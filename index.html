@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Collective Knowledge — free lessons, guides, and resources for students.">
+  <meta name="theme-color" content="#1a4d4a">
+
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="Collective Knowledge">
+  <meta property="og:description" content="Free lessons, guides, and resources for students.">
+
+  <title>Collective Knowledge</title>
+  <link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+  <a class="skip-link" href="#main">Skip to content</a>
+
+  <header class="site-header">
+    <div class="container header-inner">
+      <a class="logo" href="index.html">
+        <span class="logo-mark" aria-hidden="true">CK</span>
+        <span class="logo-text">Collective Knowledge</span>
+      </a>
+
+      <button class="nav-toggle" type="button" aria-expanded="false" aria-controls="site-nav">
+        <span class="nav-toggle-bar"></span>
+        <span class="nav-toggle-bar"></span>
+        <span class="nav-toggle-bar"></span>
+        <span class="sr-only">Menu</span>
+      </button>
+
+      <nav id="site-nav" class="site-nav" aria-label="Main">
+        <a href="index.html" aria-current="page">Home</a>
+        <a href="resources/index.html">Resources</a>
+        <a href="#about">About</a>
+      </nav>
+    </div>
+  </header>
+
+  <main id="main">
+    <section class="hero">
+      <div class="container hero-inner">
+        <p class="eyebrow">Free for every student</p>
+        <h1>Learn together.<br>Share what you know.</h1>
+        <p class="hero-lead">
+          Collective Knowledge is a growing library of free lessons, guides, and study
+          resources — built for students who want clear explanations without paywalls.
+        </p>
+        <div class="hero-actions">
+          <a class="btn btn-primary" href="resources/index.html">Browse resources</a>
+          <a class="btn btn-secondary" href="#about">How it works</a>
+        </div>
+      </div>
+    </section>
+
+    <section class="section categories">
+      <div class="container">
+        <div class="section-header">
+          <h2>What you'll find here</h2>
+          <p>Content is organized by topic so you can jump straight to what you need.</p>
+        </div>
+
+        <div class="card-grid">
+          <article class="card card--coming-soon">
+            <div class="card-icon" aria-hidden="true">∑</div>
+            <h3>Math &amp; Science</h3>
+            <p>Step-by-step walkthroughs, formula sheets, and problem sets.</p>
+            <span class="badge">Coming soon</span>
+          </article>
+
+          <article class="card card--coming-soon">
+            <div class="card-icon" aria-hidden="true">⌨</div>
+            <h3>Computer Science</h3>
+            <p>Intro programming, algorithms, and practical project guides.</p>
+            <span class="badge">Coming soon</span>
+          </article>
+
+          <article class="card card--coming-soon">
+            <div class="card-icon" aria-hidden="true">✎</div>
+            <h3>Writing &amp; Research</h3>
+            <p>Essay structure, citation help, and research tips.</p>
+            <span class="badge">Coming soon</span>
+          </article>
+
+          <article class="card card--coming-soon">
+            <div class="card-icon" aria-hidden="true">◈</div>
+            <h3>Study Skills</h3>
+            <p>Note-taking, exam prep, and strategies that actually stick.</p>
+            <span class="badge">Coming soon</span>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <section id="about" class="section about">
+      <div class="container about-inner">
+        <div class="about-copy">
+          <h2>Built to grow with you</h2>
+          <p>
+            This site is just getting started. The goal is simple: collect useful
+            educational material in one place and keep it free forever.
+          </p>
+          <p>
+            New lessons and resources will be added over time. Each one will live
+            on its own page so you can bookmark, share, and revisit easily.
+          </p>
+        </div>
+        <aside class="about-panel">
+          <h3>How to add content later</h3>
+          <ol>
+            <li>Create a new HTML file under <code>resources/</code></li>
+            <li>Link it from the resources index page</li>
+            <li>Push to GitHub — the site updates automatically</li>
+          </ol>
+        </aside>
+      </div>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <div class="container footer-inner">
+      <p>&copy; <span id="year"></span> Collective Knowledge</p>
+      <p class="footer-note">Free resources for students. No account required.</p>
+    </div>
+  </footer>
+
+  <script src="js/main.js"></script>
+</body>
+</html>
