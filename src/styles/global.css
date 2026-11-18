@@ -1,0 +1,118 @@
+/* ─── Google Fonts — must come first ───────────────────── */
+@import url('https://fonts.googleapis.com/css2?family=Inter:ital,wght@0,300;0,400;0,500;0,600;0,700&family=Playfair+Display:wght@600;700&display=swap');
+
+@layer base, starlight, theme, components, utilities;
+
+@import '@astrojs/starlight-tailwind';
+@import 'tailwindcss/theme.css' layer(theme);
+@import 'tailwindcss/utilities.css' layer(utilities);
+
+/* ─── Design Tokens ────────────────────────────────────── */
+:root {
+  --font-body: 'Inter', system-ui, sans-serif;
+  --font-display: 'Playfair Display', Georgia, serif;
+}
+
+/* ─── DARK THEME ───────────────────────────────────────── */
+:root[data-theme='dark'] {
+  /* Canvas */
+  --color-canvas:        #0d1117;
+  --color-canvas-subtle: #161b22;
+  --color-surface:       #1c2128;
+  --color-border:        #30363d;
+  --color-border-muted:  #21262d;
+
+  /* Text */
+  --color-text-primary:   #e6edf3;
+  --color-text-secondary: #8b949e;
+  --color-text-muted:     #6e7681;
+
+  /* Accent */
+  --color-accent:       #58a6ff;
+  --color-accent-soft:  rgba(88, 166, 255, 0.12);
+
+  /* Nav */
+  --color-nav-bg:     rgba(13, 17, 23, 0.85);
+  --color-nav-border: #21262d;
+
+  /* Starlight token overrides */
+  --sl-color-bg:          var(--color-canvas);
+  --sl-color-bg-nav:      var(--color-nav-bg);
+  --sl-color-bg-sidebar:  var(--color-canvas-subtle);
+  --sl-color-hairline:    var(--color-border);
+  --sl-color-text:        var(--color-text-primary);
+  --sl-color-text-accent: var(--color-accent);
+  --sl-color-gray-1: #e6edf3;
+  --sl-color-gray-2: #c9d1d9;
+  --sl-color-gray-3: #8b949e;
+  --sl-color-gray-4: #484f58;
+  --sl-color-gray-5: #21262d;
+  --sl-color-gray-6: #161b22;
+  --sl-color-black:  #0d1117;
+  --sl-color-white:  #f0f6fc;
+}
+
+/* ─── LIGHT THEME ──────────────────────────────────────── */
+:root[data-theme='light'] {
+  /* Canvas */
+  --color-canvas:        #ffffff;
+  --color-canvas-subtle: #f6f8fa;
+  --color-surface:       #ffffff;
+  --color-border:        #d0d7de;
+  --color-border-muted:  #eaeef2;
+
+  /* Text */
+  --color-text-primary:   #1f2328;
+  --color-text-secondary: #59636e;
+  --color-text-muted:     #818b98;
+
+  /* Accent */
+  --color-accent:       #0969da;
+  --color-accent-soft:  rgba(9, 105, 218, 0.1);
+
+  /* Nav */
+  --color-nav-bg:     rgba(255, 255, 255, 0.92);
+  --color-nav-border: #d0d7de;
+
+  /* Starlight token overrides */
+  --sl-color-bg:          var(--color-canvas);
+  --sl-color-bg-nav:      var(--color-nav-bg);
+  --sl-color-bg-sidebar:  var(--color-canvas-subtle);
+  --sl-color-hairline:    var(--color-border);
+  --sl-color-text:        var(--color-text-primary);
+  --sl-color-text-accent: var(--color-accent);
+  --sl-color-gray-1: #1f2328;
+  --sl-color-gray-2: #454c54;
+  --sl-color-gray-3: #59636e;
+  --sl-color-gray-4: #afb8c1;
+  --sl-color-gray-5: #d0d7de;
+  --sl-color-gray-6: #f6f8fa;
+  --sl-color-black:  #1f2328;
+  --sl-color-white:  #ffffff;
+}
+
+/* ─── Global Base ──────────────────────────────────────── */
+body {
+  font-family: var(--font-body) !important;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  letter-spacing: -0.011em;
+  background-color: var(--color-canvas);
+  color: var(--color-text-primary);
+}
+
+/* ─── Nav ──────────────────────────────────────────────── */
+/* Starlight's PageFrame wraps the header; override its border & bg */
+:root {
+  /* Starlight uses this for the header bottom border */
+  --sl-color-hairline-shade: var(--color-nav-border);
+}
+
+.header {
+  backdrop-filter: blur(16px) saturate(180%);
+  -webkit-backdrop-filter: blur(16px) saturate(180%);
+  background-color: var(--color-nav-bg) !important;
+  /* Remove any top gap / stray line */
+  top: 0 !important;
+  margin-top: 0 !important;
+}
