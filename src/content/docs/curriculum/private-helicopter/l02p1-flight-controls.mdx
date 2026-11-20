@@ -1,0 +1,160 @@
+---
+title: Flight Controls
+description: The three axes of flight, what each control does, how to hold them, the positive exchange of controls, and how power demand and power limits work.
+sidebar:
+  order: 21
+lesson:
+  course: private-helicopter
+  week: 1
+  order: 2
+  kind: ground
+  kindNumber: 2
+  part: 1
+  lessonTitle: Flight Controls & SFAR 73
+  status: draft
+  duration: 2–3 hr ground (all parts)
+  objectives:
+    - Name the three axes of flight and the control that governs each
+    - Describe correct hand and foot placement on the cyclic, collective, and pedals
+    - Perform a positive three-step exchange of controls
+    - Predict the secondary effects of a collective input in a hover and in forward flight
+    - Explain the relationship between manifold pressure, RPM, and available power
+  references:
+    - FAA-H-8083-21 Helicopter Flying Handbook, Ch. 4
+    - 'R22/R44 POH Section 7 — Systems Description'
+  airframes: [r22, r44]
+  audio:
+    src: /audio/private-helicopter/ground-2.m4a
+    duration: 54 min
+    covers: all four parts of this lesson
+---
+
+import KeyNotes from '@components/KeyNotes.astro';
+import LessonProgress from '@components/LessonProgress.tsx';
+import LessonHeader from '@components/LessonHeader.astro';
+import LessonAudio from '@components/LessonAudio.astro';
+import { Aside } from '@astrojs/starlight/components';
+
+<LessonHeader lesson={frontmatter.lesson} />
+
+<LessonAudio
+	src={frontmatter.lesson.audio.src}
+	duration={frontmatter.lesson.audio.duration}
+	covers={frontmatter.lesson.audio.covers}
+/>
+
+Flying a helicopter requires coordinating multiple inputs at the same time. Before we get
+there, we need to understand the axes of flight we're actually controlling.
+
+## The Axes of Flight
+
+There are three axes of flight: pitch (the lateral axis), roll (the longitudinal axis), and yaw (the vertical axis).
+
+Picture a model helicopter in your hand and a pencil as the axis:
+
+- **Pitch:** Push the pencil through the helicopter from one side to the other. The nose can rotate up and down around that pencil. That’s pitch.
+- **Roll:** Push the pencil through from nose to tail. The helicopter can tilt onto its left side or right side around that pencil. That’s roll.
+- **Yaw:** Push the pencil straight down through the top and bottom. The nose can turn left or right around that pencil. That’s yaw.
+
+## Introduction to the Flight Controls
+
+The main job of the flight controls is to control the helicopter about those axes. There are three main controls:
+
+- **Cyclic:** The stick between your legs, held with your right hand. It moves in 360 degrees and controls pitch and roll.
+- **Collective:** The stick at your left side, held with your left hand. It moves up and down. Its main function isn’t to control an axis of flight, but to make the helicopter climb or descend.
+- **Pedals:** At your feet. As one moves in, the other moves out. They control yaw.
+
+Every control interacts with the others. We’ll cover that later in this lesson. For now, these are the basics, so let’s talk about ergonomics.
+
+## Ergonomics
+
+Physical ergonomics is how the body is positioned in a setting to avoid musculoskeletal issues. After many hours in a cockpit, you may feel like helicopters weren’t designed with ergonomics in mind. But when it comes to learning the flight controls, how you position yourself on them is critical.
+
+**Cyclic:** Place your hand on the grip and rest your right forearm on your right thigh. Hold the grip comfortably, not firmly. Here’s a test: imagine a pencil weaving under your index finger, over your middle finger, and back under your ring finger. If it begins to hurt, you’re squeezing too tightly. This is common early in training, because new learners tend to get tense. Keep your grip in mind, and remember to relax.
+
+**Collective:** Same idea: comfortable, not overly firm. The foam portion at the top of the collective is the throttle (more on that shortly). The throttle is governed and will twist on its own, and a firm grip can override that. We don’t want to do that except for emergency procedure training down the road. So place two fingers on the foam throttle and two on the collective bar itself to avoid over-gripping. Remember to relax. You may notice your instructor keeps three fingers on the throttle. That’s a safety precaution so they can keep more control of the throttle than a new learner.
+
+**Pedals:** Also called anti-torque pedals. Place both heels on the floor and the balls of your feet comfortably on each pedal.
+
+## Movements of the Controls
+
+**Cyclic:** In stable flight, cyclic movements should be small wrist movements, not big arm movements. That’s why your forearm is planted on your thigh as a pivot point. Think of the movement as no bigger than the diameter of a quarter. Some situations call for a larger movement to reposition the cyclic, after which small wrist movements take back over. When that happens, slide your whole forearm across your thigh to the new position.
+
+**Collective:** Raise and lower it slowly, always. Avoid rapid inputs.
+
+**Pedals:** Slide your heels forward and back as you move the pedals, rather than planting your heels and pushing with your feet. You’ll use much of the pedals’ range throughout flight. As one heel slides in, the other slides out, like pedaling a bike: as one goes up, the other goes down. It’s very easy to block yourself by leaving one foot in position while trying to move the other forward. If the other pedal can’t retract because you left that heel planted, it may not move.
+
+Across all controls, the theme is the same: smooth, controlled inputs, and no abrupt or rapid ones. Smooth inputs aren’t just good technique, they’re a safety habit. Abrupt control inputs can lead to loss of control and, in some helicopters, dangerous flight conditions. Get in the habit now.
+
+## Positive Exchange of Controls
+
+Throughout training, you and your instructor will pass the controls back and forth. Every transfer requires a three-way positive exchange. Before another person takes the controls, both people confirm on the controls, and only then does the original person let go.
+
+Giving the controls looks like this:
+
+1. “You have the controls.”
+2. The other person takes the controls and says, “I have the controls.”
+3. The first person confirms again: “You have the controls.” Now they may release.
+
+Taking the controls works the same way, starting from the other end: “I have the controls.” / “You have the controls.” / “I have the controls.”
+
+This can happen with a single control, all controls, or any combination. It’s useful in early training to isolate a control, or when one person holds a control such as the collective while the other quickly handles a task. Each party should clearly state what’s being transferred. For example: “I have the collective.” “You have the collective.” “I have the collective.”
+
+## Secondary Control Interactions
+
+Recall that the cyclic controls roll and pitch, the pedals control yaw, and the collective controls altitude. Each control also affects the others. Your maneuver lessons will go deeper on these interactions. For now, the one to know is the effect of the collective.
+
+**In a hover:** Raising the collective changes torque and yaws the helicopter. In a typical helicopter with a main rotor and tail rotor, the direction of yaw depends on whether the main rotor turns clockwise or counterclockwise. In an R22, raising the collective yaws the helicopter to the right, and lowering it yaws the helicopter to the left. You’ll need a matching pedal input to keep the helicopter from yawing.
+
+**In forward flight:** Raising the collective causes a slight yaw to the right, and the nose pitches up. Lowering the collective causes a slight yaw to the left, and the nose pitches down.
+
+## Throttle: One More Flight Control
+
+There’s one more important control we touched on: the throttle. It’s the twist grip at the end of the collective, the one we don’t want to over-grip. Twisting it away from you adds fuel, and twisting it toward you removes fuel.
+
+Here’s the best way I’ve found to remember it. Let your left arm hang straight down at your side with a straight wrist, holding the collective grip as if you were holding a drink can. Your thumb is your reference:
+
+- Roll your hand so your thumb ends up underneath the throttle: throttle off.
+- Roll your hand so your thumb ends up on top of the throttle: throttle on.
+
+**Thumb down, throttle down. Thumb up, throttle up.**
+
+In the Robinson R22 and R44, the throttle rolls anywhere from idle to full throttle, and it also has an overtravel spring. Idle is the full-off position. If you keep rolling the throttle off past idle, you enter the overtravel range. It’s still an idle setting, but it disables the correlator (used for specific emergencies), and it’s spring-loaded, so the throttle returns to idle when you release pressure. We’ll talk about the correlator in a moment. From idle, rolling the throttle on to any point adds fuel, and where it stops is full throttle.
+
+The throttle also has a governor, an electric system that automatically opens and closes the throttle as the helicopter needs more or less fuel. In Robinson helicopters, the governor is active above 80% rotor RPM. In normal flight in a governed helicopter, you don’t need to manipulate the throttle except for runup and shutdown. Let it twist freely in your hand.
+
+## Power Demand
+
+The helicopter has to supply enough power for the demand placed on it. When you speed up the rotor system on runup, it takes more power to spin it faster. After that, rotor RPM should stay at a set value for the entire flight (except for certain training maneuvers), and power demand comes from your control inputs.
+
+Raising the collective demands a lot of power from the engine. Pedal inputs that increase tail rotor thrust also demand more power from the engine. The pedal that does this depends on which way the main rotor turns. In the R22, the main rotor turns counterclockwise, so that pedal is the left pedal. In a helicopter with a clockwise main rotor, it would be the right. Certain aerodynamic configurations, which we’ll cover later, change the power required too. In each case the helicopter needs more fuel to make more power, which means opening the throttle.
+
+Because the collective demands so much power, Robinson helicopters have a correlator. It’s a mechanical linkage from the collective directly to the throttle at the engine. As you raise the collective, it opens the throttle for you and handles most of the extra fuel and power required, so the governor doesn’t have to do all of it (the governor can be slow and sluggish at that job). You won’t notice this happening. The governor fine-tunes from there, since its primary job is maintaining rotor RPM. The pedals do not have correlation.
+
+## Power Limits (Full Throttle)
+
+There’s a limit to how much power we can ask of the engine with our control inputs. Eventually the throttle is fully open, no more fuel can be added, and the twist grip won’t roll on any higher. This is called full throttle. If you keep making control inputs that demand more power at that point, the engine can’t supply it, and the rotor system will slow down. Below normal operating speed, that’s called low RPM, which we’ll get to shortly. First, let’s talk about power indicators and how to avoid that situation.
+
+In any helicopter, it’s imperative to fly within our power limits. How those limits are indicated depends on the helicopter. In the Robinson R22 and R44 series, our power limit indicator is the manifold pressure gauge, located on the dash in front of you. We’ll go into its operation in detail later, but essentially, it tells you how much power you’re using so you can compare it to your maximum limits. In the preflight planning lesson that follows this one, you’ll learn to calculate those limits before applying them on your first flight lesson.
+
+Manifold pressure increases as the throttle opens, and that happens in every case we just covered: the correlator adding throttle as you raise the collective, and the governor adding throttle to follow up on both collective and left pedal inputs. As the pilot, you need to watch your manifold pressure primarily when raising the collective and when adding left pedal, since those are the two main drivers of an increase in manifold pressure.
+
+Everything you’ve learned about the flight controls so far is critical before your first simulator or flight session, and it ties directly into the next part of this lesson.
+
+<KeyNotes>
+- **Three axes, three controls.** Cyclic → pitch and roll. Pedals → yaw. Collective → climb and descent, not an axis.
+- **Throttle memory aid:** thumb down, throttle down; thumb up, throttle up.
+- **Positive exchange is three statements**, every time: "You have the controls" → "I have the controls" → "You have the controls."
+- **Collective is never a fast input.** Raise and lower it slowly, always.
+- **In a hover**, raising the collective changes torque and yaws the nose — expect to need pedal.
+- **There is no single-axis input in a helicopter.** Every input is a small package of corrections.
+</KeyNotes>
+
+<Aside type="tip" title="Want the mechanism behind all this?">
+This part gives you what you need to put your hands on the controls. The
+[Flight Controls subject article](/subjects/flight-controls/) covers the rest —
+the swashplate, phase lag, the correlator and governor, and why each control does
+what it does.
+</Aside>
+
+<LessonProgress lessonId="/curriculum/private-helicopter/l02p1-flight-controls/" client:load />

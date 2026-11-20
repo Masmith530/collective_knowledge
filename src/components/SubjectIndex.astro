@@ -1,0 +1,194 @@
+---
+/**
+ * SubjectIndex — every subject area and its articles.
+ *
+ * Areas with no articles are listed by name at the end rather than rendered as
+ * empty sections, so the page shows the intended shape of the reference without
+ * pretending the content exists.
+ */
+import { getCollection } from 'astro:content';
+import { SUBJECT_AREAS } from '../lib/subjects';
+
+const articles = (await getCollection('docs', ({ data }) => Boolean(data.topic))).sort(
+	(a, b) => a.data.topic!.order - b.data.topic!.order,
+);
+
+const areas = SUBJECT_AREAS.map((area) => ({
+	...area,
+	items: articles.filter((a) => a.data.topic!.category === area.slug),
+}));
+
+const filled = areas.filter((a) => a.items.length > 0);
+const planned = areas.filter((a) => a.items.length === 0);
+---
+
+<div class="ck-sx not-content">
+	{
+		filled.map((area) => (
+			<section class="ck-sx-area">
+				<div class="ck-sx-head">
+					<h2>{area.label}</h2>
+					<p>{area.blurb}</p>
+				</div>
+				<ul>
+					{area.items.map((item) => (
+						<li>
+							<a href={`/${item.id}/`} data-ck-lesson={`/${item.id}/`}>
+								<span class="ck-sx-title">{item.data.title}</span>
+								{item.data.description && <span class="ck-sx-desc">{item.data.description}</span>}
+							</a>
+						</li>
+					))}
+				</ul>
+			</section>
+		))
+	}
+
+	{
+		planned.length > 0 && (
+			<section class="ck-sx-planned">
+				<h2>Planned</h2>
+				<ul>
+					{planned.map((area) => (
+						<li>
+							<strong>{area.label}</strong> — {area.blurb}
+						</li>
+					))}
+				</ul>
+			</section>
+		)
+	}
+</div>
+
+<script>
+	function markDone() {
+		let lessons: Record<string, string> = {};
+		try {
+			const raw = localStorage.getItem('ck-progress-v1');
+			if (raw) lessons = JSON.parse(raw).lessons ?? {};
+		} catch {
+			return;
+		}
+		for (const el of document.querySelectorAll('.ck-sx [data-ck-lesson]')) {
+			const id = el.getAttribute('data-ck-lesson');
+			if (id && lessons[id]) el.setAttribute('data-ck-done', '');
+			else el.removeAttribute('data-ck-done');
+		}
+	}
+	markDone();
+	document.addEventListener('astro:page-load', markDone);
+	window.addEventListener('ck:progress', markDone);
+</script>
+
+<style>
+	.ck-sx {
+		margin-top: 2rem;
+	}
+
+	.ck-sx-area + .ck-sx-area {
+		margin-top: 2.25rem;
+	}
+
+	.ck-sx-head {
+		margin-bottom: 0.8rem;
+	}
+
+	.ck-sx-head h2 {
+		margin: 0;
+		border: 0;
+		padding: 0;
+		font-size: 1.0625rem;
+		font-weight: 650;
+		letter-spacing: -0.015em;
+		color: var(--color-text-primary);
+	}
+
+	.ck-sx-head p {
+		margin: 0.2rem 0 0;
+		font-size: 0.875rem;
+		color: var(--color-text-secondary);
+	}
+
+	.ck-sx ul {
+		list-style: none;
+		margin: 0;
+		padding: 0;
+		display: flex;
+		flex-direction: column;
+		gap: 0.5rem;
+	}
+
+	.ck-sx li {
+		margin: 0;
+	}
+
+	.ck-sx-area a {
+		display: block;
+		padding: 0.9rem 1.15rem;
+		border: 1px solid var(--color-border);
+		border-radius: var(--ck-r);
+		background: var(--color-canvas);
+		text-decoration: none;
+		transition: border-color 140ms ease, box-shadow 140ms ease;
+	}
+
+	.ck-sx-area a:hover {
+		border-color: color-mix(in srgb, var(--color-accent) 45%, var(--color-border));
+		box-shadow: var(--ck-shadow);
+	}
+
+	.ck-sx-title {
+		display: block;
+		font-size: 1rem;
+		font-weight: 620;
+		letter-spacing: -0.01em;
+		color: var(--color-text-primary);
+	}
+
+	.ck-sx-area a[data-ck-done] .ck-sx-title::after {
+		content: '✓';
+		margin-inline-start: 0.45rem;
+		font-size: 0.85rem;
+		color: var(--color-ok);
+	}
+
+	.ck-sx-desc {
+		display: block;
+		margin-top: 0.3rem;
+		font-size: 0.8125rem;
+		line-height: 1.6;
+		color: var(--color-text-secondary);
+	}
+
+	.ck-sx-planned {
+		margin-top: 2.5rem;
+		padding-top: 1.35rem;
+		border-top: 1px solid var(--color-border-muted);
+	}
+
+	.ck-sx-planned h2 {
+		margin: 0 0 0.6rem;
+		border: 0;
+		padding: 0;
+		font-size: 0.6875rem;
+		font-weight: 700;
+		letter-spacing: 0.1em;
+		text-transform: uppercase;
+		color: var(--color-text-muted);
+	}
+
+	.ck-sx-planned ul {
+		gap: 0.3rem;
+	}
+
+	.ck-sx-planned li {
+		font-size: 0.8125rem;
+		line-height: 1.6;
+		color: var(--color-text-muted);
+	}
+
+	.ck-sx-planned strong {
+		color: var(--color-text-secondary);
+		font-weight: 600;
+	}
+</style>

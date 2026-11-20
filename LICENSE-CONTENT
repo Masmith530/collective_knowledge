@@ -1,0 +1,39 @@
+# Content License
+
+All training content in this repository — everything under `src/content/`,
+including lessons, handbook articles, and quiz banks — is licensed under the
+
+    Creative Commons Attribution-ShareAlike 4.0 International
+    (CC BY-SA 4.0)
+
+Full text: https://creativecommons.org/licenses/by-sa/4.0/legalcode
+Summary:   https://creativecommons.org/licenses/by-sa/4.0/
+
+You are free to share and adapt this material, including commercially, provided
+you give appropriate credit and license your adaptations under the same terms.
+
+The ShareAlike requirement is deliberate: material contributed to a free
+community resource should stay free.
+
+## Material from other sources
+
+**FAA publications** (handbooks, advisory circulars, the ACS, and the Federal
+Aviation Regulations) are works of the United States Government in the public
+domain, and are quoted and linked freely.
+
+**Manufacturer publications** — Rotorcraft Flight Manuals, Pilot's Operating
+Handbooks, safety notices, safety tips, and service bulletins — are copyrighted
+by their respective manufacturers and are **not** reproduced in this repository.
+This project cites and links to them only. Obtain them from the manufacturer.
+
+**Trademarks** and aircraft model names are the property of their owners and are
+used here solely to identify the aircraft under discussion. This project is not
+affiliated with, endorsed by, or sponsored by any aircraft manufacturer, flight
+school, or the Federal Aviation Administration.
+
+## No warranty
+
+This content is provided as-is, without warranty of any kind. It is study
+material, not an FAA-approved training course, and it is not a substitute for an
+authorized flight instructor, your aircraft's flight manual, or the current
+regulations. See `src/content/docs/start-here/disclaimer.mdx`.

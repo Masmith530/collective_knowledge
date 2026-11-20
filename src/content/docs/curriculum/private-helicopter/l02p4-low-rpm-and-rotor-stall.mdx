@@ -1,0 +1,153 @@
+---
+title: Low RPM Recovery & Rotor Stall
+description: Recognizing low rotor RPM, the recovery, how to avoid it, and what rotor stall is — plus the homework and the quiz for the whole lesson.
+sidebar:
+  order: 24
+lesson:
+  course: private-helicopter
+  week: 1
+  order: 2
+  kind: ground
+  kindNumber: 2
+  part: 4
+  lessonTitle: Flight Controls & SFAR 73
+  status: draft
+  objectives:
+    - Recognize the indications of low rotor RPM
+    - State the low rotor RPM recovery from memory
+    - Explain what rotor stall is and why it is not recoverable at low altitude
+    - Describe the conditions that lead to low RPM and how to avoid them
+  standards:
+    - Student states the required SFAR 73 subject areas from memory
+    - Student states the low rotor RPM recovery sequence without prompting
+    - Instructor has provided the SFAR 73 awareness training and logged the endorsement
+  references:
+    - 'Robinson Safety Tip 9, SN-10, SN-24'
+    - 'R22/R44 POH Section 10 — Safety Tips and Safety Notices'
+    - FAA-H-8083-21 Helicopter Flying Handbook, Ch. 11
+  airframes: [r22, r44]
+  quiz: private-helicopter/l02
+  flashcards: private-helicopter/ground-2
+---
+
+import KeyNotes from '@components/KeyNotes.astro';
+import Homework from '@components/Homework.astro';
+import QuizBlock from '@components/QuizBlock.astro';
+import FlashcardDeck from '@components/FlashcardDeck.astro';
+import LessonProgress from '@components/LessonProgress.tsx';
+import LessonHeader from '@components/LessonHeader.astro';
+
+<LessonHeader lesson={frontmatter.lesson} />
+
+## Recovering from Low RPM
+
+No matter what causes low RPM, the first response is the same: roll on throttle and lower the collective at the same time to recover RPM before you start figuring out what went wrong. In forward flight, aft cyclic to slow the airspeed also helps recover lost RPM. It needs to become a conditioned reflex. Never raise the collective to stop a descent when RPM is low.
+
+If you use aft cyclic, remember that you’re trading airspeed for rotor energy. Once RPM is back to normal, restore your airspeed. Forward airspeed makes the rotor more efficient, so it takes less power to hold altitude. If you let the airspeed get very low, you’ll need more power than you did before, and you may not have it to spare. Restore airspeed with smooth, gentle forward cyclic, never an abrupt push, and not while RPM is still low. That’s the same low-G hazard we covered earlier.
+
+What you do next depends on how much altitude you have.
+
+Close to the ground (within roughly 50 feet): Recovery may be unlikely. Lowering the collective and rolling on means we first descend faster to restore RPM. That sounds crazy, but it’s the best alternative. Raising the collective to stop the descent pulls RPM down even further and makes the descent worse. If contact seems likely, keep flying the helicopter and maneuver to the best landing spot. Raise the collective as you reach the ground to cushion the landing, similar to an autorotation.
+
+With enough altitude: You may be able to build forward airspeed during the recovery and fly away. Forward flight takes less power to maintain altitude than hovering does (more on that in later aerodynamics lessons).
+
+Once you’re safely on the ground: Roll the throttle back to idle as you lower the collective all the way down. That avoids any chance of RPM building back up unintentionally.
+
+## Avoiding Low RPM
+
+The best recovery is the one you never need. Low RPM almost always starts with asking for more power than the helicopter has available, so the habits you’ve already learned are your best defense:
+
+- Watch your power. Keep an eye on manifold pressure whenever you raise the collective or add left pedal, and make those inputs smoothly.
+- Respect high altitude and heavy weight. You reach full throttle sooner. That’s why preflight planning matters.
+
+## Rotor Stall
+
+If rotor RPM is allowed to decay too low, the entire rotor system can stall. It’s a very serious condition, and you must never let it get there in flight.
+
+Here’s what happens. A rotor blade works like an airplane wing: it makes lift by moving through the air at an angle. That angle, between the blade and the air it meets, is called the **angle of attack**. Stick your hand out of a car window and tilt it up slightly, and you feel lift. Tilt it too far, and the air stops flowing smoothly over your hand and the lift disappears. That’s a stall.
+
+The same thing can happen to a rotor. As RPM drops, the blades move through the air more slowly, so each blade needs a higher angle of attack to make the lift that holds the helicopter up. If RPM drops far enough, that angle gets too high, the air stops flowing smoothly over the blade, and it stalls. The rotor suddenly loses lift and gains a huge amount of drag. That drag acts like a brake on the rotor and slows it down even more.
+
+As the helicopter starts to fall, air rushes up through the rotor and increases the angle of attack even further, making the stall worse. At that point, recovery is virtually impossible, even with the collective fully lowered.
+
+Rotor stall can happen at any airspeed, including in a hover. That’s why our goal is never to let RPM get that low in the first place.
+
+Robinson’s POH warns that catastrophic rotor stall could occur if rotor RPM ever drops below 80%, plus 1% for every 1,000 feet of density altitude. At 3,000 feet, for example, that’s 83%. This is a danger threshold, not a margin to use. Your normal operating limits are far higher, and you will never fly near it. We’ll learn to calculate density altitude in the preflight planning lesson.
+
+Rotor stall accidents most often occur close to the ground, during takeoff or landing, where the helicopter may fall only a few feet and the occupants survive. When it happens above 40 or 50 feet AGL, it is most likely fatal. That’s why the habit we built earlier matters: smooth, gentle inputs, a constant eye on power, and lowering the collective immediately when RPM is in doubt.
+
+## Another Hazard of Low RPM
+
+Low RPM carries one more hazard. In helicopters, low RPM combined with high power demand can cause an uncontrollable yaw to the right, because the tail rotor loses thrust as RPM drops. We’ll cover this in a later lesson.
+
+## Putting It All Together
+
+That covers the five required subject areas: energy management, mast bumping, low rotor RPM and rotor stall, low-G conditions, and rotor RPM decay. Every one of them comes back to what you learned in the first half of this lesson: control inputs and power management. Your instructor will provide your SFAR 73 ground session, and once it’s complete, you’ll receive your logbook endorsement and be cleared to touch the controls.
+
+## Further Reading
+
+Robinson puts Safety Tips and Safety Notices at the back of the POH, in Section 10. Each notice was written because of real accidents, so they’re worth your time. These are the ones that tie to this lesson:
+
+- Low-G: Safety Tip 1 and SN-11
+- Low RPM and rotor stall: Safety Tip 9, SN-10, and SN-24
+- First flights and smooth inputs: SN-20 and SN-29
+
+Read them before your SFAR 73 ground session.
+
+<KeyNotes>
+- **Three axes, three controls.** Cyclic → pitch and roll. Pedals → yaw. Collective → climb and descent, not an axis.
+- **Throttle memory aid:** thumb down, throttle down; thumb up, throttle up.
+- **Positive exchange is three statements**, every time: "You have the controls" → "I have the controls" → "You have the controls."
+- **Collective is never a fast input.** Raise and lower it slowly, always.
+- **The five SFAR 73 required subject areas:** energy management, mast bumping, low rotor RPM and rotor stall, low-G conditions and recovery, and rotor RPM decay.
+- **Low-G recovery is aft cyclic — gently.** Never lateral cyclic first; that is what drives mast bumping.
+- **Three forms of energy:** airspeed is kinetic, rotor RPM is blade inertia, altitude is potential. You trade between them; you cannot create them.
+- **Low rotor RPM recovery:** lower collective, roll throttle on, and in forward flight ease aft cyclic. With altitude, recover the RPM. Without it, cushion the landing.
+</KeyNotes>
+
+<Homework due="Before your SFAR 73 ground session">
+1. Read **POH Section 10** in full. Start with the notices tied to this lesson:
+   - Low-G: **Safety Tip 1** and **SN-11**
+   - Low RPM and rotor stall: **Safety Tip 9**, **SN-10**, and **SN-24**
+   - First flights and smooth inputs: **SN-20** and **SN-29**
+2. Read **SFAR 73** itself. It is short. Note which activities in paragraph 2 require the awareness training and which require additional experience.
+3. Sit in the aircraft (or a chair) and practice **hand and foot placement** until it is automatic. Practice the throttle roll with your eyes closed.
+4. Write out the **low rotor RPM recovery** from memory, then check it against the POH.
+5. Find the **power limit chart** in your POH. Determine the manifold pressure available at your home field on a standard day.
+6. Be ready to **state the five required subject areas** without notes.
+</Homework>
+
+<QuizBlock slug="private-helicopter/l02" />
+
+<LessonProgress
+	lessonId="/curriculum/private-helicopter/l02-flight-controls-and-sfar-73/"
+	client:load
+/>
+<KeyNotes>
+- **Low rotor RPM recovery:** lower collective, roll throttle on, and in forward flight ease aft cyclic.
+- **What you do next depends on altitude.** With altitude, recover the RPM. Without it, cushion the landing.
+- **Rotor stall is not a recoverable condition at low altitude.** Prevention is the entire defence.
+- **The horn and light are a last warning, not a working instrument.** Manage RPM so you never hear them.
+</KeyNotes>
+
+<Homework due="Before your SFAR 73 ground session">
+1. Read **POH Section 10** in full. Start with the notices tied to this lesson:
+   - Low-G: **Safety Tip 1** and **SN-11**
+   - Low RPM and rotor stall: **Safety Tip 9**, **SN-10**, and **SN-24**
+   - First flights and smooth inputs: **SN-20** and **SN-29**
+2. Read **SFAR 73** itself. It is short. Note which activities in paragraph 2 require the awareness training and which require additional experience.
+3. Sit in the aircraft (or a chair) and practice **hand and foot placement** until it is automatic. Practice the throttle roll with your eyes closed.
+4. Write out the **low rotor RPM recovery** from memory, then check it against the POH.
+5. Find the **power limit chart** in your POH. Determine the manifold pressure available at your home field on a standard day.
+6. Be ready to **state the five required subject areas** without notes.
+</Homework>
+
+## Review
+
+Both of these cover all four parts of this lesson.
+
+<FlashcardDeck slug="private-helicopter/ground-2" title="Flashcards — Flight Controls & SFAR 73" />
+
+<QuizBlock slug="private-helicopter/l02" title="Check Yourself — Flight Controls & SFAR 73" />
+
+<LessonProgress lessonId="/curriculum/private-helicopter/l02p4-low-rpm-and-rotor-stall/" client:load />

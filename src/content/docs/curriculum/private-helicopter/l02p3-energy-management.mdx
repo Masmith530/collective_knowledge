@@ -1,0 +1,108 @@
+---
+title: Energy Management & RPM Decay
+description: The three forms of energy you trade between, how they behave power-on and power-off, and what makes rotor RPM decay.
+sidebar:
+  order: 23
+lesson:
+  course: private-helicopter
+  week: 1
+  order: 2
+  kind: ground
+  kindNumber: 2
+  part: 3
+  lessonTitle: Flight Controls & SFAR 73
+  status: draft
+  objectives:
+    - Name the three forms of energy available to you and what stores each one
+    - Explain how energy is traded power-on and power-off
+    - Describe what causes rotor RPM to decay in powered flight and in autorotation
+  references:
+    - SFAR 73 — Robinson R-22/R-44 Special Training and Experience Requirements
+    - FAA-H-8083-21 Helicopter Flying Handbook, Ch. 11
+  airframes: [r22, r44]
+---
+
+import KeyNotes from '@components/KeyNotes.astro';
+import LessonProgress from '@components/LessonProgress.tsx';
+import LessonHeader from '@components/LessonHeader.astro';
+
+<LessonHeader lesson={frontmatter.lesson} />
+
+## Energy Management
+
+On to energy management, the foundation for the remainder of the SFAR 73 subject areas.
+
+The R22 and R44 have low-inertia rotor systems. That means when power runs out, the rotor slows down very quickly, so managing our energy is of the utmost importance. I like to think of energy management in two states: **power-on** (the engine is running) and **power-off** (the engine is not running). Let’s explore both.
+
+**Power-On**
+
+With the engine running, our primary goal is to operate the helicopter within its limitations. Earlier we talked about manifold pressure, and this is exactly why it matters. We only have so much power available, and we must stay within it. There are also limitations for airspeed, various flight maneuvers, and more. They protect us from mismanaging our energy and winding up in an undesired state of flight.
+
+We also have three forms of energy to keep track of:
+
+- **Airspeed:** kinetic energy
+- **Rotor RPM:** blade inertia
+- **Altitude:** potential energy
+
+Placing ourselves in a “high energy” state protects us in the case of an engine failure or any other emergency that requires an autorotation, which we’ll discuss next. A good reserve is at least 500 feet above ground level (AGL) and 60 knots indicated airspeed (KIAS). Your POH also includes a height-velocity diagram, which shows the combinations of height and airspeed where an autorotation may not be survivable. We’ll cover it in detail in a later lesson.
+
+**Power-Off**
+
+When the engine is no longer driving the rotor system, we must enter a flight state called **autorotation**. The first action is to **lower the collective immediately**. Because our rotor system is low inertia, rotor RPM decays very quickly, and if the collective isn’t lowered in time, the rotor can stall. Recovery from that is unlikely. Remember from earlier that lowering the collective yaws the helicopter left in an R22, so you’ll need right pedal to keep the nose straight. If you’re in forward flight the nose will also pitch down, so you’ll need aft cyclic to keep the nose level.
+
+Lowering the collective puts us in a descent, and air flows upward through the rotor disc, much like blowing on a pinwheel. That airflow keeps the rotor spinning. The only downside is that we’re now descending toward the ground, so we need to find a place to land. Once we’ve picked one, we flare to stop the descent and then cushion the landing.
+
+Here’s how it works. Remember those buckets of energy: kinetic, potential, and rotor inertia. At high airspeed, high altitude, and normal RPM, all of our buckets are full.
+
+- **Altitude (potential)** can be traded for airspeed, which turns it into kinetic energy. We can also use it to adjust rotor RPM by raising and lowering the collective.
+- **Airspeed (kinetic)** can be converted into blade inertia, temporarily, by loading the rotor with aft cyclic, as in a flare. It can also be used to temporarily stop the rate of descent.
+
+The goal is to use these buckets to complete a safe landing. As you descend, your potential energy runs out, which is why we use it to gain kinetic energy and blade inertia if needed. Once you’re low to the ground, we need that kinetic energy to flare and stop the descent. If you don’t have enough forward energy, you’ll sink through the flare and into the ground. The flare stops the descent but drains your kinetic energy.
+
+Once you’re slow, you’re basically out of potential and kinetic energy. Now you use the remaining blade inertia to cushion your last fall (hopefully around 8 feet) by raising the collective. That drains your last bucket, and you’re safely on the ground.
+
+But energy management isn’t just about staying in the air. It’s about arriving at your chosen landing area with the right amount of energy. Too much and you overshoot. Too little and you land short. You’ll use your flight controls and maneuvering to manage that.
+
+Even if your landing area is far from ideal, keep flying the helicopter all the way to the ground. A hard landing with the rotor still turning is survivable. A stalled rotor usually isn’t, and that’s what we’ll cover next.
+
+## Rotor RPM Decay and Low Rotor RPM
+
+Our goal in flight is to keep rotor RPM within normal operating limits. Certain conditions will decay (reduce) rotor RPM. When rotor RPM falls below normal operating limits, that condition is called **low rotor RPM**.
+
+Even a small loss of RPM reduces the lift from the main rotor and the thrust from the tail rotor, which makes low RPM a very hazardous condition.
+
+**Power-On**
+
+With the engine running, the most common cause of RPM decay is the one we covered earlier: control inputs that require more power than the throttle can provide. The throttle is fully open and we keep asking for more, which slows the engine and the rotor. Primarily, that means continuing to raise the collective, and it can also come from too much left pedal.
+
+It can also feed on itself. If the helicopter starts to settle and you raise the collective to stop it, RPM drops further, power drops further, and the helicopter settles faster.
+
+Other conditions can lead to RPM decay too, such as equipment failures and malfunctions. Anything that reduces the engine’s power output can leave the engine unable to supply the power for even normal control inputs.
+
+**Power-Off**
+
+In a power-off situation, you enter autorotation. Even in autorotation, your goal is to maintain rotor RPM. The allowable range is wider than in powered flight, which gives you room to maneuver, but down to the flare you want normal to high rotor RPM.
+
+In autorotation, RPM changes with your control inputs:
+
+- **Raising the collective** decays RPM, and it stays lower until you lower the collective again.
+- **Forward cyclic** unloads the rotor and decays RPM temporarily. It returns when you reload the rotor.
+- **Rolling out of a turn** decays RPM temporarily, while rolling into a turn increases it.
+
+During training, you’ll learn to manage rotor RPM to prevent decay below normal limits. Certain maneuvers, like a maximum-glide autorotation, intentionally run RPM near the bottom of the allowable range. In training, we will never let it droop below 90%.
+
+**Recognizing Low RPM**
+
+So how do you recognize low rotor RPM? You’ll notice several indications:
+
+- **Sound and vibration:** The helicopter’s vibrations deepen. You’ll feel and hear a lower-frequency sound compared to the higher pitch of a rotor spinning at normal RPM.
+- **Descent:** Since we’re losing RPM, we’re losing lift, so the helicopter may start to settle or descend.
+- **Yaw:** The nose may yaw. If the engine has lost power, it typically yaws left. If you’ve demanded more power than the engine can supply and RPM keeps decaying, tail rotor thrust falls off, and in a severe case the nose swings right.
+- **Warning light and horn:** At 97% RPM, a low RPM light may illuminate, and you may hear a horn. That’s a warning, but the light and horn are disabled if the collective is _fully_ lowered.
+<KeyNotes>
+- **Three forms of energy:** airspeed is kinetic, rotor RPM is blade inertia, altitude is potential.
+- **You trade between them; you cannot create them** without engine power.
+- **A low-inertia rotor stores very little energy.** That is what shortens your reaction time in a light training helicopter, and it is why RPM is managed continuously rather than corrected occasionally.
+</KeyNotes>
+
+<LessonProgress lessonId="/curriculum/private-helicopter/l02p3-energy-management/" client:load />

@@ -1,52 +1,160 @@
-# Helicopter Training Resource (Starter Scaffold)
+# Collective Knowledge
 
-A lean starter template built with **Astro + Starlight**, **TypeScript**, **Tailwind CSS**, and **React**, configured for free deployment on **Cloudflare Pages**.
+**Free, community-built helicopter flight training.** No accounts, no ads, no
+paywalls — and no running costs, which is what makes that promise credible.
 
-## Quick Start
+Live site: https://collectiveknowledge.pages.dev
 
-### 1. Start the Dev Server
-```bash
-npm run dev
+## What this is
+
+Helicopter training material organized around two deliberately different
+pillars:
+
+| | **Curriculum** | **Handbook** |
+| --- | --- | --- |
+| Shape | Sequenced building-block lessons | Standalone full-detail articles |
+| Assumes | The lessons before it | Nothing about your stage |
+| For | Learning it the first time | Looking it up and going deep |
+| Example | *L2 — Flight Controls & SFAR 73* | *Flight Controls* |
+
+Most free aviation material is the second kind. Handing a week-two student the
+complete treatment of retreating blade stall produces memorization, not
+understanding — so the sequenced curriculum is what this project adds. Each
+lesson links out to the handbook article behind it for anyone who wants the
+depth now.
+
+## Status
+
+Early and deliberately small. Two Private Pilot — Helicopter ground lessons and
+one handbook article. The structure is in place; content grows from here.
+
+Every page carries a `status` (`stub` → `outline` → `draft` → `review` →
+`ready`). That honesty is load-bearing — never upgrade a status to make the site
+look more finished. See [`CLAUDE.md`](CLAUDE.md).
+
+## Running it
+
+Requires Node 22 (pinned in `.nvmrc`).
+
+```sh
+npm install
+npm run dev      # http://localhost:4321
 ```
-Open [http://localhost:4321](http://localhost:4321) in your browser.
 
-### 2. Build for Production
-```bash
-npm run build
+```sh
+npm run build    # static site → dist/
+npm run check    # astro check — keep at 0 errors
+npm test         # progress module tests
 ```
 
----
+`npm test` needs no framework and no build step — Node strips the TypeScript
+types itself.
 
-## How to Work With This Setup
+## Stack
 
-### Adding Content
-- Add Markdown (`.md`) or MDX (`.mdx`) files inside `src/content/docs/guides/` (or create new subdirectories like `src/content/docs/aerodynamics/`).
-- Files automatically appear in the navigation sidebar thanks to Starlight's `autogenerate` setting.
+- **[Astro 7](https://astro.build/)** — static output, zero JS by default
+- **[Starlight 0.43](https://starlight.astro.build/)** — docs theme
+- **[Pagefind](https://pagefind.app/)** — static search index, no search service
+- **[Tailwind 4](https://tailwindcss.com/)** + CSS custom properties for theming
+- **[React 19](https://react.dev/)** islands — only the quiz and progress UI
+- **[Cloudflare Pages](https://pages.cloudflare.com/)** — free tier hosting
 
-### Adding Interactive React Components
-1. Create your component in `src/components/MyTool.tsx` using React and Tailwind CSS.
-2. In any `.mdx` file, import and use it:
-   ```mdx
-   import MyTool from '../../../components/MyTool';
+Everything there is free at any traffic level this site will see. That is a hard
+constraint, not a coincidence — see "It stays free" in `CLAUDE.md`.
 
-   <MyTool client:load />
-   ```
-   *(Tip: Add the `not-content` class to your component's root wrapper to prevent Starlight's prose typography styles from overriding your Tailwind UI styles).*
+## How it works
 
----
+### Progress
 
-## Cloudflare Pages Deployment (100% Free)
+Lesson completion and quiz scores live in the browser's `localStorage`. There is
+no server and no account, by design, so progress is **per-browser and does not
+sync** — and the UI says so rather than hiding it.
 
-1. Commit and push your code to GitHub:
-   ```bash
-   git add .
-   git commit -m "Configure tooling"
-   git push origin main
-   ```
-2. In the [Cloudflare Dashboard](https://dash.cloudflare.com/):
-   - Navigate to **Workers & Pages** > **Create application** > **Pages** > **Connect to Git**.
-   - Select `Masmith530/collective_knowledge`.
-   - Preset: **Astro**
-   - Build command: `npm run build`
-   - Output directory: `dist`
-3. Click **Save and Deploy**.
+A lesson completes either by passing its quiz (80%) or by ticking the checkbox at
+the end. Completed lessons get a ✓ in the sidebar and the course list, and the
+course page shows a progress bar.
+
+### Quizzes
+
+Questions live in `src/content/quizzes/` as YAML, separate from lesson prose so a
+bank can be reused in a stage-check later. The quiz runs in a modal, one question
+at a time, and grades at the end — it does not reveal answers as you go, because
+that makes the score meaningless. The results screen reviews every question with
+an explanation and a citation.
+
+### Theme
+
+Every text colour clears WCAG AA (4.5:1) against every background it appears on;
+interactive borders clear 3:1. The measured ratios are in
+[`docs/contrast.md`](docs/contrast.md) — **if you change a colour, re-measure it
+and update that file.**
+
+## Repository layout
+
+```
+src/
+├── content/
+│   ├── docs/
+│   │   ├── index.mdx                 home page — the course catalog
+│   │   ├── curriculum/               PILLAR 1 — sequenced courses
+│   │   │   └── private-helicopter/     course overview + l01, l02
+│   │   ├── handbook/                 PILLAR 2 — standalone articles
+│   │   │   └── flight-controls.mdx
+│   │   └── start-here/disclaimer.mdx
+│   └── quizzes/                      quiz banks (YAML)
+├── components/
+│   ├── LessonHeader.astro            meta line + collapsible objectives
+│   ├── KeyNotes.astro                condensed takeaways
+│   ├── Homework.astro                pre-next-session assignments
+│   ├── Quiz.tsx / QuizBlock.astro    graded modal quiz
+│   ├── LessonProgress.tsx            end-of-lesson completion control
+│   ├── CourseProgress.tsx            progress bar
+│   ├── CourseContents.astro          course lesson list
+│   ├── CourseCatalog.astro           home page catalog
+│   └── overrides/                    Starlight header, hero, sidebar, theme toggle
+├── lib/
+│   ├── progress.ts                   localStorage progress (tested)
+│   └── courses.ts                    the course catalog
+├── content.config.ts                 lesson + topic schemas (documented)
+└── styles/global.css                 verified-contrast design tokens
+```
+
+**Nothing is registered by hand.** Add a lesson file with a `lesson` frontmatter
+block and it appears in the course contents, the progress bar, and the sidebar
+automatically.
+
+## Contributing
+
+Corrections are the most valuable contribution — especially from instructors.
+Every page has an *Edit page* link straight to the file on GitHub.
+
+Read [`CLAUDE.md`](CLAUDE.md) for the project rules before making changes.
+
+## Deploying to Cloudflare Pages
+
+Connect the repo once in the Cloudflare dashboard
+(**Workers & Pages → Create → Pages → Connect to Git**):
+
+| Setting | Value |
+| --- | --- |
+| Framework preset | Astro |
+| Build command | `npm run build` |
+| Output directory | `dist` |
+| Node version | `22` (via `NODE_VERSION` env var) |
+
+Pushes to `main` deploy automatically; pull requests get preview URLs. Edge
+headers are in `public/_headers`. GitHub Actions typechecks, tests, and builds
+every push and PR.
+
+## Licensing
+
+- **Content** (`src/content/`) — [CC BY-SA 4.0](LICENSE-CONTENT)
+- **Code** (everything else) — [MIT](LICENSE)
+
+Manufacturer flight manuals and safety notices are copyrighted and are cited,
+never reproduced.
+
+> **This is study material, not authority.** It is not an FAA-approved course and
+> is no substitute for an authorized instructor, your aircraft's flight manual,
+> or the current regulations. See the
+> [disclaimer](src/content/docs/start-here/disclaimer.mdx).

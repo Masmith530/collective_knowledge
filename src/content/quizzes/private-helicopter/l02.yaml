@@ -1,0 +1,96 @@
+title: Check Yourself — Flight Controls & SFAR 73
+lesson: private-helicopter/l02
+questions:
+  - q: Which control governs the vertical axis, and what is that movement called?
+    choices:
+      - text: Cyclic — roll
+      - text: Collective — climb
+      - text: Pedals — yaw
+        correct: true
+      - text: Throttle — torque
+    explain: >-
+      The vertical axis runs down through the top and bottom of the helicopter.
+      Rotation about it turns the nose left or right, which is yaw, and the
+      anti-torque pedals control it.
+    reference: Lesson 2, "The Axes of Flight"
+
+  - q: You are giving the controls to your instructor. What are the three statements, in order?
+    choices:
+      - text: '"You have the controls" → "I have the controls" → "You have the controls"'
+        correct: true
+      - text: '"I have the controls" → "You have the controls" → "I have the controls"'
+      - text: '"You have the controls" → "Roger" → release'
+      - text: A single "you have the controls" is sufficient if the other pilot nods.
+    explain: >-
+      The giving pilot says "You have the controls." The receiving pilot takes them
+      and says "I have the controls." The first pilot confirms "You have the
+      controls" and only then releases. The three-step exchange exists so no one
+      ever assumes someone else is flying.
+    reference: Lesson 2, "Positive Exchange of Controls"
+
+  - q: In a hover, you raise the collective. What happens to yaw, and why?
+    choices:
+      - text: Nothing — the pedals are the only yaw control.
+      - text: The nose yaws, because changing collective changes torque.
+        correct: true
+      - text: The nose yaws, because the cyclic has moved.
+      - text: The nose yaws only if the throttle is also rolled on.
+    explain: >-
+      Raising the collective increases the power the main rotor demands, which
+      increases torque, which yaws the fuselage. Pedal input is required to hold
+      heading — this is a secondary control interaction, not a pedal input you made.
+    reference: Lesson 2, "Secondary Control Interactions"
+
+  - q: Which of these is NOT one of the five subject areas SFAR 73 paragraph 2(a) requires?
+    choices:
+      - text: Energy management
+      - text: Mast bumping
+      - text: Settling with power
+        correct: true
+      - text: Low rotor RPM and rotor stall
+    explain: >-
+      The five required areas are energy management, mast bumping, low rotor RPM and
+      rotor stall, low-G conditions and proper recovery, and rotor RPM decay.
+      Settling with power is important and you will be trained on it, but it is not
+      one of the SFAR 73 paragraph 2(a) subject areas.
+    reference: SFAR 73 paragraph 2(a); Lesson 2, "Required Ground Training"
+
+  - q: You encounter a low-G condition. What is the correct first control input?
+    choices:
+      - text: Lateral cyclic to level the aircraft
+      - text: Gentle aft cyclic
+        correct: true
+      - text: Lower the collective
+      - text: Opposite pedal
+    explain: >-
+      Gentle aft cyclic reloads the rotor disc and restores G. Lateral cyclic in a
+      low-G state is what produces mast bumping, because with the rotor unloaded
+      the cyclic moves the fuselage rather than the disc.
+    reference: Robinson Safety Tip 1 and SN-11; Lesson 2, "Low-G"
+
+  - q: What are the three forms of energy a helicopter pilot manages?
+    choices:
+      - text: Fuel, power, and torque
+      - text: Manifold pressure, RPM, and airspeed
+      - text: Airspeed, rotor RPM, and altitude
+        correct: true
+      - text: Collective, cyclic, and throttle
+    explain: >-
+      Airspeed is kinetic energy, rotor RPM is energy stored as blade inertia, and
+      altitude is potential energy. You trade between them — you cannot create them
+      without engine power.
+    reference: Lesson 2, "Energy Management"
+
+  - q: Which action is part of recovering from low rotor RPM?
+    choices:
+      - text: Raise the collective to regain lift
+      - text: Lower the collective and roll the throttle on
+        correct: true
+      - text: Hold the collective and apply forward cyclic
+      - text: Reduce throttle to reduce drag on the rotor
+    explain: >-
+      Lowering the collective reduces the load on the rotor so it can accelerate,
+      and rolling the throttle on adds power. In forward flight, easing aft cyclic
+      also helps. What you do next depends on the altitude you have: with altitude,
+      recover the RPM; without it, cushion the landing.
+    reference: Robinson Safety Tip 9, SN-10, SN-24; Lesson 2, "Recovering from Low RPM"

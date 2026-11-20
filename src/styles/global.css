@@ -1,5 +1,5 @@
-/* ─── Google Fonts — must come first ───────────────────── */
-@import url('https://fonts.googleapis.com/css2?family=Inter:ital,wght@0,300;0,400;0,500;0,600;0,700&family=Playfair+Display:wght@600;700&display=swap');
+/* ─── Fonts — must come first ───────────────────────────── */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400..700&display=swap');
 
 @layer base, starlight, theme, components, utilities;
 
@@ -7,112 +7,372 @@
 @import 'tailwindcss/theme.css' layer(theme);
 @import 'tailwindcss/utilities.css' layer(utilities);
 
-/* ─── Design Tokens ────────────────────────────────────── */
+/*
+ * THEME TOKENS
+ *
+ * Light is the default (see ThemeToggle.astro).
+ *
+ * Every text colour is verified against every background it appears on at WCAG
+ * AA (4.5:1), and every interactive border at 3:1. Measured ratios are in
+ * `docs/contrast.md` — if you change a colour, re-measure it and update that
+ * file. This is material people read for hours.
+ */
+
 :root {
-  --font-body: 'Inter', system-ui, sans-serif;
-  --font-display: 'Playfair Display', Georgia, serif;
+	--font-body: 'Inter', system-ui, -apple-system, 'Segoe UI', sans-serif;
+
+	/* Geometry. Slightly larger radii than a classic docs theme — this is most
+	   of what separates "modern" from "2015 Bootstrap" at a glance. */
+	--ck-r-sm: 8px;
+	--ck-r: 12px;
+	--ck-r-lg: 16px;
+	--ck-measure: 70ch;
 }
 
-/* ─── DARK THEME ───────────────────────────────────────── */
-:root[data-theme='dark'] {
-  /* Canvas */
-  --color-canvas:        #0d1117;
-  --color-canvas-subtle: #161b22;
-  --color-surface:       #1c2128;
-  --color-border:        #30363d;
-  --color-border-muted:  #21262d;
-
-  /* Text */
-  --color-text-primary:   #e6edf3;
-  --color-text-secondary: #8b949e;
-  --color-text-muted:     #6e7681;
-
-  /* Accent */
-  --color-accent:       #58a6ff;
-  --color-accent-soft:  rgba(88, 166, 255, 0.12);
-
-  /* Nav */
-  --color-nav-bg:     rgba(13, 17, 23, 0.85);
-  --color-nav-border: #21262d;
-
-  /* Starlight token overrides */
-  --sl-color-bg:          var(--color-canvas);
-  --sl-color-bg-nav:      var(--color-nav-bg);
-  --sl-color-bg-sidebar:  var(--color-canvas-subtle);
-  --sl-color-hairline:    var(--color-border);
-  --sl-color-text:        var(--color-text-primary);
-  --sl-color-text-accent: var(--color-accent);
-  --sl-color-gray-1: #e6edf3;
-  --sl-color-gray-2: #c9d1d9;
-  --sl-color-gray-3: #8b949e;
-  --sl-color-gray-4: #484f58;
-  --sl-color-gray-5: #21262d;
-  --sl-color-gray-6: #161b22;
-  --sl-color-black:  #0d1117;
-  --sl-color-white:  #f0f6fc;
-}
-
-/* ─── LIGHT THEME ──────────────────────────────────────── */
+/* ─── LIGHT (default) ───────────────────────────────────── */
+:root,
 :root[data-theme='light'] {
-  /* Canvas */
-  --color-canvas:        #ffffff;
-  --color-canvas-subtle: #f6f8fa;
-  --color-surface:       #ffffff;
-  --color-border:        #d0d7de;
-  --color-border-muted:  #eaeef2;
+	--color-canvas: #ffffff;
+	--color-canvas-subtle: #f8fafc;
+	--color-surface: #ffffff;
+	--color-border: #e6ebf1;
+	--color-border-muted: #eef2f6;
+	--color-border-strong: #858fa0; /* 3.26:1 on white, 3.12:1 on subtle */
 
-  /* Text */
-  --color-text-primary:   #1f2328;
-  --color-text-secondary: #59636e;
-  --color-text-muted:     #818b98;
+	--color-text-primary: #0f172a; /* 17.9:1 */
+	--color-text-secondary: #475569; /*  7.6:1 */
+	--color-text-muted: #64748b; /*  4.8:1 */
 
-  /* Accent */
-  --color-accent:       #0969da;
-  --color-accent-soft:  rgba(9, 105, 218, 0.1);
+	--color-accent: #2563eb; /*  5.2:1 */
+	--color-accent-strong: #1d4ed8; /*  6.7:1 */
+	--color-accent-soft: #eff4ff;
+	--color-accent-ring: rgba(37, 99, 235, 0.14);
 
-  /* Nav */
-  --color-nav-bg:     rgba(255, 255, 255, 0.92);
-  --color-nav-border: #d0d7de;
+	--color-ok: #15803d; /*  5.0:1 */
+	--color-warn: #a16207; /*  4.9:1 */
+	--color-bad: #b91c1c; /*  6.5:1 */
+	--color-info: #6d28d9;
 
-  /* Starlight token overrides */
-  --sl-color-bg:          var(--color-canvas);
-  --sl-color-bg-nav:      var(--color-nav-bg);
-  --sl-color-bg-sidebar:  var(--color-canvas-subtle);
-  --sl-color-hairline:    var(--color-border);
-  --sl-color-text:        var(--color-text-primary);
-  --sl-color-text-accent: var(--color-accent);
-  --sl-color-gray-1: #1f2328;
-  --sl-color-gray-2: #454c54;
-  --sl-color-gray-3: #59636e;
-  --sl-color-gray-4: #afb8c1;
-  --sl-color-gray-5: #d0d7de;
-  --sl-color-gray-6: #f6f8fa;
-  --sl-color-black:  #1f2328;
-  --sl-color-white:  #ffffff;
+	--color-ok-soft: #f0fdf4;
+	--color-warn-soft: #fffbeb;
+	--color-bad-soft: #fef2f2;
+
+	--color-nav-bg: rgba(255, 255, 255, 0.82);
+
+	/* Soft, low-spread elevation. Modern UI leans on shadow more than borders. */
+	--ck-shadow-sm: 0 1px 2px rgba(15, 23, 42, 0.05);
+	--ck-shadow: 0 1px 3px rgba(15, 23, 42, 0.07), 0 4px 12px -2px rgba(15, 23, 42, 0.06);
+	--ck-shadow-lg: 0 2px 6px rgba(15, 23, 42, 0.07), 0 16px 40px -8px rgba(15, 23, 42, 0.14);
+
+	color-scheme: light;
 }
 
-/* ─── Global Base ──────────────────────────────────────── */
-body {
-  font-family: var(--font-body) !important;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  letter-spacing: -0.011em;
-  background-color: var(--color-canvas);
-  color: var(--color-text-primary);
+/* ─── DARK ──────────────────────────────────────────────── */
+:root[data-theme='dark'] {
+	--color-canvas: #0b1120;
+	--color-canvas-subtle: #111a2b;
+	--color-surface: #172034;
+	--color-border: #223049;
+	--color-border-muted: #1a2437;
+	--color-border-strong: #6b7d94; /* 4.47:1 on canvas, 3.86:1 on surface */
+
+	--color-text-primary: #e8eef7; /* 16.1:1 */
+	--color-text-secondary: #a3b3c9; /*  8.8:1 */
+	--color-text-muted: #8798b0; /*  6.4:1 */
+
+	--color-accent: #60a5fa; /*  7.4:1 */
+	--color-accent-strong: #93c5fd;
+	--color-accent-soft: rgba(96, 165, 250, 0.12);
+	--color-accent-ring: rgba(96, 165, 250, 0.22);
+
+	--color-ok: #4ade80; /* 10.8:1 */
+	--color-warn: #fbbf24; /* 11.3:1 */
+	--color-bad: #fb7185; /*  7.0:1 */
+	--color-info: #c4b5fd;
+
+	--color-ok-soft: rgba(74, 222, 128, 0.1);
+	--color-warn-soft: rgba(251, 191, 36, 0.1);
+	--color-bad-soft: rgba(251, 113, 133, 0.1);
+
+	--color-nav-bg: rgba(11, 17, 32, 0.82);
+
+	--ck-shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.3);
+	--ck-shadow: 0 1px 3px rgba(0, 0, 0, 0.4), 0 4px 12px -2px rgba(0, 0, 0, 0.3);
+	--ck-shadow-lg: 0 2px 6px rgba(0, 0, 0, 0.4), 0 16px 40px -8px rgba(0, 0, 0, 0.55);
+
+	color-scheme: dark;
 }
 
-/* ─── Nav ──────────────────────────────────────────────── */
-/* Starlight's PageFrame wraps the header; override its border & bg */
+/* ─── Map onto Starlight's tokens ───────────────────────── */
 :root {
-  /* Starlight uses this for the header bottom border */
-  --sl-color-hairline-shade: var(--color-nav-border);
+	--sl-color-bg: var(--color-canvas);
+	--sl-color-bg-nav: var(--color-nav-bg);
+	--sl-color-bg-sidebar: var(--color-canvas);
+	--sl-color-bg-inline-code: var(--color-canvas-subtle);
+	--sl-color-hairline: var(--color-border);
+	--sl-color-hairline-light: var(--color-border-muted);
+	--sl-color-hairline-shade: var(--color-border-muted);
+
+	--sl-color-text: var(--color-text-primary);
+	--sl-color-text-accent: var(--color-accent);
+	--sl-color-white: var(--color-text-primary);
+	--sl-color-black: var(--color-canvas);
+
+	--sl-color-gray-1: var(--color-text-primary);
+	--sl-color-gray-2: var(--color-text-secondary);
+	--sl-color-gray-3: var(--color-text-muted);
+	--sl-color-gray-4: var(--color-border-strong);
+	--sl-color-gray-5: var(--color-border);
+	--sl-color-gray-6: var(--color-canvas-subtle);
+	--sl-color-gray-7: var(--color-border-muted);
+
+	--sl-color-blue: var(--color-accent-soft);
+	--sl-color-blue-high: var(--color-accent);
+	--sl-color-purple: var(--color-accent-soft);
+	--sl-color-purple-high: var(--color-info);
+	--sl-color-green: var(--color-ok-soft);
+	--sl-color-green-high: var(--color-ok);
+	--sl-color-orange: var(--color-warn-soft);
+	--sl-color-orange-high: var(--color-warn);
+	--sl-color-red: var(--color-bad-soft);
+	--sl-color-red-high: var(--color-bad);
+
+	--sl-color-accent: var(--color-accent);
+	--sl-color-accent-high: var(--color-accent-strong);
+	--sl-color-accent-low: var(--color-accent-soft);
+
+	--sl-content-width: 46rem;
+	--sl-line-height: 1.75;
+	--sl-text-5xl: 2.5rem;
 }
 
+/* ─── Base ──────────────────────────────────────────────── */
+html {
+	scroll-behavior: smooth;
+	scroll-padding-top: 5rem;
+}
+
+body {
+	font-family: var(--font-body);
+	font-feature-settings: 'cv11', 'ss01';
+	-webkit-font-smoothing: antialiased;
+	-moz-osx-font-smoothing: grayscale;
+	background-color: var(--color-canvas);
+	color: var(--color-text-primary);
+}
+
+:focus-visible {
+	outline: 2px solid var(--color-accent);
+	outline-offset: 2px;
+	border-radius: 4px;
+}
+
+::selection {
+	background: var(--color-accent-ring);
+}
+
+/* ─── Header ────────────────────────────────────────────── */
 .header {
-  backdrop-filter: blur(16px) saturate(180%);
-  -webkit-backdrop-filter: blur(16px) saturate(180%);
-  background-color: var(--color-nav-bg) !important;
-  /* Remove any top gap / stray line */
-  top: 0 !important;
-  margin-top: 0 !important;
+	backdrop-filter: blur(12px) saturate(180%);
+	-webkit-backdrop-filter: blur(12px) saturate(180%);
+	background-color: var(--color-nav-bg);
+	border-bottom: 1px solid var(--color-border-muted);
+}
+
+/* ─── Sidebar ───────────────────────────────────────────── */
+#starlight__sidebar {
+	border-right: 1px solid var(--color-border-muted);
+	scrollbar-width: thin;
+}
+
+/* ─── Prose ─────────────────────────────────────────────── */
+.sl-markdown-content {
+	color: var(--color-text-primary);
+	font-size: 1.0125rem;
+}
+
+.sl-markdown-content :is(h2, h3, h4) {
+	letter-spacing: -0.02em;
+	color: var(--color-text-primary);
+	scroll-margin-top: 5rem;
+}
+
+.sl-markdown-content h2 {
+	margin-top: 3rem;
+	font-size: 1.5rem;
+	font-weight: 680;
+}
+
+.sl-markdown-content h3 {
+	margin-top: 2.25rem;
+	font-size: 1.1875rem;
+	font-weight: 650;
+}
+
+.sl-markdown-content :is(p, li) {
+	max-width: var(--ck-measure);
+}
+
+.sl-markdown-content strong {
+	color: var(--color-text-primary);
+	font-weight: 650;
+}
+
+.sl-markdown-content a:not(:where(.not-content *)) {
+	color: var(--color-accent);
+	font-weight: 500;
+	text-decoration-thickness: 1px;
+	text-decoration-color: color-mix(in srgb, var(--color-accent) 35%, transparent);
+	text-underline-offset: 0.2em;
+	transition: text-decoration-color 120ms ease;
+}
+
+.sl-markdown-content a:not(:where(.not-content *)):hover {
+	text-decoration-color: var(--color-accent);
+}
+
+.sl-markdown-content :is(code):not(:where(.not-content *)) {
+	background: var(--color-canvas-subtle);
+	border: 1px solid var(--color-border-muted);
+	border-radius: 5px;
+	padding: 0.12em 0.38em;
+	font-size: 0.875em;
+	color: var(--color-text-primary);
+}
+
+.sl-markdown-content blockquote:not(:where(.not-content *)) {
+	border-inline-start: 3px solid var(--color-border-strong);
+	color: var(--color-text-secondary);
+	font-style: normal;
+}
+
+.sl-markdown-content hr {
+	border: 0;
+	border-top: 1px solid var(--color-border-muted);
+	margin: 2.5rem 0;
+}
+
+/* Asides: flatter and quieter than Starlight's default */
+.sl-markdown-content .starlight-aside {
+	border-radius: var(--ck-r);
+	border: 1px solid var(--color-border);
+	border-inline-start-width: 3px;
+	padding: 1rem 1.25rem;
+}
+
+.sl-markdown-content .starlight-aside__title {
+	font-size: 0.8125rem;
+	font-weight: 650;
+	letter-spacing: 0.01em;
+	text-transform: none;
+}
+
+/* ─── Tables ────────────────────────────────────────────── */
+.sl-markdown-content table:not(:where(.not-content *)) {
+	display: table;
+	width: 100%;
+	border-collapse: separate;
+	border-spacing: 0;
+	border: 1px solid var(--color-border);
+	border-radius: var(--ck-r);
+	overflow: hidden;
+	font-size: 0.9375rem;
+}
+
+.sl-markdown-content :is(th, td):not(:where(.not-content *)) {
+	border: 0;
+	border-bottom: 1px solid var(--color-border-muted);
+	padding: 0.6rem 0.9rem;
+	text-align: start;
+}
+
+.sl-markdown-content tr:last-child :is(th, td):not(:where(.not-content *)) {
+	border-bottom: 0;
+}
+
+.sl-markdown-content th:not(:where(.not-content *)) {
+	background: var(--color-canvas-subtle);
+	color: var(--color-text-primary);
+	font-weight: 650;
+	font-size: 0.8125rem;
+}
+
+/* ─── Buttons ───────────────────────────────────────────── */
+.ck-btn {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	gap: 0.45rem;
+	padding: 0.6rem 1.1rem;
+	border-radius: var(--ck-r-sm);
+	border: 1px solid transparent;
+	font: inherit;
+	font-size: 0.9rem;
+	font-weight: 600;
+	line-height: 1.25;
+	text-decoration: none;
+	white-space: nowrap;
+	cursor: pointer;
+	transition: background 130ms ease, border-color 130ms ease, color 130ms ease,
+		box-shadow 130ms ease, transform 130ms ease;
+}
+
+.ck-btn-primary {
+	background: var(--color-accent);
+	color: #fff;
+	border-color: var(--color-accent);
+	box-shadow: var(--ck-shadow-sm);
+}
+
+.ck-btn-primary:hover {
+	background: var(--color-accent-strong);
+	border-color: var(--color-accent-strong);
+	box-shadow: var(--ck-shadow);
+}
+
+.ck-btn-secondary {
+	background: var(--color-canvas);
+	color: var(--color-text-primary);
+	border-color: var(--color-border-strong);
+}
+
+.ck-btn-secondary:hover {
+	background: var(--color-canvas-subtle);
+	border-color: var(--color-text-muted);
+}
+
+.ck-btn:disabled {
+	opacity: 0.45;
+	cursor: not-allowed;
+	box-shadow: none;
+}
+
+.ck-btn:disabled:hover {
+	transform: none;
+}
+
+/* ─── Home page fine print ──────────────────────────────── */
+/* Lives here rather than in a <style> block on index.mdx: MDX parses the
+   contents of a raw <style> tag as JSX and chokes on CSS declarations. */
+.ck-home-fine {
+	max-width: 34rem;
+	margin: 2.5rem auto 0;
+	text-align: center;
+	font-size: 0.8125rem;
+	line-height: 1.6;
+	color: var(--color-text-muted);
+}
+
+/* ─── Reduced motion ───────────────────────────────────── */
+@media (prefers-reduced-motion: reduce) {
+	html {
+		scroll-behavior: auto;
+	}
+
+	*,
+	*::before,
+	*::after {
+		animation-duration: 0.01ms !important;
+		transition-duration: 0.01ms !important;
+	}
 }

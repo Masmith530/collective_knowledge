@@ -9,7 +9,9 @@
     "start": "astro dev",
     "build": "astro build",
     "preview": "astro preview",
-    "astro": "astro"
+    "astro": "astro",
+    "test": "node --experimental-strip-types --no-warnings test/progress.test.mjs",
+    "check": "astro check"
   },
   "dependencies": {
     "@astrojs/react": "^7.0.1",

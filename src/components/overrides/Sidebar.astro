@@ -1,0 +1,432 @@
+---
+/**
+ * Sidebar override — context aware, with a section switcher.
+ *
+ * Starlight renders one global sidebar everywhere, which is wrong here: inside
+ * a course you want that course's outline, inside Subject Areas you want the
+ * subject list.
+ *
+ * The top is a two-item switcher rather than a "← back" link. A back link was
+ * actively confusing: you can reach Subject Areas straight from the home page,
+ * so "← Curriculum" offered to send you "back" somewhere you had never been.
+ * A switcher states where you are and where else you can go, and reads the same
+ * from any entry point.
+ *
+ * Within a course, lessons with parts are collapsed and only the current one is
+ * expanded — the full outline expanded at once was too tall to navigate.
+ * Subject areas stay expanded because they are only two levels deep.
+ */
+import { getCollection } from 'astro:content';
+import { COURSES } from '../../lib/courses';
+import { SUBJECT_AREAS } from '../../lib/subjects';
+import { getCourseOutline } from '../../lib/lessons';
+
+const path = Astro.url.pathname;
+const inSubjects = path.startsWith('/subjects/');
+// The catalog page itself lists courses rather than one course's outline.
+const atCatalog = path === '/curriculum/';
+// Only open courses are navigable — a planned course has no page to link to.
+const openCourses = COURSES.filter((c) => c.status === 'open');
+
+// ─── Course outline ───
+const course = COURSES.find((c) => path.startsWith(c.href)) ?? openCourses[0];
+const weeks = course ? await getCourseOutline(course.slug) : [];
+
+// ─── Subject areas ───
+const articles = (await getCollection('docs', ({ data }) => Boolean(data.topic))).sort(
+	(a, b) => a.data.topic!.order - b.data.topic!.order,
+);
+const areas = SUBJECT_AREAS.map((area) => ({
+	...area,
+	items: articles
+		.filter((a) => a.data.topic!.category === area.slug)
+		.map((a) => ({ href: `/${a.id}/`, title: a.data.title })),
+})).filter((a) => a.items.length > 0);
+
+const here = (href: string) => path === href;
+---
+
+<nav class="ck-sb" aria-label="Site navigation">
+	{/* Section switcher */}
+	<div class="ck-switch" role="group" aria-label="Section">
+		<a href="/curriculum/" aria-current={!inSubjects ? 'true' : undefined}>Courses</a>
+		<a href="/subjects/" aria-current={inSubjects ? 'true' : undefined}>Subjects</a>
+	</div>
+
+	{
+		atCatalog ? (
+			<>
+				<p class="ck-sb-course">All courses</p>
+				<ul>
+					{openCourses.map((c) => (
+						<li>
+							<a
+								href={c.href}
+								class="ck-sb-link"
+								aria-current={here(c.href) ? 'page' : undefined}
+							>
+								{c.title}
+							</a>
+						</li>
+					))}
+				</ul>
+				<div class="ck-sb-foot">
+					<a href="/start-here/disclaimer/" class="ck-sb-link ck-sb-fine">Disclaimer &amp; licensing</a>
+				</div>
+			</>
+		) : inSubjects ? (
+			<>
+				<a href="/subjects/" class="ck-sb-link ck-sb-top" aria-current={here('/subjects/') ? 'page' : undefined}>
+					All subject areas
+				</a>
+
+				{areas.map((area) => (
+					<div class="ck-sb-group">
+						<p class="ck-sb-heading">{area.label}</p>
+						<ul>
+							{area.items.map((item) => (
+								<li>
+									<a
+										href={item.href}
+										class="ck-sb-link"
+										data-ck-lesson={item.href}
+										aria-current={here(item.href) ? 'page' : undefined}
+									>
+										{item.title}
+									</a>
+								</li>
+							))}
+						</ul>
+					</div>
+				))}
+
+				{areas.length === 0 && <p class="ck-sb-empty">No articles yet.</p>}
+			</>
+		) : (
+			<>
+				<p class="ck-sb-course">{course?.title}</p>
+				{course && (
+					<a
+						href={course.href}
+						class="ck-sb-link ck-sb-top"
+						aria-current={here(course.href) ? 'page' : undefined}
+					>
+						Course overview
+					</a>
+				)}
+
+				{weeks.map((week) => (
+					<div class="ck-sb-group">
+						<p class="ck-sb-heading">Week {week.week}</p>
+						<ul>
+							{week.lessons.map((lesson) =>
+								lesson.parts.length === 0 ? (
+									<li>
+										<a
+											href={lesson.href}
+											class="ck-sb-link ck-sb-lesson"
+											data-ck-lesson={lesson.href}
+											aria-current={here(lesson.href) ? 'page' : undefined}
+										>
+											<span class="ck-sb-kind">{lesson.label}</span>
+											<span>{lesson.title}</span>
+										</a>
+									</li>
+								) : (
+									<li>
+										<details open={lesson.pageIds.includes(path)}>
+											<summary>
+												<span class="ck-sb-kind">{lesson.label}</span>
+												<span class="ck-sb-ltitle">{lesson.title}</span>
+												<span class="ck-sb-count">{lesson.parts.length}</span>
+											</summary>
+											<ul class="ck-sb-parts">
+												{lesson.parts.map((part) => (
+													<li>
+														<a
+															href={part.href}
+															class="ck-sb-link ck-sb-part"
+															data-ck-lesson={part.href}
+															aria-current={here(part.href) ? 'page' : undefined}
+														>
+															<span class="ck-sb-partn">{part.part}</span>
+															<span>{part.title}</span>
+														</a>
+													</li>
+												))}
+											</ul>
+										</details>
+									</li>
+								),
+							)}
+						</ul>
+					</div>
+				))}
+
+				{weeks.length === 0 && <p class="ck-sb-empty">No lessons yet.</p>}
+
+				<div class="ck-sb-foot">
+					<a href="/start-here/disclaimer/" class="ck-sb-link ck-sb-fine">Disclaimer &amp; licensing</a>
+				</div>
+			</>
+		)
+	}
+</nav>
+
+<script>
+	function markDone() {
+		let lessons: Record<string, string> = {};
+		try {
+			const raw = localStorage.getItem('ck-progress-v1');
+			if (raw) lessons = JSON.parse(raw).lessons ?? {};
+		} catch {
+			return;
+		}
+		for (const el of document.querySelectorAll('.ck-sb [data-ck-lesson]')) {
+			const id = el.getAttribute('data-ck-lesson');
+			if (id && lessons[id]) el.setAttribute('data-ck-done', '');
+			else el.removeAttribute('data-ck-done');
+		}
+	}
+	markDone();
+	document.addEventListener('astro:page-load', markDone);
+	window.addEventListener('ck:progress', markDone);
+	window.addEventListener('storage', markDone);
+</script>
+
+<style>
+	.ck-sb {
+		padding: 1.1rem 0 2rem;
+		font-size: 0.875rem;
+	}
+
+	.ck-sb ul {
+		list-style: none;
+		margin: 0;
+		padding: 0;
+	}
+
+	.ck-sb li {
+		margin: 0;
+	}
+
+	/* ── Section switcher ── */
+	.ck-switch {
+		display: grid;
+		grid-template-columns: 1fr 1fr;
+		gap: 2px;
+		margin-bottom: 1.35rem;
+		padding: 2px;
+		border: 1px solid var(--color-border);
+		border-radius: var(--ck-r-sm);
+		background: var(--color-canvas-subtle);
+	}
+
+	.ck-switch a {
+		padding: 0.4rem 0.5rem;
+		border-radius: 6px;
+		font-size: 0.8125rem;
+		font-weight: 600;
+		text-align: center;
+		text-decoration: none;
+		color: var(--color-text-muted);
+		transition: background 120ms ease, color 120ms ease;
+	}
+
+	.ck-switch a:hover {
+		color: var(--color-text-primary);
+	}
+
+	.ck-switch a[aria-current] {
+		background: var(--color-canvas);
+		color: var(--color-text-primary);
+		box-shadow: var(--ck-shadow-sm);
+	}
+
+	.ck-sb-course {
+		margin: 0 0 0.4rem 0.6rem;
+		font-size: 0.8125rem;
+		font-weight: 650;
+		letter-spacing: -0.01em;
+		color: var(--color-text-primary);
+	}
+
+	/* ── Links ── */
+	.ck-sb-link {
+		display: block;
+		padding: 0.4rem 0.6rem;
+		border-radius: var(--ck-r-sm);
+		text-decoration: none;
+		line-height: 1.45;
+		color: var(--color-text-secondary);
+		transition: background 120ms ease, color 120ms ease;
+	}
+
+	.ck-sb-link:hover {
+		background: var(--color-canvas-subtle);
+		color: var(--color-text-primary);
+	}
+
+	.ck-sb-link[aria-current='page'] {
+		background: var(--color-accent-soft);
+		color: var(--color-accent);
+		font-weight: 600;
+	}
+
+	.ck-sb-link[data-ck-done]::after {
+		content: '✓';
+		margin-inline-start: 0.4rem;
+		font-size: 0.8rem;
+		font-weight: 700;
+		color: var(--color-ok);
+	}
+
+	.ck-sb-top {
+		margin-bottom: 0.25rem;
+		font-size: 0.8125rem;
+	}
+
+	.ck-sb-group {
+		margin-top: 1rem;
+	}
+
+	.ck-sb-heading {
+		margin: 0 0 0.25rem 0.6rem;
+		font-size: 0.6875rem;
+		font-weight: 700;
+		letter-spacing: 0.1em;
+		text-transform: uppercase;
+		color: var(--color-text-muted);
+	}
+
+	/* ── Lesson rows ── */
+	.ck-sb-lesson {
+		display: flex;
+		flex-direction: column;
+		gap: 0.1rem;
+	}
+
+	.ck-sb-kind {
+		font-size: 0.6875rem;
+		font-weight: 700;
+		letter-spacing: 0.04em;
+		text-transform: uppercase;
+		color: var(--color-text-muted);
+	}
+
+	.ck-sb-link[aria-current='page'] .ck-sb-kind {
+		color: color-mix(in srgb, var(--color-accent) 75%, var(--color-text-muted));
+	}
+
+	/* ── Collapsible multi-part lesson ── */
+	.ck-sb details > summary {
+		display: flex;
+		align-items: center;
+		flex-wrap: wrap;
+		gap: 0.1rem 0.4rem;
+		padding: 0.4rem 0.6rem;
+		border-radius: var(--ck-r-sm);
+		cursor: pointer;
+		list-style: none;
+		color: var(--color-text-secondary);
+		transition: background 120ms ease;
+	}
+
+	.ck-sb details > summary::-webkit-details-marker {
+		display: none;
+	}
+
+	.ck-sb details > summary:hover {
+		background: var(--color-canvas-subtle);
+	}
+
+	.ck-sb details > summary::before {
+		content: '';
+		order: -1;
+		width: 0;
+		height: 0;
+		border-left: 4.5px solid currentColor;
+		border-top: 3.5px solid transparent;
+		border-bottom: 3.5px solid transparent;
+		color: var(--color-text-muted);
+		flex-shrink: 0;
+		margin-inline-end: 0.1rem;
+		transition: transform 150ms ease;
+	}
+
+	.ck-sb details[open] > summary::before {
+		transform: rotate(90deg);
+	}
+
+	.ck-sb details > summary .ck-sb-kind {
+		flex-basis: 100%;
+		margin-inline-start: 0.7rem;
+	}
+
+	.ck-sb-ltitle {
+		flex: 1;
+		min-width: 0;
+		color: var(--color-text-primary);
+		font-weight: 550;
+	}
+
+	.ck-sb-count {
+		flex-shrink: 0;
+		padding: 0 0.35rem;
+		border-radius: 999px;
+		background: var(--color-canvas-subtle);
+		border: 1px solid var(--color-border);
+		font-size: 0.65rem;
+		font-weight: 700;
+		color: var(--color-text-muted);
+	}
+
+	.ck-sb-parts {
+		margin: 0.1rem 0 0.4rem 1.3rem;
+		padding-left: 0.5rem;
+		border-left: 1px solid var(--color-border);
+	}
+
+	.ck-sb-part {
+		display: flex;
+		align-items: center;
+		gap: 0.5rem;
+		font-size: 0.8125rem;
+	}
+
+	.ck-sb-partn {
+		flex-shrink: 0;
+		width: 1.1rem;
+		height: 1.1rem;
+		display: grid;
+		place-items: center;
+		border-radius: 4px;
+		background: var(--color-canvas-subtle);
+		border: 1px solid var(--color-border);
+		font-size: 0.65rem;
+		font-weight: 700;
+		color: var(--color-text-muted);
+	}
+
+	.ck-sb-part[aria-current='page'] .ck-sb-partn {
+		background: var(--color-accent);
+		border-color: var(--color-accent);
+		color: #fff;
+	}
+
+	.ck-sb-foot {
+		margin-top: 1.75rem;
+		padding-top: 0.9rem;
+		border-top: 1px solid var(--color-border-muted);
+	}
+
+	.ck-sb-fine {
+		font-size: 0.75rem;
+		color: var(--color-text-muted);
+	}
+
+	.ck-sb-empty {
+		margin: 0 0.6rem;
+		color: var(--color-text-muted);
+	}
+</style>

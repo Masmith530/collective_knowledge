@@ -1,117 +1,99 @@
 ---
-// src/components/overrides/Hero.astro
-// Replaces Starlight's hero with a full-bleed, centered homepage intro
+/**
+ * Hero override.
+ *
+ * Says what the site *is* — free, open, community-written training for
+ * helicopter pilots and the people teaching them. It deliberately does not
+ * pitch the pedagogy: "learn it in building blocks" was selling a method to
+ * someone who has not yet decided to be here, and the method shows itself once
+ * they are reading a course.
+ *
+ * Both actions point at index pages rather than a specific course, so neither
+ * goes stale as courses are added.
+ */
 ---
 
 <section class="ck-hero">
-  <div class="ck-hero-inner">
-    <p class="ck-eyebrow">Rotary-Wing Ground School</p>
-    <h1 class="ck-title">
-      Built for pilots who<br />take their training seriously.
-    </h1>
-    <p class="ck-subtitle">
-      A free, community-driven training reference for helicopter student pilots,
-      commercial candidates, and flight instructors. Clear aeronautical theory,
-      practical maneuver guides, and interactive study tools — no paywalls, ever.
-    </p>
-    <div class="ck-actions">
-      <a href="/aerodynamics/principles/" class="ck-btn-primary">Start Learning</a>
-      <a href="#modules" class="ck-btn-ghost">View Curriculum</a>
-    </div>
-  </div>
+	<p class="ck-eyebrow">
+		<span class="ck-dot" aria-hidden="true"></span>
+		Community built · Open source · Always free
+	</p>
+
+	<h1>Free, open flight training<br class="ck-br" /> for helicopter pilots.</h1>
+
+	<p class="ck-sub">
+		Community-written ground courses for student pilots — and for the instructors
+		teaching them. No accounts, no ads, no paywalls.
+	</p>
+
+	<div class="ck-actions">
+		<a href="/curriculum/" class="ck-btn ck-btn-primary">Browse courses</a>
+		<a href="/subjects/" class="ck-btn ck-btn-secondary">View subject areas</a>
+	</div>
 </section>
 
 <style>
-  .ck-hero {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    padding: clamp(5rem, 14vmin, 10rem) 1.5rem clamp(4rem, 10vmin, 7rem);
-    text-align: center;
-  }
+	.ck-hero {
+		max-width: 46rem;
+		margin: 0 auto;
+		padding: clamp(3rem, 10vmin, 6rem) 0 clamp(1rem, 3vmin, 2rem);
+		text-align: center;
+	}
 
-  .ck-hero-inner {
-    max-width: 720px;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 1.5rem;
-  }
+	.ck-eyebrow {
+		display: inline-flex;
+		align-items: center;
+		gap: 0.45rem;
+		margin: 0 0 1.15rem;
+		padding: 0.28rem 0.8rem;
+		border: 1px solid var(--color-border);
+		border-radius: 999px;
+		background: var(--color-canvas-subtle);
+		font-size: 0.75rem;
+		font-weight: 550;
+		color: var(--color-text-secondary);
+	}
 
-  /* Eyebrow label */
-  .ck-eyebrow {
-    margin: 0;
-    font-family: var(--font-body);
-    font-size: 0.75rem;
-    font-weight: 600;
-    letter-spacing: 0.12em;
-    text-transform: uppercase;
-    color: var(--color-accent);
-  }
+	.ck-dot {
+		width: 6px;
+		height: 6px;
+		border-radius: 50%;
+		background: var(--color-ok);
+		flex-shrink: 0;
+	}
 
-  /* Headline */
-  .ck-title {
-    margin: 0;
-    font-family: var(--font-display, 'Playfair Display', Georgia, serif);
-    font-size: clamp(2.25rem, 5.5vw, 3.75rem);
-    font-weight: 700;
-    line-height: 1.12;
-    letter-spacing: -0.025em;
-    color: var(--color-text-primary);
-  }
+	.ck-hero h1 {
+		margin: 0;
+		font-size: clamp(2.1rem, 5.4vw, 3.25rem);
+		font-weight: 700;
+		line-height: 1.08;
+		letter-spacing: -0.035em;
+		color: var(--color-text-primary);
+	}
 
-  /* Subtitle */
-  .ck-subtitle {
-    margin: 0;
-    font-size: clamp(1rem, 1.8vw, 1.125rem);
-    line-height: 1.7;
-    color: var(--color-text-secondary);
-    max-width: 58ch;
-  }
+	.ck-sub {
+		margin: 1.15rem auto 0;
+		max-width: 34rem;
+		font-size: 1.0625rem;
+		line-height: 1.65;
+		color: var(--color-text-secondary);
+	}
 
-  /* CTA row */
-  .ck-actions {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 0.75rem;
-    justify-content: center;
-    margin-top: 0.5rem;
-  }
+	.ck-actions {
+		display: flex;
+		flex-wrap: wrap;
+		justify-content: center;
+		gap: 0.6rem;
+		margin-top: 1.85rem;
+	}
 
-  .ck-btn-primary,
-  .ck-btn-ghost {
-    display: inline-flex;
-    align-items: center;
-    gap: 0.4rem;
-    padding: 0.65rem 1.5rem;
-    border-radius: 8px;
-    font-size: 0.9rem;
-    font-weight: 600;
-    letter-spacing: -0.01em;
-    text-decoration: none;
-    transition: all 150ms ease;
-    white-space: nowrap;
-  }
+	.ck-br {
+		display: none;
+	}
 
-  .ck-btn-primary {
-    background: var(--color-accent);
-    color: #fff;
-    border: 1px solid transparent;
-  }
-
-  .ck-btn-primary:hover {
-    opacity: 0.88;
-  }
-
-  .ck-btn-ghost {
-    background: transparent;
-    color: var(--color-text-secondary);
-    border: 1px solid var(--color-border);
-  }
-
-  .ck-btn-ghost:hover {
-    background: var(--color-canvas-subtle);
-    color: var(--color-text-primary);
-    border-color: var(--color-text-muted);
-  }
+	@media (min-width: 40rem) {
+		.ck-br {
+			display: inline;
+		}
+	}
 </style>

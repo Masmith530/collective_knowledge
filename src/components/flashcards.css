@@ -1,0 +1,269 @@
+/* Flashcard deck styles. Tokens only — tracks light and dark automatically. */
+
+/* ─── Resting card ──────────────────────────────────────── */
+.ck-fc-card {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	flex-wrap: wrap;
+	gap: 1rem;
+	margin: 1.25rem 0;
+	padding: 1.25rem 1.4rem;
+	border: 1px solid var(--color-border);
+	border-radius: var(--ck-r);
+	background: var(--color-canvas-subtle);
+}
+
+.ck-fc-card-main {
+	min-width: 0;
+	flex: 1;
+}
+
+.ck-fc-card-title {
+	margin: 0 0 0.3rem;
+	border: 0;
+	padding: 0;
+	font-size: 1.0625rem;
+	font-weight: 650;
+	color: var(--color-text-primary);
+}
+
+.ck-fc-card-meta {
+	margin: 0;
+	font-size: 0.8125rem;
+	color: var(--color-text-secondary);
+}
+
+.ck-fc-mini {
+	height: 4px;
+	max-width: 16rem;
+	margin: 0.7rem 0 0.4rem;
+	border-radius: 999px;
+	background: var(--color-border-muted);
+	overflow: hidden;
+}
+
+.ck-fc-mini > span {
+	display: block;
+	height: 100%;
+	border-radius: 999px;
+	background: var(--color-ok);
+	transition: width 250ms ease;
+}
+
+.ck-fc-known {
+	margin: 0;
+	font-size: 0.8125rem;
+	font-weight: 600;
+	color: var(--color-text-secondary);
+}
+
+.ck-fc-known.is-all {
+	color: var(--color-ok);
+}
+
+.ck-fc-linkbtn {
+	border: 0;
+	background: none;
+	padding: 0;
+	font: inherit;
+	font-weight: 500;
+	color: var(--color-text-muted);
+	text-decoration: underline;
+	cursor: pointer;
+}
+
+.ck-fc-linkbtn:hover {
+	color: var(--color-text-primary);
+}
+
+.ck-fc-actions {
+	display: flex;
+	gap: 0.5rem;
+	flex-shrink: 0;
+}
+
+.ck-fc-empty {
+	margin: 0;
+	font-size: 0.9rem;
+	color: var(--color-text-muted);
+}
+
+/* ─── Modal ─────────────────────────────────────────────── */
+.ck-fc-dialog {
+	width: min(38rem, calc(100vw - 2rem));
+	padding: 0;
+	border: 1px solid var(--color-border);
+	border-radius: var(--ck-r-lg);
+	background: var(--color-canvas);
+	color: var(--color-text-primary);
+	overflow: hidden;
+}
+
+.ck-fc-dialog::backdrop {
+	background: rgba(2, 6, 12, 0.66);
+	backdrop-filter: blur(3px);
+}
+
+.ck-fc-head {
+	display: flex;
+	align-items: flex-start;
+	justify-content: space-between;
+	gap: 1rem;
+	padding: 1.1rem 1.4rem 0.9rem;
+	border-bottom: 1px solid var(--color-border-muted);
+}
+
+.ck-fc-head-main {
+	flex: 1;
+	min-width: 0;
+}
+
+.ck-fc-step {
+	margin: 0 0 0.5rem;
+	font-size: 0.75rem;
+	font-weight: 700;
+	letter-spacing: 0.07em;
+	text-transform: uppercase;
+	color: var(--color-text-muted);
+}
+
+.ck-fc-bar {
+	height: 4px;
+	max-width: 14rem;
+	border-radius: 999px;
+	background: var(--color-border-muted);
+	overflow: hidden;
+}
+
+.ck-fc-bar > span {
+	display: block;
+	height: 100%;
+	border-radius: 999px;
+	background: var(--color-ok);
+	transition: width 200ms ease;
+}
+
+.ck-fc-close {
+	flex-shrink: 0;
+	width: 30px;
+	height: 30px;
+	display: grid;
+	place-items: center;
+	border: 1px solid var(--color-border);
+	border-radius: var(--ck-r-sm);
+	background: transparent;
+	color: var(--color-text-secondary);
+	font-size: 0.8rem;
+	cursor: pointer;
+}
+
+.ck-fc-close:hover {
+	background: var(--color-canvas-subtle);
+	color: var(--color-text-primary);
+}
+
+/* ─── The card face ────────────────────────────────────── */
+.ck-fc-face {
+	display: flex;
+	flex-direction: column;
+	gap: 0.75rem;
+	width: 100%;
+	min-height: 13rem;
+	padding: 1.75rem 1.5rem;
+	border: 0;
+	background: transparent;
+	font: inherit;
+	text-align: center;
+	cursor: pointer;
+	align-items: center;
+	justify-content: center;
+}
+
+.ck-fc-face:hover {
+	background: var(--color-canvas-subtle);
+}
+
+.ck-fc-side {
+	font-size: 0.6875rem;
+	font-weight: 700;
+	letter-spacing: 0.1em;
+	text-transform: uppercase;
+	color: var(--color-accent);
+}
+
+.ck-fc-text {
+	font-size: 1.0625rem;
+	font-weight: 500;
+	line-height: 1.6;
+	color: var(--color-text-primary);
+	max-width: 32rem;
+	/* Answers may contain newlines (numbered lists in the source CSV). */
+	white-space: pre-line;
+}
+
+.ck-fc-hint {
+	font-size: 0.75rem;
+	color: var(--color-text-muted);
+}
+
+/* ─── Footer / actions ─────────────────────────────────── */
+.ck-fc-foot {
+	display: flex;
+	gap: 0.6rem;
+	padding: 0.95rem 1.4rem;
+	border-top: 1px solid var(--color-border-muted);
+	background: var(--color-canvas-subtle);
+}
+
+.ck-fc-foot > .ck-btn {
+	flex: 1;
+}
+
+.ck-fc-wide {
+	width: 100%;
+}
+
+/* ─── Done screen ──────────────────────────────────────── */
+.ck-fc-done {
+	text-align: center;
+}
+
+.ck-fc-done-n {
+	margin: 2rem 0 0;
+	font-size: 2.1rem
+	;
+	font-weight: 700;
+	line-height: 1;
+	font-variant-numeric: tabular-nums;
+	color: var(--color-ok);
+}
+
+.ck-fc-done-label {
+	margin: 0.5rem 0 0;
+	font-size: 0.9375rem;
+	font-weight: 600;
+	color: var(--color-text-primary);
+}
+
+.ck-fc-done-note {
+	margin: 0.35rem 0 1.75rem;
+	font-size: 0.8125rem;
+	color: var(--color-text-muted);
+}
+
+.ck-fc-warn {
+	margin: 0;
+	padding: 0.7rem 1.4rem;
+	border-top: 1px solid var(--color-border-muted);
+	font-size: 0.8125rem;
+	color: var(--color-warn);
+}
+
+@media (max-width: 34rem) {
+	.ck-fc-card,
+	.ck-fc-actions {
+		flex-direction: column;
+		align-items: stretch;
+	}
+}

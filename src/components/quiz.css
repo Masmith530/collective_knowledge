@@ -1,0 +1,347 @@
+/* Quiz styles. A plain stylesheet because the component is React and has no
+   scoped <style> available. All colours come from the verified theme tokens in
+   global.css, so the quiz tracks light/dark automatically. */
+
+.sr-only {
+	position: absolute;
+	width: 1px;
+	height: 1px;
+	padding: 0;
+	margin: -1px;
+	overflow: hidden;
+	clip: rect(0, 0, 0, 0);
+	white-space: nowrap;
+	border: 0;
+}
+
+/* ─── Resting card ──────────────────────────────────────── */
+.ck-quiz-card {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	flex-wrap: wrap;
+	gap: 1rem;
+	margin: 2.5rem 0 1rem;
+	padding: 1.25rem 1.4rem;
+	border: 1px solid var(--color-border);
+	border-radius: var(--ck-radius);
+	background: var(--color-canvas-subtle);
+}
+
+.ck-quiz-card-main {
+	min-width: 0;
+}
+
+.ck-quiz-card-title {
+	margin: 0 0 0.3rem;
+	border: 0;
+	padding: 0;
+	font-size: 1.0625rem;
+	font-weight: 650;
+	color: var(--color-text-primary);
+}
+
+.ck-quiz-card-meta {
+	margin: 0;
+	font-size: 0.8125rem;
+	color: var(--color-text-secondary);
+}
+
+.ck-quiz-best {
+	margin: 0.5rem 0 0;
+	font-size: 0.8125rem;
+	font-weight: 600;
+}
+
+.ck-quiz-best.is-pass {
+	color: var(--color-ok);
+}
+
+.ck-quiz-best.is-fail {
+	color: var(--color-warn);
+}
+
+.ck-quiz-empty {
+	margin: 0;
+	font-size: 0.9rem;
+	color: var(--color-text-muted);
+}
+
+/* ─── Modal shell ───────────────────────────────────────── */
+.ck-quiz-dialog {
+	width: min(42rem, calc(100vw - 2rem));
+	max-height: min(85vh, 54rem);
+	padding: 0;
+	border: 1px solid var(--color-border);
+	border-radius: 12px;
+	background: var(--color-canvas);
+	color: var(--color-text-primary);
+	overflow: hidden;
+}
+
+.ck-quiz-dialog::backdrop {
+	background: rgba(2, 6, 12, 0.66);
+	backdrop-filter: blur(3px);
+}
+
+.ck-quiz-run,
+.ck-quiz-results {
+	display: flex;
+	flex-direction: column;
+	max-height: min(85vh, 54rem);
+}
+
+/* ─── Running ───────────────────────────────────────────── */
+.ck-quiz-run-head {
+	display: flex;
+	align-items: flex-start;
+	justify-content: space-between;
+	gap: 1rem;
+	padding: 1.15rem 1.4rem 0.9rem;
+	border-bottom: 1px solid var(--color-border-muted);
+}
+
+.ck-quiz-run-step {
+	margin: 0 0 0.5rem;
+	font-size: 0.75rem;
+	font-weight: 700;
+	letter-spacing: 0.07em;
+	text-transform: uppercase;
+	color: var(--color-text-muted);
+}
+
+.ck-quiz-bar {
+	width: 11rem;
+	height: 4px;
+	border-radius: 999px;
+	background: var(--color-border-muted);
+	overflow: hidden;
+}
+
+.ck-quiz-bar > span {
+	display: block;
+	height: 100%;
+	background: var(--color-accent);
+	border-radius: 999px;
+	transition: width 180ms ease;
+}
+
+.ck-quiz-close {
+	flex-shrink: 0;
+	width: 30px;
+	height: 30px;
+	display: grid;
+	place-items: center;
+	border: 1px solid var(--color-border);
+	border-radius: var(--ck-radius-sm);
+	background: transparent;
+	color: var(--color-text-secondary);
+	font-size: 0.8rem;
+	cursor: pointer;
+}
+
+.ck-quiz-close:hover {
+	background: var(--color-canvas-subtle);
+	color: var(--color-text-primary);
+}
+
+.ck-quiz-run-q {
+	margin: 0;
+	padding: 1.3rem 1.4rem 1rem;
+	font-size: 1.0625rem;
+	font-weight: 600;
+	line-height: 1.55;
+	color: var(--color-text-primary);
+}
+
+.ck-quiz-choices {
+	display: flex;
+	flex-direction: column;
+	gap: 0.5rem;
+	padding: 0 1.4rem 1.3rem;
+	overflow-y: auto;
+}
+
+.ck-quiz-choice {
+	display: flex;
+	align-items: flex-start;
+	gap: 0.7rem;
+	width: 100%;
+	padding: 0.7rem 0.9rem;
+	border: 1px solid var(--color-border-strong);
+	border-radius: var(--ck-radius-sm);
+	background: var(--color-canvas);
+	color: var(--color-text-primary);
+	font: inherit;
+	font-size: 0.9375rem;
+	line-height: 1.5;
+	text-align: left;
+	cursor: pointer;
+	transition: border-color 120ms ease, background 120ms ease;
+}
+
+.ck-quiz-choice:hover {
+	border-color: var(--color-accent);
+	background: var(--color-accent-soft);
+}
+
+.ck-quiz-choice[data-selected] {
+	border-color: var(--color-accent);
+	background: var(--color-accent-soft);
+	box-shadow: inset 0 0 0 1px var(--color-accent);
+}
+
+.ck-quiz-letter {
+	flex-shrink: 0;
+	width: 1.5rem;
+	height: 1.5rem;
+	display: grid;
+	place-items: center;
+	border-radius: 5px;
+	border: 1px solid var(--color-border-strong);
+	font-size: 0.72rem;
+	font-weight: 700;
+	color: var(--color-text-secondary);
+}
+
+.ck-quiz-choice[data-selected] .ck-quiz-letter {
+	border-color: var(--color-accent);
+	background: var(--color-accent);
+	color: var(--color-canvas);
+}
+
+:root[data-theme='light'] .ck-quiz-choice[data-selected] .ck-quiz-letter {
+	color: #fff;
+}
+
+.ck-quiz-run-foot {
+	display: flex;
+	justify-content: space-between;
+	gap: 0.75rem;
+	padding: 0.95rem 1.4rem;
+	border-top: 1px solid var(--color-border-muted);
+	background: var(--color-canvas-subtle);
+}
+
+/* ─── Results ───────────────────────────────────────────── */
+.ck-quiz-score {
+	padding: 1.6rem 1.4rem;
+	text-align: center;
+	border-bottom: 1px solid var(--color-border-muted);
+}
+
+.ck-quiz-score.is-pass {
+	background: var(--color-ok-soft);
+}
+
+.ck-quiz-score.is-fail {
+	background: var(--color-warn-soft);
+}
+
+.ck-quiz-score-n {
+	margin: 0;
+	font-size: 2.1rem;
+	font-weight: 700;
+	line-height: 1;
+	font-variant-numeric: tabular-nums;
+	color: var(--color-text-primary);
+}
+
+.ck-quiz-score-label {
+	margin: 0.5rem 0 0;
+	font-size: 0.875rem;
+	font-weight: 600;
+}
+
+.ck-quiz-score.is-pass .ck-quiz-score-label {
+	color: var(--color-ok);
+}
+
+.ck-quiz-score.is-fail .ck-quiz-score-label {
+	color: var(--color-warn);
+}
+
+.ck-quiz-review-title {
+	margin: 0;
+	padding: 1.1rem 1.4rem 0.5rem;
+	border: 0;
+	font-size: 0.75rem
+	;
+	font-weight: 700;
+	letter-spacing: 0.08em;
+	text-transform: uppercase;
+	color: var(--color-text-muted);
+}
+
+.ck-quiz-review {
+	list-style: none;
+	margin: 0;
+	padding: 0 1.4rem 1.3rem;
+	overflow-y: auto;
+}
+
+.ck-quiz-review-item {
+	padding: 0.9rem 0;
+	border-top: 1px solid var(--color-border-muted);
+}
+
+.ck-quiz-review-item:first-child {
+	border-top: 0;
+}
+
+.ck-quiz-review-q {
+	display: flex;
+	gap: 0.6rem;
+	margin: 0 0 0.45rem;
+	font-size: 0.9375rem;
+	font-weight: 600;
+	line-height: 1.5;
+	color: var(--color-text-primary);
+}
+
+.ck-quiz-review-mark {
+	flex-shrink: 0;
+	font-weight: 700;
+	color: var(--color-bad);
+}
+
+.ck-quiz-review-item[data-ok] .ck-quiz-review-mark {
+	color: var(--color-ok);
+}
+
+.ck-quiz-review-your,
+.ck-quiz-review-ans,
+.ck-quiz-review-why,
+.ck-quiz-review-ref {
+	margin: 0 0 0.3rem 1.45rem;
+	font-size: 0.875rem;
+	line-height: 1.6;
+}
+
+.ck-quiz-review-your {
+	color: var(--color-bad);
+}
+
+.ck-quiz-review-ans {
+	color: var(--color-text-primary);
+}
+
+.ck-quiz-review-why {
+	color: var(--color-text-secondary);
+}
+
+.ck-quiz-review-ref {
+	color: var(--color-text-muted);
+	font-size: 0.8125rem;
+}
+
+@media (max-width: 30rem) {
+	.ck-quiz-bar {
+		width: 7rem;
+	}
+
+	.ck-quiz-card {
+		flex-direction: column;
+		align-items: stretch;
+	}
+}

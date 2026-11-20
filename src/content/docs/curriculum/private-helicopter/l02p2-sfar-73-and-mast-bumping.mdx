@@ -1,0 +1,126 @@
+---
+title: SFAR 73, Low-G & Mast Bumping
+description: What an SFAR is, who SFAR 73 applies to, the five required ground subject areas, and the two hazards that follow directly from control inputs.
+sidebar:
+  order: 22
+lesson:
+  course: private-helicopter
+  week: 1
+  order: 2
+  kind: ground
+  kindNumber: 2
+  part: 2
+  lessonTitle: Flight Controls & SFAR 73
+  status: draft
+  objectives:
+    - Explain what an SFAR is and where it sits in the regulations
+    - State who SFAR 73 applies to and what it requires before you touch the controls
+    - List the five required ground training subject areas from memory
+    - Describe the cause, recognition, and correct recovery for a low-G condition
+    - Explain how mast bumping occurs and why lateral cyclic is the wrong input
+  references:
+    - SFAR 73 — Robinson R-22/R-44 Special Training and Experience Requirements
+    - 'R22/R44 POH Section 10 — Safety Tips and Safety Notices'
+    - 'Robinson Safety Tip 1, SN-11'
+  airframes: [r22, r44]
+---
+
+import KeyNotes from '@components/KeyNotes.astro';
+import LessonProgress from '@components/LessonProgress.tsx';
+import LessonHeader from '@components/LessonHeader.astro';
+import { Aside } from '@astrojs/starlight/components';
+
+<LessonHeader lesson={frontmatter.lesson} />
+
+<Aside type="caution" title="This is a prerequisite to touching the controls">
+SFAR 73 paragraph 2(a) requires this ground training before you may manipulate the
+controls of an R22 or R44. Your instructor provides it and logs the endorsement.
+</Aside>
+
+Before we dig into the details, let's cover what an SFAR even is.
+
+## Intro to the FARs
+
+One of the main publications you’ll use in your training is the FARs, or Federal Aviation Regulations. The FAR/AIM is a condensed version for pilots. It includes many regulations you’ll need to know (and some you won’t), but there are many more regulations outside of it. Some sections a helicopter pilot _does_ need to know aren’t in the book at all. A paper copy is handy for highlighting, tabbing sections, and studying. The book is updated every year, so as an experienced pilot, I use the regulations online at **eCFR.gov**.
+
+The Code of Federal Regulations covers everything from how much peanut butter must be in a jar to legally call it “peanut butter,” to how bright your car’s headlights are allowed to be. There are a few titles we’re primarily interested in, but for now it’s **Title 14, Aeronautics and Space**. Here’s how to drill down:
+
+1. **Title 14** – Aeronautics and Space
+2. **Chapter I** – Federal Aviation Administration, Department of Transportation
+3. **Subchapter D** – Airmen
+4. **Part 61** – Certification: Pilots, Flight Instructors, and Ground Instructors
+
+That’s us: we’re pilots. If you use a paper copy of the FAR/AIM, tab out the Part 61 section, since you’ll come back to it many times. SFAR 73 is found within Part 61.
+
+## What Is an SFAR?
+
+An SFAR is a Special Federal Aviation Regulation. It’s a temporary or targeted “add-on” rule that addresses specific circumstances without rewriting the entire book. Think of the normal rules of the road, then a construction-zone detour or special-event traffic rules layered on top.
+
+In 1995, the FAA issued SFAR 73, requiring special training for pilots of the Robinson R22 and R44. These helicopters have characteristics, including their lightweight rotor systems, that demand specific knowledge and handling, and the training was meant to address accidents involving them. The FAA has said accidents in these helicopters have declined markedly since the SFAR was issued, and it stayed in place for roughly 30 years. In July 2024, the FAA revised it (effective August 22, 2024). The revision removed the requirement to practice a hazardous maneuver during flight training because of safety concerns, though that hazard is still taught on the ground. It also updated the language to align with the rest of Part 61 and added a five-year expiration date, giving the FAA time to review the requirements before adopting them permanently as their own section of regulations.
+
+## SFAR 73 Applicability
+
+SFAR 73 applies to anyone who seeks to do any of the following in a Robinson R22 or R44:
+
+- Manipulate the controls
+- Act as pilot in command
+- Provide ground or flight training
+- Conduct a flight review
+
+The requirements are in _addition to_ the normal Part 61 requirements. Nothing in the SFAR replaces them.
+
+## Required Ground Training (Paragraph 2(a))
+
+There are various parts of SFAR 73, this part matters to you right away.
+
+**You can’t touch the controls first.** Under paragraph 2(a)(1), no one may manipulate the controls of an R22 or R44 for the purpose of flight until they’ve completed SFAR 73 ground training _and_ their logbook has been endorsed by a flight instructor authorized under the SFAR. That includes you, on your very first flight.
+
+**It applies to experienced pilots too.** Paragraph 2(a)(2) says even pilots who already hold a rotorcraft category and helicopter class rating, and who meet the experience requirements in paragraph 2(b), must complete the same ground training and endorsement before flying one of these helicopters.
+
+**What the training covers.** Paragraph 2(a)(3) says the training must be given by an authorized flight instructor and covers five general subject areas:
+
+1. Energy management
+2. Mast bumping
+3. Low rotor RPM and rotor stall
+4. Low G conditions, effects, and proper recovery procedures
+5. Rotor RPM decay
+
+Paragraph 2(a)(4) confirms these subject areas apply to both the R22 and the R44.
+
+**An alternative path.** Paragraph 2(a)(5) says someone who can show satisfactory completion of the manufacturer’s safety course may obtain an endorsement from an FAA aviation safety inspector instead of completing this ground training.
+
+So let’s dig in to those subject areas.
+
+## Low-G
+
+Low G refers to any state in which the load on the aircraft is less than the normal 1 G of gravity. In an aircraft, you create G forces by maneuvering. When Maverick in Top Gun is pulling heavy G’s, he’s doing it by turning the aircraft aggressively at high forward speed.
+
+The same idea applies in a helicopter. Turning or flaring from forward flight creates positive G’s, and rolling out of the turn into normal flight brings you back to 1 G. But pushing forward on the cyclic from forward flight does the opposite. It reduces G forces, even below the 1 G of normal gravity.
+
+You may have seen videos of aircraft flying maneuvers that create weightlessness, where objects float around inside the cabin. That’s what a very low G state looks like.
+
+Low-G isn’t inherently bad. It’s the helicopter’s response combined with an improper pilot reaction that turns it into a dangerous, high-risk situation. That’s part of the reason SFAR 73 exists, and part of the reason the low-G maneuver was removed from flight training in modern times.
+
+Traditionally, when an R22 or R44 enters a low-G state, the helicopter rolls to the right. How hard it snaps into that roll depends on how much G you lose and how fast you’re going. Higher airspeed means a faster, more aggressive roll. Robinson has since introduced a symmetrical horizontal stabilizer, with surfaces on both the left and right sides of the tail cone instead of one on the right only. It significantly reduces the right roll, though it doesn’t eliminate it. Whether your helicopter has it depends on the specific aircraft.
+
+Regardless of the roll, a pilot may react automatically, or think they should react, by trying to correct it. That’s the improper response. Your first response to a low-G situation _must_ be to reload the rotor, since we just unloaded it. You do that with **gentle aft cyclic**, and remember: nothing is ever aggressive or rushed. You’ll physically feel the helicopter load back up when this happens, the same way you will as you flare or use aft cyclic throughout training. You’ll often feel a weightless sensation before the roll even starts. That’s your cue to act.
+
+So the correction is gentle aft cyclic first. If a pilot uses lateral cyclic before aft cyclic, mast bumping can occur.
+
+## Mast Bumping
+
+Mast bumping is when the rotor hub strikes the rotor mast. It doesn’t happen in normal flight. It takes a low-G condition combined with improper pilot input.
+
+Here’s how it happens. The Robinson R22 and R44 have two-blade teetering rotor systems, so the blades can see-saw on the hub. In normal flight, the rotor is loaded: it’s producing thrust, and your cyclic inputs tilt the rotor disc and the helicopter follows. In a low-G state, that thrust is gone. The rotor is unloaded and the cyclic has very little control over the helicopter, but the tail rotor is still pushing, so the helicopter rolls to the right.
+
+If you answer that roll with lateral cyclic, you’re tilting the rotor disc to the left, but the helicopter can’t follow because the rotor isn’t loaded. The roll keeps developing, so you add more. Now the disc is tilted far past where the fuselage is, and the rotor can flap beyond its limits and the hub strikes the mast. Mast bumping is often catastrophic: the mast can fail, and the rotor system can separate from the helicopter.
+
+That’s why the order matters. Aft cyclic reloads the rotor first. Once it’s loaded and thrust returns, the cyclic works again, and _then_ you correct the roll. And always make those inputs gently.
+<KeyNotes>
+- **The five SFAR 73 required subject areas:** energy management, mast bumping, low rotor RPM and rotor stall, low-G conditions and recovery, and rotor RPM decay.
+- **Low-G recovery is gentle aft cyclic.** Never lateral cyclic first — that is what drives mast bumping.
+- **An unloaded rotor does not respond to cyclic the way a loaded one does.** With little thrust to work against, the cyclic moves the fuselage relative to the rotor instead of tilting the disc.
+- **Mast bumping can be catastrophic** and can separate the rotor from the aircraft. The first link in the chain — the abrupt input — is the one you control.
+</KeyNotes>
+
+<LessonProgress lessonId="/curriculum/private-helicopter/l02p2-sfar-73-and-mast-bumping/" client:load />

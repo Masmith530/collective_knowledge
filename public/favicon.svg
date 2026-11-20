@@ -1,0 +1,19 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" role="img" aria-label="Collective Knowledge">
+  <!--
+    Two opposed rotor blades through a hub, angled.
+
+    No fuselage, mast or tail boom on purpose: a horizontal bar with a vertical
+    stem and a second horizontal bar below it is an airplane silhouette, which
+    is what the previous icon accidentally drew. Blades alone cannot be misread
+    that way, and the angle keeps them from reading as wings.
+
+    One round-capped bar IS the two opposed blades of a teetering rotor. The
+    hub is drawn as a ring so the mark reads as an assembly rather than a slash.
+  -->
+  <rect width="32" height="32" rx="7.5" fill="#2563eb"/>
+  <g transform="rotate(-28 16 16)">
+    <line x1="4.6" y1="16" x2="27.4" y2="16" stroke="#ffffff" stroke-width="3.2" stroke-linecap="round"/>
+  </g>
+  <circle cx="16" cy="16" r="3.9" fill="#ffffff"/>
+  <circle cx="16" cy="16" r="1.6" fill="#2563eb"/>
+</svg>

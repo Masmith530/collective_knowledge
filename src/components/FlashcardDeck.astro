@@ -1,0 +1,30 @@
+---
+/**
+ * FlashcardDeck — looks a deck up in the `flashcards` collection and hands it
+ * to the Flashcards island.
+ *
+ * Same split as QuizBlock: collections are server-only, so the lookup happens
+ * here and only the card data crosses into the browser.
+ */
+import { getEntry } from 'astro:content';
+import Flashcards from './Flashcards.tsx';
+
+interface Props {
+	/** Path of the CSV under `src/content/flashcards`, without the extension. */
+	slug: string;
+	title?: string;
+}
+
+const { slug, title } = Astro.props;
+
+const entry = await getEntry('flashcards', slug);
+
+if (!entry) {
+	throw new Error(
+		`FlashcardDeck: no deck found at src/content/flashcards/${slug}.csv. ` +
+			`Create that file, or remove the <FlashcardDeck slug="${slug}" /> that asked for it.`,
+	);
+}
+---
+
+<Flashcards title={title} cards={entry.data.cards} slug={slug} client:visible />

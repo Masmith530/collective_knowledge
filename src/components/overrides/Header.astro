@@ -1,55 +1,246 @@
 ---
-// src/components/overrides/Header.astro
-// Fills Starlight's header slot. Import ThemeSelect directly.
+/**
+ * Header override.
+ *
+ * Starlight's default header is site title + search + social + theme. This
+ * replaces it with a wordmark, top-level section nav, and the same search and
+ * theme controls.
+ *
+ * Note the Search import: an earlier version of this override dropped it, which
+ * left Pagefind's index being built every deploy with no UI able to open it.
+ * Keep it.
+ */
+import Search from '@astrojs/starlight/components/Search.astro';
 import ThemeToggle from './ThemeToggle.astro';
+
+const path = Astro.url.pathname;
+
+const NAV = [
+	{ label: 'Courses', href: '/curriculum/', match: '/curriculum/' },
+	{ label: 'Subject Areas', href: '/subjects/', match: '/subjects/' },
+];
 ---
 
-<div class="ck-header-inner">
-  <!-- Wordmark -->
-  <a href="/" class="ck-wordmark" aria-label="Collective Knowledge home">
-    <span class="ck-wordmark-primary">Collective</span><span class="ck-wordmark-sep">&nbsp;</span><span class="ck-wordmark-accent">Knowledge</span>
-  </a>
+<div class="ck-hdr">
+	<div class="ck-hdr-left">
+		<a href="/" class="ck-wordmark" aria-label="Collective Knowledge — home">
+			<svg viewBox="0 0 32 32" width="22" height="22" aria-hidden="true" class="ck-mark">
+				<rect width="32" height="32" rx="7.5" fill="currentColor"></rect>
+				<g transform="rotate(-28 16 16)">
+					<line
+						x1="4.6"
+						y1="16"
+						x2="27.4"
+						y2="16"
+						stroke="var(--color-canvas)"
+						stroke-width="3.2"
+						stroke-linecap="round"></line>
+				</g>
+				<circle cx="16" cy="16" r="3.9" fill="var(--color-canvas)"></circle>
+				<circle cx="16" cy="16" r="1.6" fill="currentColor"></circle>
+			</svg>
+			<span class="ck-wordmark-text">
+				<span>Collective</span><span class="ck-wordmark-accent">Knowledge</span>
+			</span>
+		</a>
 
-  <!-- Right: theme toggle -->
-  <div class="ck-header-right">
-    <ThemeToggle />
-  </div>
+		<nav class="ck-nav" aria-label="Sections">
+			{
+				NAV.map((item) => (
+					<a
+						href={item.href}
+						class="ck-nav-link"
+						aria-current={path.startsWith(item.match) ? 'page' : undefined}
+					>
+						{item.label}
+					</a>
+				))
+			}
+		</nav>
+	</div>
+
+	<div class="ck-hdr-right">
+		<div class="ck-search"><Search /></div>
+		<ThemeToggle />
+		<a
+			href="https://github.com/Masmith530/collective_knowledge"
+			class="ck-icon-link"
+			aria-label="GitHub repository"
+		>
+			<svg width="18" height="18" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true">
+				<path
+					d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-2.91-.88-2.91-2.84 0-.56.2-1.02.53-1.38-.05-.13-.23-.66.05-1.37 0 0 .43-.14 1.41.53a4.8 4.8 0 0 1 2.62 0c.98-.67 1.41-.53 1.41-.53.28.71.1 1.24.05 1.37.33.36.53.82.53 1.38 0 1.97-1.14 2.64-2.92 2.84.3.26.56.76.56 1.54 0 1.11-.01 2.01-.01 2.29 0 .21.15.46.55.38A7.99 7.99 0 0 0 16 8c0-4.42-3.58-8-8-8Z"
+				></path>
+			</svg>
+		</a>
+	</div>
 </div>
 
+{/* Reading progress. Only shown on pages that have article content. */}
+<div class="ck-read-progress" aria-hidden="true"><span id="ck-read-bar"></span></div>
+
 <style>
-  .ck-header-inner {
-    width: 100%;
-    height: 100%;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 1rem;
-  }
+	.ck-hdr {
+		display: flex;
+		align-items: center;
+		justify-content: space-between;
+		gap: 1rem;
+		height: 100%;
+		min-width: 0;
+	}
 
-  .ck-wordmark {
-    display: flex;
-    align-items: baseline;
-    text-decoration: none;
-    font-family: 'Playfair Display', Georgia, serif;
-    font-weight: 700;
-    font-size: 1.1rem;
-    letter-spacing: -0.02em;
-    line-height: 1;
-    white-space: nowrap;
-    user-select: none;
-  }
+	.ck-hdr-left {
+		display: flex;
+		align-items: center;
+		gap: 1.75rem;
+		min-width: 0;
+	}
 
-  .ck-wordmark-primary {
-    color: var(--color-text-primary);
-  }
+	.ck-wordmark {
+		display: flex;
+		align-items: center;
+		gap: 0.55rem;
+		text-decoration: none;
+		font-size: 0.975rem;
+		font-weight: 680;
+		letter-spacing: -0.025em;
+		white-space: nowrap;
+		color: var(--color-text-primary);
+	}
 
-  .ck-wordmark-accent {
-    color: var(--color-accent);
-  }
+	.ck-mark {
+		color: var(--color-accent);
+		flex-shrink: 0;
+	}
 
-  .ck-header-right {
-    display: flex;
-    align-items: center;
-    gap: 0.75rem;
-  }
+	.ck-wordmark-text {
+		display: flex;
+		gap: 0.3em;
+		min-width: 0;
+		overflow: clip;
+	}
+
+	.ck-wordmark-accent {
+		color: var(--color-accent);
+	}
+
+	.ck-nav {
+		display: none;
+		align-items: center;
+		gap: 0.25rem;
+	}
+
+	.ck-nav-link {
+		padding: 0.4rem 0.7rem;
+		border-radius: var(--ck-r-sm);
+		font-size: 0.875rem;
+		font-weight: 550;
+		text-decoration: none;
+		color: var(--color-text-secondary);
+		transition: background 120ms ease, color 120ms ease;
+	}
+
+	.ck-nav-link:hover {
+		background: var(--color-canvas-subtle);
+		color: var(--color-text-primary);
+	}
+
+	.ck-nav-link[aria-current='page'] {
+		background: var(--color-accent-soft);
+		color: var(--color-accent);
+	}
+
+	.ck-hdr-right {
+		display: flex;
+		align-items: center;
+		gap: 0.4rem;
+		flex-shrink: 0;
+	}
+
+	.ck-search {
+		min-width: 0;
+	}
+
+	.ck-icon-link {
+		display: none;
+		place-items: center;
+		width: 34px;
+		height: 34px;
+		border-radius: var(--ck-r-sm);
+		border: 1px solid transparent;
+		color: var(--color-text-secondary);
+		transition: background 130ms ease, color 130ms ease;
+	}
+
+	.ck-icon-link:hover {
+		background: var(--color-canvas-subtle);
+		border-color: var(--color-border);
+		color: var(--color-text-primary);
+	}
+
+	/* Reading progress sits on the header's bottom edge. */
+	.ck-read-progress {
+		position: absolute;
+		inset-inline: 0;
+		bottom: -1px;
+		height: 2px;
+		pointer-events: none;
+	}
+
+	.ck-read-progress > span {
+		display: block;
+		height: 100%;
+		width: 0;
+		background: var(--color-accent);
+		transition: width 90ms linear;
+	}
+
+	@media (min-width: 50rem) {
+		.ck-nav,
+		.ck-icon-link {
+			display: flex;
+		}
+	}
 </style>
+
+<script>
+	// Reading progress across the article body. Kept out of React because it
+	// runs on every page and needs no state beyond a CSS width.
+	function initReadingProgress() {
+		const bar = document.getElementById('ck-read-bar');
+		const article = document.querySelector('.sl-markdown-content');
+		if (!bar) return;
+
+		if (!article) {
+			bar.style.width = '0';
+			return;
+		}
+
+		let queued = false;
+		const update = () => {
+			queued = false;
+			const rect = article.getBoundingClientRect();
+			const start = rect.top + window.scrollY;
+			const span = rect.height - window.innerHeight;
+			if (span <= 0) {
+				bar.style.width = '0';
+				return;
+			}
+			const pct = ((window.scrollY - start) / span) * 100;
+			bar.style.width = `${Math.min(100, Math.max(0, pct))}%`;
+		};
+
+		const onScroll = () => {
+			if (queued) return;
+			queued = true;
+			requestAnimationFrame(update);
+		};
+
+		window.addEventListener('scroll', onScroll, { passive: true });
+		window.addEventListener('resize', onScroll, { passive: true });
+		update();
+	}
+
+	initReadingProgress();
+	document.addEventListener('astro:page-load', initReadingProgress);
+</script>

@@ -1,0 +1,264 @@
+---
+/**
+ * CourseContents — the course outline, grouped by week.
+ *
+ * Weeks are the unit students plan around, and they are where ground and
+ * maneuver lessons interleave. Multi-part lessons list their parts beneath them
+ * so a reader sees "4 parts" rather than four unrelated pages.
+ */
+import CourseProgress from './CourseProgress.tsx';
+import { getCourseOutline, allPageIds } from '../lib/lessons';
+
+interface Props {
+	course: string;
+}
+
+const { course } = Astro.props;
+const weeks = await getCourseOutline(course);
+const pageIds = allPageIds(weeks);
+---
+
+{
+	weeks.length === 0 ? (
+		<p class="ck-cc-empty not-content">No lessons in this course yet.</p>
+	) : (
+		<>
+			<CourseProgress lessonIds={pageIds} client:load />
+
+			<div class="ck-cc not-content">
+				{weeks.map((week) => (
+					<section class="ck-cc-week">
+						<h2>Week {week.week}</h2>
+
+						<ul>
+							{week.lessons.map((lesson) => (
+								<li class="ck-cc-row">
+									<a
+										href={lesson.href}
+										class="ck-cc-item"
+										data-ck-lesson={lesson.parts.length === 0 ? lesson.href : undefined}
+									>
+										<span class:list={['ck-cc-kind', `is-${lesson.kind}`]}>{lesson.label}</span>
+										<span class="ck-cc-text">
+											<span class="ck-cc-title">{lesson.title}</span>
+											{lesson.description && <span class="ck-cc-desc">{lesson.description}</span>}
+											{lesson.parts.length > 0 && (
+												<span class="ck-cc-desc">
+													{lesson.parts.length} parts
+													{lesson.duration ? ` · ${lesson.duration}` : ''}
+												</span>
+											)}
+										</span>
+										{lesson.parts.length === 0 && lesson.duration && (
+											<span class="ck-cc-dur">{lesson.duration}</span>
+										)}
+									</a>
+
+									{lesson.parts.length > 0 && (
+										<ol class="ck-cc-parts">
+											{lesson.parts.map((part) => (
+												<li>
+													<a href={part.href} class="ck-cc-part" data-ck-lesson={part.href}>
+														<span class="ck-cc-partn">{part.part}</span>
+														<span>{part.title}</span>
+													</a>
+												</li>
+											))}
+										</ol>
+									)}
+								</li>
+							))}
+						</ul>
+					</section>
+				))}
+			</div>
+		</>
+	)
+}
+
+<script>
+	function markDone() {
+		let lessons: Record<string, string> = {};
+		try {
+			const raw = localStorage.getItem('ck-progress-v1');
+			if (raw) lessons = JSON.parse(raw).lessons ?? {};
+		} catch {
+			return;
+		}
+		for (const el of document.querySelectorAll('.ck-cc [data-ck-lesson]')) {
+			const id = el.getAttribute('data-ck-lesson');
+			if (id && lessons[id]) el.setAttribute('data-ck-done', '');
+			else el.removeAttribute('data-ck-done');
+		}
+	}
+	markDone();
+	document.addEventListener('astro:page-load', markDone);
+	window.addEventListener('ck:progress', markDone);
+	window.addEventListener('storage', markDone);
+</script>
+
+<style>
+	.ck-cc-week + .ck-cc-week {
+		margin-top: 2.25rem;
+	}
+
+	.ck-cc-week h2 {
+		margin: 0 0 0.75rem;
+		border: 0;
+		padding: 0;
+		font-size: 0.7rem
+		;
+		font-weight: 700;
+		letter-spacing: 0.1em;
+		text-transform: uppercase;
+		color: var(--color-text-muted);
+	}
+
+	.ck-cc ul {
+		list-style: none;
+		margin: 0;
+		padding: 0;
+		display: flex;
+		flex-direction: column;
+		gap: 0.6rem;
+	}
+
+	.ck-cc-row {
+		margin: 0;
+		border: 1px solid var(--color-border);
+		border-radius: var(--ck-r);
+		background: var(--color-canvas);
+		overflow: hidden;
+		transition: border-color 140ms ease, box-shadow 140ms ease;
+	}
+
+	.ck-cc-row:hover {
+		border-color: var(--color-border-strong);
+		box-shadow: var(--ck-shadow);
+	}
+
+	.ck-cc-item {
+		display: flex;
+		align-items: flex-start;
+		gap: 0.9rem;
+		padding: 1rem 1.15rem;
+		text-decoration: none;
+	}
+
+	.ck-cc-kind {
+		flex-shrink: 0;
+		min-width: 4.6rem;
+		padding: 0.18rem 0.5rem;
+		border-radius: 6px;
+		background: var(--color-accent-soft);
+		font-size: 0.6875rem;
+		font-weight: 700;
+		letter-spacing: 0.03em;
+		text-transform: uppercase;
+		text-align: center;
+		color: var(--color-accent);
+		white-space: nowrap;
+	}
+
+	/* Flight and sim lessons read differently at a glance from ground lessons. */
+	.ck-cc-kind.is-flight {
+		background: var(--color-ok-soft);
+		color: var(--color-ok);
+	}
+
+	.ck-cc-kind.is-sim {
+		background: var(--color-warn-soft);
+		color: var(--color-warn);
+	}
+
+	.ck-cc-text {
+		flex: 1;
+		min-width: 0;
+	}
+
+	.ck-cc-title {
+		display: block;
+		font-size: 1rem;
+		font-weight: 620;
+		letter-spacing: -0.01em;
+		color: var(--color-text-primary);
+		line-height: 1.4;
+	}
+
+	.ck-cc-item[data-ck-done] .ck-cc-title::after,
+	.ck-cc-part[data-ck-done]::after {
+		content: '✓';
+		margin-inline-start: 0.45rem;
+		font-size: 0.85rem;
+		font-weight: 700;
+		color: var(--color-ok);
+	}
+
+	.ck-cc-desc {
+		display: block;
+		margin-top: 0.3rem;
+		font-size: 0.8125rem;
+		line-height: 1.55;
+		color: var(--color-text-secondary);
+	}
+
+	.ck-cc-dur {
+		flex-shrink: 0;
+		font-size: 0.75rem;
+		color: var(--color-text-muted);
+		white-space: nowrap;
+		padding-top: 0.2rem;
+	}
+
+	.ck-cc-parts {
+		list-style: none;
+		margin: 0;
+		padding: 0 0.6rem 0.6rem 6.4rem;
+		gap: 0.1rem;
+	}
+
+	.ck-cc-part {
+		display: flex;
+		align-items: center;
+		gap: 0.6rem;
+		padding: 0.4rem 0.55rem;
+		border-radius: var(--ck-r-sm);
+		font-size: 0.875rem;
+		text-decoration: none;
+		color: var(--color-text-secondary);
+		transition: background 120ms ease, color 120ms ease;
+	}
+
+	.ck-cc-part:hover {
+		background: var(--color-canvas-subtle);
+		color: var(--color-text-primary);
+	}
+
+	.ck-cc-partn {
+		flex-shrink: 0;
+		width: 1.2rem;
+		height: 1.2rem;
+		display: grid;
+		place-items: center;
+		border-radius: 4px;
+		border: 1px solid var(--color-border);
+		background: var(--color-canvas-subtle);
+		font-size: 0.65rem;
+		font-weight: 700;
+		color: var(--color-text-muted);
+	}
+
+	.ck-cc-empty {
+		color: var(--color-text-muted);
+	}
+
+	@media (max-width: 34rem) {
+		.ck-cc-dur {
+			display: none;
+		}
+
+		.ck-cc-parts {
+			padding-left: 1.1rem;
+		}
+	}
+</style>

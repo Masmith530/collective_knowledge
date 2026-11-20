@@ -1,0 +1,173 @@
+---
+/**
+ * LessonHeader — a quiet meta line plus what the lesson is for.
+ *
+ * Deliberately small. An earlier version showed status chips, prerequisites and
+ * a boxed objectives panel, which was more furniture than anyone reads before
+ * getting to the lesson itself.
+ *
+ * For a multi-part lesson it also shows "Part 2 of 4", with the total counted
+ * from the collection rather than hand-written in frontmatter.
+ */
+import { getCollection, getEntry } from 'astro:content';
+import type { CollectionEntry } from 'astro:content';
+import { readingMinutes } from '../lib/reading-time';
+import { lessonLabel } from '../lib/lessons';
+
+type Lesson = NonNullable<CollectionEntry<'docs'>['data']['lesson']>;
+
+interface Props {
+	lesson: Lesson;
+}
+
+const { lesson } = Astro.props;
+
+// Reading time is computed from this page's own body. The id is the pathname
+// without its surrounding slashes, which is how the docs loader names entries.
+const selfId = Astro.url.pathname.replace(/^\/+|\/+$/g, '');
+const self = await getEntry('docs', selfId);
+const readingTime = self?.body ? readingMinutes(self.body) : undefined;
+
+// Count sibling parts so the page can say "Part 2 of 4" without that total
+// being duplicated into every part's frontmatter.
+let partLabel: string | undefined;
+if (lesson.part) {
+	const siblings = await getCollection(
+		'docs',
+		({ data }) =>
+			data.lesson?.course === lesson.course &&
+			data.lesson?.kind === lesson.kind &&
+			data.lesson?.kindNumber === lesson.kindNumber,
+	);
+	partLabel = `Part ${lesson.part} of ${siblings.length}`;
+}
+
+const meta = [
+	lessonLabel(lesson.kind, lesson.kindNumber),
+	partLabel,
+	`Week ${lesson.week}`,
+	readingTime ? `${readingTime} min read` : undefined,
+].filter(Boolean) as string[];
+---
+
+<div class="ck-lh not-content">
+	<p class="ck-lh-meta">
+		{
+			meta.map((m, i) => (
+				<>
+					{i > 0 && <span class="ck-lh-dot" aria-hidden="true">·</span>}
+					<span>{m}</span>
+				</>
+			))
+		}
+	</p>
+
+	{
+		lesson.lessonTitle && lesson.part && (
+			<p class="ck-lh-parent">
+				from <strong>{lesson.lessonTitle}</strong>
+			</p>
+		)
+	}
+</div>
+
+{
+	lesson.objectives.length > 0 && (
+		<details class="ck-lh-obj not-content">
+			<summary>
+				{lesson.part ? "What you'll be able to do after this part" : "What you'll be able to do after this lesson"}
+			</summary>
+			<ul>
+				{lesson.objectives.map((o) => (
+					<li>{o}</li>
+				))}
+			</ul>
+		</details>
+	)
+}
+
+<style>
+	.ck-lh {
+		margin: -0.75rem 0 1.5rem;
+	}
+
+	.ck-lh-meta {
+		display: flex;
+		flex-wrap: wrap;
+		align-items: center;
+		gap: 0.4rem;
+		margin: 0;
+		font-size: 0.8125rem;
+		font-weight: 500;
+		color: var(--color-text-muted);
+	}
+
+	.ck-lh-dot {
+		color: var(--color-border-strong);
+	}
+
+	.ck-lh-parent {
+		margin: 0.3rem 0 0;
+		font-size: 0.8125rem;
+		color: var(--color-text-muted);
+	}
+
+	.ck-lh-parent strong {
+		color: var(--color-text-secondary);
+		font-weight: 600;
+	}
+
+	.ck-lh-obj {
+		margin: 0 0 2rem;
+		border: 1px solid var(--color-border);
+		border-radius: var(--ck-r);
+		background: var(--color-canvas-subtle);
+		overflow: hidden;
+	}
+
+	.ck-lh-obj > summary {
+		padding: 0.7rem 1rem;
+		font-size: 0.875rem;
+		font-weight: 600;
+		color: var(--color-text-primary);
+		cursor: pointer;
+		list-style: none;
+		display: flex;
+		align-items: center;
+		gap: 0.5rem;
+	}
+
+	.ck-lh-obj > summary::-webkit-details-marker {
+		display: none;
+	}
+
+	.ck-lh-obj > summary::before {
+		content: '';
+		width: 0;
+		height: 0;
+		border-left: 5px solid currentColor;
+		border-top: 4px solid transparent;
+		border-bottom: 4px solid transparent;
+		color: var(--color-text-muted);
+		transition: transform 150ms ease;
+		flex-shrink: 0;
+	}
+
+	.ck-lh-obj[open] > summary::before {
+		transform: rotate(90deg);
+	}
+
+	.ck-lh-obj ul {
+		margin: 0;
+		padding: 0 1.25rem 0.9rem 2.2rem;
+		display: flex;
+		flex-direction: column;
+		gap: 0.35rem;
+	}
+
+	.ck-lh-obj li {
+		font-size: 0.875rem;
+		line-height: 1.6;
+		color: var(--color-text-secondary);
+	}
+</style>

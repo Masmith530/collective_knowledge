@@ -1,0 +1,148 @@
+---
+/**
+ * LessonAudio — the companion recording for a lesson.
+ *
+ * A plain `<audio>` element. No player library, no embed, no third party: an
+ * embed from a podcast host or YouTube would hand the reader to someone else's
+ * tracker, and this site does not do that. The browser's own controls are
+ * accessible, keyboard-operable and free.
+ *
+ * The file is served from `public/`, which on Cloudflare Pages means a hard
+ * **25 MiB per-file cap**. Recordings are therefore audio-only (talk content —
+ * video is wasted bytes) and encoded accordingly. See `docs/media.md`.
+ *
+ * The build fails if the referenced file is missing, rather than shipping a
+ * player that 404s on click.
+ */
+import { existsSync, statSync } from 'node:fs';
+import { join } from 'node:path';
+import { MEDIA_IS_LOCAL, mediaUrl } from '../lib/media';
+
+interface Props {
+	/** Path under `public/`, e.g. `/audio/private-helicopter/ground-2.mp3`. */
+	src: string;
+	/** Human-readable length, e.g. "18 min". */
+	duration?: string;
+	/** Note when the recording covers more than this page, e.g. "all four parts". */
+	covers?: string;
+	title?: string;
+}
+
+const { src, duration, covers, title = 'Listen to this lesson' } = Astro.props;
+
+const href = mediaUrl(src);
+
+// These checks only apply while media ships from this repo. Once MEDIA_BASE
+// points at R2 the file is not on disk at build time and cannot be inspected.
+let sizeLabel: string | undefined;
+
+if (MEDIA_IS_LOCAL) {
+	const publicPath = join(process.cwd(), 'public', src.replace(/^\//, ''));
+
+	if (!existsSync(publicPath)) {
+		throw new Error(
+			`LessonAudio: no file at public${src}. Add the recording there, or remove the ` +
+				`\`audio\` block from this lesson's frontmatter. See docs/media.md for how to encode it.`,
+		);
+	}
+
+	// 25 MiB is Cloudflare Pages' per-file limit on every plan. Catching it here
+	// is far clearer than a failed deploy later.
+	const LIMIT = 25 * 1024 * 1024;
+	const bytes = statSync(publicPath).size;
+	if (bytes > LIMIT) {
+		throw new Error(
+			`LessonAudio: public${src} is ${(bytes / 1024 / 1024).toFixed(1)} MiB, over Cloudflare Pages' ` +
+				`25 MiB per-file limit. Re-encode it smaller, or move media to R2 — see docs/media.md.`,
+		);
+	}
+
+	sizeLabel = `${(bytes / 1024 / 1024).toFixed(1)} MB`;
+}
+---
+
+<figure class="ck-audio not-content">
+	<figcaption>
+		<span class="ck-audio-label">
+			<svg
+				width="15"
+				height="15"
+				viewBox="0 0 24 24"
+				fill="none"
+				stroke="currentColor"
+				stroke-width="2"
+				stroke-linecap="round"
+				stroke-linejoin="round"
+				aria-hidden="true"
+			>
+				<path d="M3 18v-6a9 9 0 0 1 18 0v6"></path>
+				<path d="M21 19a2 2 0 0 1-2 2h-1a2 2 0 0 1-2-2v-3a2 2 0 0 1 2-2h3zM3 19a2 2 0 0 0 2 2h1a2 2 0 0 0 2-2v-3a2 2 0 0 0-2-2H3z"></path>
+			</svg>
+			{title}
+		</span>
+		<span class="ck-audio-meta">
+			{[duration, sizeLabel].filter(Boolean).join(' · ')}
+		</span>
+	</figcaption>
+
+	<audio controls preload="metadata" src={href}>
+		Your browser can't play audio. <a href={href} download>Download the recording</a> instead.
+	</audio>
+
+	<p class="ck-audio-note">
+		{covers ? `Covers ${covers}. ` : ''}The written lesson below is the same material — read
+		it, listen to it, or both.
+	</p>
+</figure>
+
+<style>
+	.ck-audio {
+		margin: 0 0 2rem;
+		padding: 1.1rem 1.3rem;
+		border: 1px solid var(--color-border);
+		border-radius: var(--ck-r);
+		background: var(--color-canvas-subtle);
+	}
+
+	.ck-audio figcaption {
+		display: flex;
+		align-items: center;
+		justify-content: space-between;
+		flex-wrap: wrap;
+		gap: 0.5rem;
+		margin-bottom: 0.75rem;
+	}
+
+	.ck-audio-label {
+		display: flex;
+		align-items: center;
+		gap: 0.45rem;
+		font-size: 0.875rem;
+		font-weight: 650;
+		color: var(--color-text-primary);
+	}
+
+	.ck-audio-label svg {
+		color: var(--color-accent);
+		flex-shrink: 0;
+	}
+
+	.ck-audio-meta {
+		font-size: 0.75rem;
+		color: var(--color-text-muted);
+		font-variant-numeric: tabular-nums;
+	}
+
+	.ck-audio audio {
+		display: block;
+		width: 100%;
+		height: 38px;
+	}
+
+	.ck-audio-note {
+		margin: 0.75rem 0 0;
+		font-size: 0.8125rem;
+		line-height: 1.6;
+		color: var(--color-text-secondary);
+	}
+</style>

@@ -1,0 +1,16 @@
+# Cloudflare Pages header rules. Applied to the static site at the edge.
+# Free tier — these cost nothing.
+
+/*
+  X-Content-Type-Options: nosniff
+  X-Frame-Options: DENY
+  Referrer-Policy: strict-origin-when-cross-origin
+  Permissions-Policy: geolocation=(), microphone=(), camera=()
+
+# Astro fingerprints these filenames, so they can be cached indefinitely.
+/_astro/*
+  Cache-Control: public, max-age=31536000, immutable
+
+# Pagefind's search index is regenerated each build and is not fingerprinted.
+/pagefind/*
+  Cache-Control: public, max-age=3600, must-revalidate

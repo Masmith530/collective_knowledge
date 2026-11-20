@@ -1,0 +1,40 @@
+---
+/**
+ * QuizBlock — looks a quiz up in the `quizzes` collection and hands it to the
+ * Quiz island.
+ *
+ * Content collections are server-only, so the lookup happens here and only the
+ * question data crosses into the browser. The lesson's own URL is passed through
+ * as the progress key, which is what lets the sidebar tick and the course
+ * progress bar find it without a shared registry.
+ */
+import { getEntry } from 'astro:content';
+import Quiz from './Quiz.tsx';
+
+interface Props {
+	/** Path of the YAML file under `src/content/quizzes`, without the extension. */
+	slug: string;
+	title?: string;
+}
+
+const { slug, title } = Astro.props;
+
+const entry = await getEntry('quizzes', slug);
+
+if (!entry) {
+	throw new Error(
+		`QuizBlock: no quiz found at src/content/quizzes/${slug}.yaml. ` +
+			`Create that file, or remove the <QuizBlock slug="${slug}" /> that asked for it.`,
+	);
+}
+
+const lessonId = Astro.url.pathname;
+---
+
+<Quiz
+	title={title ?? entry.data.title}
+	questions={entry.data.questions}
+	slug={slug}
+	lessonId={lessonId}
+	client:visible
+/>

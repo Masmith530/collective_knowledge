@@ -1,0 +1,28 @@
+---
+/**
+ * ThemeProvider override.
+ *
+ * Starlight's own provider falls back to the OS `prefers-color-scheme`, which
+ * meant anyone on a dark desktop got the dark site. Light is this site's
+ * default, so the only thing that selects dark is an explicit choice by the
+ * reader, stored under `starlight-theme`.
+ *
+ * The script is inline and runs before first paint to avoid a flash of the
+ * wrong theme. `:root` in global.css is already the light palette, so even with
+ * JavaScript disabled the page renders correctly.
+ */
+---
+
+<script is:inline>
+	(() => {
+		const stored = (() => {
+			try {
+				return localStorage.getItem('starlight-theme');
+			} catch {
+				return null;
+			}
+		})();
+		// Light unless the reader has explicitly chosen dark.
+		document.documentElement.dataset.theme = stored === 'dark' ? 'dark' : 'light';
+	})();
+</script>

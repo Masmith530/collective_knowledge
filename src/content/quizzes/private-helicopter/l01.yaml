@@ -1,0 +1,73 @@
+title: Check Yourself — Introduction to the Course
+lesson: private-helicopter/l01
+questions:
+  - q: A school tells you they can take you from zero to a Private Pilot — Helicopter certificate in six weeks. What should you conclude?
+    choices:
+      - text: They run an efficient full-time program and this is achievable.
+      - text: They are cutting corners, and corners cut in aviation are a safety problem.
+        correct: true
+      - text: It is achievable only under Part 61.
+      - text: It is achievable if you skip ground training.
+    explain: >-
+      The fastest reasonable full-time completion is about 2.5 to 3 months, and that
+      requires treating training as a full-time profession. The FAA's published
+      national average is just over 70 flight hours. A six-week claim means
+      something is being skipped, and your goal is to be a safe, competent pilot —
+      no amount of time saved is worth more than that.
+    reference: Lesson 1, "Let's Be Honest About This Program"
+
+  - q: You enroll under Part 61 instead of Part 141 specifically to avoid the required ground hours. What actually happens to your total cost?
+    choices:
+      - text: It goes down, because ground instruction is no longer required.
+      - text: It stays about the same.
+      - text: It goes up, largely because Part 61 requires 5 additional hours of solo flight.
+        correct: true
+      - text: It depends entirely on the school's hourly rate.
+    explain: >-
+      Part 61 requires 5 more hours of solo time, and helicopter rental costs more
+      per hour than ground instruction — that alone exceeds the entire Part 141
+      ground requirement. Part 61 also does not remove the obligation to receive
+      and log ground training on the required subject areas; it only removes the
+      hour requirement attached to it.
+    reference: 14 CFR 61.109(c); Lesson 1, Misconception #2
+
+  - q: Roughly how many hours per week should you set aside to make steady progress in a part-time private program?
+    choices:
+      - text: 5 to 10 hours
+      - text: 10 to 15 hours
+      - text: 20 to 30 hours
+        correct: true
+      - text: 50 or more hours
+    explain: >-
+      Less than 20 to 30 hours a week leads to slow or inadequate progress, which
+      makes the program longer and more expensive. There is also a point where you
+      are doing too much to learn effectively, so the goal is the sweet spot.
+    reference: Lesson 1, "Tracking Your Progress"
+
+  - q: What is your first and only focus after starting private pilot training?
+    choices:
+      - text: The written exam
+      - text: Solo — the knowledge, flight skills, pre-solo written and review, and pre-solo evaluation
+        correct: true
+      - text: The cross-country requirement
+      - text: Accumulating 70 flight hours
+    explain: >-
+      The big picture is broken into milestones because looking at the whole
+      certificate at once is too much. Solo comes first. Cross-country and the
+      remaining minimums, then proficiency and remaining tests, then the practical
+      exam, come after.
+    reference: Lesson 1, "Your Training Plan"
+
+  - q: A flight is cancelled for maintenance and you left your books at home. What did that cost you?
+    choices:
+      - text: Nothing — cancellations are not your responsibility.
+      - text: A ground lesson you could have completed in that block.
+        correct: true
+      - text: Only the flight time.
+      - text: A logbook endorsement.
+    explain: >-
+      Cancellations for weather and maintenance are a routine part of aviation. A
+      student who brings all ground and flight materials to every session can
+      convert a scrubbed flight into a ground lesson. Otherwise the block becomes
+      study time at best.
+    reference: Lesson 1, "A Few Final Words"
