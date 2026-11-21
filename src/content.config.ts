@@ -127,8 +127,43 @@ const lesson = z.object({
 const topic = z.object({
 	/** Handbook category, e.g. `systems`, `aerodynamics`, `weather`. */
 	category: z.string(),
-	/** Set only when the article is specific to one aircraft, e.g. `r22`. */
+	/**
+	 * Set only when the article is specific to one aircraft, e.g. `r22` — it
+	 * must match a slug in `src/lib/airframes.ts`.
+	 *
+	 * This is what puts the article under "Robinson R22" inside its subject
+	 * area instead of in the area's general list. Use it when the content is
+	 * true of that aircraft and not of helicopters at large: its limits, its
+	 * governor behaviour, its safety notices. A swashplate article that happens
+	 * to use an R22 as its example is still general.
+	 */
 	airframe: z.string().optional(),
+
+	/**
+	 * Groups the pages of a split article, the way `kind` + `kindNumber` groups
+	 * a lesson's parts. Every part and the overview page carry the same value.
+	 *
+	 * A long reference article is split for the same reason a long lesson is:
+	 * so a reader can land on the bit they came for. Omit it on a single-page
+	 * article.
+	 */
+	article: z.string().optional(),
+
+	/** Which part of a split article this page is, 1-based. */
+	part: z.number().int().positive().optional(),
+
+	/**
+	 * The umbrella article title, used when the article is split into parts.
+	 * The page's own `title` is then the part's title.
+	 */
+	articleTitle: z.string().optional(),
+
+	/**
+	 * Marks this page as a split article's landing page rather than one of its
+	 * parts — same role as `lesson.overview`. Everything linking to the article
+	 * points here. Carries no `part`.
+	 */
+	overview: z.boolean().default(false),
 	/** Reading order within the category. Articles stand alone, but a sensible
 	    first-to-last order still helps someone working through a category. */
 	order: z.number().int().nonnegative().default(0),

@@ -27,7 +27,7 @@ const { lesson } = Astro.props;
 const selfId = Astro.url.pathname.replace(/^\/+|\/+$/g, '');
 const self = await getEntry('docs', selfId);
 // An overview page is a few lines of framing plus a list of its parts, so its
-// own reading time is both tiny and misleading. `LessonParts` states the total
+// own reading time is both tiny and misleading. `PartList` states the total
 // for the lesson, which is the number that actually helps.
 const readingTime = lesson.overview || !self?.body ? undefined : readingMinutes(self.body);
 

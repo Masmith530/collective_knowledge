@@ -13,21 +13,31 @@
  * worth reading; with six areas and forty articles it is how someone sees at a
  * glance where the depth is, so it is here from the start rather than retrofitted.
  */
-import { getCollection } from 'astro:content';
-import { SUBJECT_AREAS } from '../lib/subjects';
+import { SUBJECT_AREAS, getSubjectOutline } from '../lib/subjects';
 import { listSentence } from '../lib/format';
 
-const articles = (await getCollection('docs', ({ data }) => Boolean(data.topic))).sort(
-	(a, b) => a.data.topic!.order - b.data.topic!.order,
-);
+const outline = await getSubjectOutline();
 
-const areas = SUBJECT_AREAS.map((area) => ({
-	...area,
-	items: articles.filter((a) => a.data.topic!.category === area.slug),
-}));
+const areas = SUBJECT_AREAS.map((area) => {
+	const built = outline.find((o) => o.slug === area.slug);
+	return {
+		...area,
+		groups: built?.groups ?? [],
+		count: (built?.groups ?? []).reduce((n, g) => n + g.articles.length, 0),
+	};
+});
 
-const filled = areas.filter((a) => a.items.length > 0);
-const planned = areas.filter((a) => a.items.length === 0);
+/*
+ * A group heading is noise when there is only one group and it is the general
+ * one — "General" above a list is a label for nothing. It earns its place the
+ * moment an area holds both general and airframe-specific articles, which is
+ * the distinction a reader most needs to see.
+ */
+const showGroupHeadings = (groups: { general: boolean }[]) =>
+	groups.length > 1 || !groups[0]?.general;
+
+const filled = areas.filter((a) => a.count > 0);
+const planned = areas.filter((a) => a.count === 0);
 ---
 
 <div class="ck-sx not-content">
@@ -38,21 +48,35 @@ const planned = areas.filter((a) => a.items.length === 0);
 					<h2>
 						{area.label}
 						<span class="ck-sx-count">
-							{area.items.length} article{area.items.length === 1 ? '' : 's'}
+							{area.count} article{area.count === 1 ? '' : 's'}
 						</span>
 					</h2>
 					<p>{area.blurb}</p>
 				</div>
-				<ul>
-					{area.items.map((item) => (
-						<li>
-							<a href={`/${item.id}/`} data-ck-lesson={`/${item.id}/`}>
-								<span class="ck-sx-title">{item.data.title}</span>
-								{item.data.description && <span class="ck-sx-desc">{item.data.description}</span>}
-							</a>
-						</li>
-					))}
-				</ul>
+
+				{area.groups.map((group) => (
+					<div class="ck-sx-group">
+						{showGroupHeadings(area.groups) && <h3 class="ck-sx-gh">{group.label}</h3>}
+						<ul>
+							{group.articles.map((item) => (
+								<li>
+									<a
+										href={item.href}
+										data-ck-lesson={item.parts.length === 0 ? item.href : undefined}
+									>
+										<span class="ck-sx-title">
+											{item.title}
+											{item.parts.length > 0 && (
+												<span class="ck-sx-parts">{item.parts.length} parts</span>
+											)}
+										</span>
+										{item.description && <span class="ck-sx-desc">{item.description}</span>}
+									</a>
+								</li>
+							))}
+						</ul>
+					</div>
+				))}
 			</section>
 		))
 	}
@@ -152,6 +176,29 @@ const planned = areas.filter((a) => a.items.length === 0);
 		font-weight: 620;
 		letter-spacing: -0.01em;
 		color: var(--color-text-primary);
+	}
+
+	/* The airframe (or "General") inside a subject area. Quieter than the area
+	   heading above it and louder than an article title below, so the three
+	   levels read as three levels. */
+	.ck-sx-gh {
+		margin: 1.1rem 0 0.4rem;
+		font-size: 0.75rem;
+		font-weight: 700;
+		letter-spacing: 0.08em;
+		text-transform: uppercase;
+		color: var(--color-text-muted);
+	}
+
+	.ck-sx-group:first-of-type .ck-sx-gh {
+		margin-top: 0;
+	}
+
+	.ck-sx-parts {
+		margin-inline-start: 0.5rem;
+		font-size: 0.75rem;
+		font-weight: 600;
+		color: var(--color-text-muted);
 	}
 
 	.ck-sx-area a[data-ck-done] .ck-sx-title::after {

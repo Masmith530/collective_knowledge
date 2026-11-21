@@ -1,0 +1,100 @@
+---
+title: Your Plan and Your First Session
+description: How the training plan is built, what training will actually feel like, the paperwork for your first session, and the publications and equipment you will need.
+sidebar:
+  order: 12
+lesson:
+  course: private-helicopter
+  week: 1
+  order: 1
+  kind: ground
+  kindNumber: 1
+  lessonTitle: Introduction to the Course
+  status: draft
+  part: 2
+  objectives:
+    - List the administrative items required before training begins
+    - Identify the publications and equipment used throughout the course
+  standards:
+    - Student arrives with identity, citizenship, and medical documentation in hand
+    - Student and instructor have agreed a written training plan with milestones
+  references:
+    - FAA-H-8083-21 Helicopter Flying Handbook
+    - FAA-H-8083-25 Pilot's Handbook of Aeronautical Knowledge
+  quiz: private-helicopter/l01
+---
+
+import KeyNotes from '@components/KeyNotes.astro';
+import Homework from '@components/Homework.astro';
+import QuizBlock from '@components/QuizBlock.astro';
+import LessonHeader from '@components/LessonHeader.astro';
+import LessonProgress from '@components/LessonProgress.tsx';
+
+<LessonHeader lesson={frontmatter.lesson} />
+
+## Your Training Plan
+
+In your first session, you and your instructor will start building your plan. Here’s how it comes together.
+
+**1. The big picture.** Your Part 141 TCO minimums or Part 61 minimums serve as your checklist. Your plan will also include every endorsement leading up to your practical exam and every test you’ll take: the written exam, stage checks, end-of-course tests, and the practical exam itself.
+
+**2. Milestones and short-term goals.** The big picture gets broken into milestones with progress checks along the way. For private, the first goal is solo. That should be your initial and _only_ focus: the knowledge and flight skills, the pre-solo written and review, and the pre-solo evaluation. Looking at the whole picture at once is too much. After solo, you’ll work toward cross-country and the other minimums, then proficiency and remaining tests, and finally the practical exam.
+
+**3. Put it on paper.** Your plan should be something you can review consistently. Progress is tracked by comparing the flight and ground time used against what’s left, over the time that’s left, to confirm your weekly schedule is still feasible. For private, expect to fly 3-5 times per week with several ground sessions on top of that.
+
+## What Training Will Feel Like
+
+Fun. Excitement. Frustration. Doubt. All of these are a normal part of making it through. Your instructor is there to make training enjoyable and challenging, to make sure you’re progressing consistently, and to tell you honestly whether you are.
+
+## A Few Final Words
+
+- **Be consistent.** Both frequency (how often you train) and recency (how long since you last trained) make a big difference in learning. Gaps and inconsistency will cost you.
+- **Find your people.** Form a small study group if you can, or join one online. Group learning improves retention and keeps motivation up.
+- **Be ready for anything.** Cancellations are a regular part of aviation, no matter the school or sector. Bring all your ground and flight materials to every session. You _will_ have flights cancelled for maintenance, weather, and more. If you’re prepared and a ground session is due, you may be able to use that time. Otherwise, use the block as study time.
+- **Develop a pilot-in-command mentality early.** After an initial amount of flight training, your instructor will expect you to handle flight duties to the extent you’ve learned them. You’ll be operating the aircraft alone in the near future, and your instructor won’t always be there. The sooner you start working toward self-sufficiency, the better off you’ll be, all the way through the end of training.
+- **Protect your reputation.** Aviation is a very small industry, and your reputation travels with you. Your attitude will be noticed as you progress, and it can be the difference between being hirable and struggling to find your first job, or later jobs. The recipe is simple: be professional and polite. Attitude is arguably more important than absolute mastery.
+
+## Administrative Tasks for Your First Session
+
+Your instructor will walk you through the paperwork. Here’s what to expect so you can come prepared:
+
+- **Student pilot certificate:** Your instructor will help you complete the application.
+- **TSA documents:** These will be verified to make sure they’re valid, and any records required by regulation will be kept. Bring the documents you’ll need to prove your identity and citizenship status.
+- **Medical certificate:** Your instructor will make sure your medical is valid, or guide you through the process of getting one. There’s no point in getting started only to find out you’ve been denied a medical that could take months or years to resolve. If you have any concerns about your health history, raise them early.
+- **Tour:** You’ll get a walk-through of the operation so you know where to go for ground sessions, flights, and any simulators, and how to show up and prepare for each event.
+
+## Preparing for Training
+
+Here are the official materials you’ll use throughout the course:
+
+- **RFM/POH:** the Rotorcraft Flight Manual / Pilot’s Operating Handbook, essentially the owner’s manual for your helicopter. If you fly Robinsons, their flight manuals are free on their website.
+- **FAR/AIM:** the regulations (the rules you’re legally bound by) combined with the Aeronautical Information Manual, which contains information you’ll see here and in other books.
+- **Handbooks:** the Helicopter Flying Handbook and the Pilot’s Handbook of Aeronautical Knowledge. Later you’ll add the Aviation Weather Handbook and more.
+- **Headset:** you’ll need an adequate one. Bose or Lightspeed are recommended, and yes, it makes a difference.
+
+You can access most of these materials for free on the FAA’s website. Your school will also provide its curriculum, safety procedures, and any other resources it uses.
+
+Come to your first session ready to talk, ask questions, and start building habits that will carry you through the program.
+
+<KeyNotes>
+- **Frequency and recency both matter.** Expect to fly 3–5 times per week for private, with ground sessions on top.
+- **First goal is solo — nothing else.** Knowledge, flight skills, the pre-solo written and review, and the pre-solo evaluation. Cross-country and the remaining minimums come after.
+- **Bring every book and document to every session.** Cancellations are routine; a prepared student converts a scrubbed flight into a ground lesson.
+- **Sort the medical before you spend money.** A denial can take months or years to resolve, and it is the one thing that can stop the whole program.
+</KeyNotes>
+
+## Review
+
+<Homework due="Before your first session">
+1. Gather your **identity and citizenship documents** for TSA verification.
+2. Confirm your **medical certificate** is valid, or start the application. Raise any health history concerns with your instructor *now*, not after you have paid for training.
+3. Download the free FAA publications: the **Helicopter Flying Handbook (FAA-H-8083-21)** and the **Pilot's Handbook of Aeronautical Knowledge (FAA-H-8083-25)**.
+4. Download the **RFM/POH** for the helicopter you will fly. Robinson publishes theirs free.
+5. Get a **FAR/AIM** — current edition, paper or digital.
+6. Write down **why you are here** and what you want out of aviation. Your instructor will ask, and the answer shapes your training plan.
+7. Block out your weekly training hours on a real calendar and bring it. You and your instructor will build the training plan around it.
+</Homework>
+
+<QuizBlock slug="private-helicopter/l01" />
+
+<LessonProgress lessonId="/curriculum/private-helicopter/l01p2-your-plan-and-first-session/" client:load />

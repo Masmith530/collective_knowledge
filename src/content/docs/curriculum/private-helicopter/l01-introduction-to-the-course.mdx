@@ -9,7 +9,9 @@ lesson:
   order: 1
   kind: ground
   kindNumber: 1
+  lessonTitle: Introduction to the Course
   status: draft
+  overview: true
   duration: 1–2 hr ground
   objectives:
     - Describe what happens in a first instructional session and arrive prepared for it
@@ -28,143 +30,12 @@ lesson:
   quiz: private-helicopter/l01
 ---
 
-import KeyNotes from '@components/KeyNotes.astro';
-import Homework from '@components/Homework.astro';
-import QuizBlock from '@components/QuizBlock.astro';
 import LessonHeader from '@components/LessonHeader.astro';
-import LessonProgress from '@components/LessonProgress.tsx';
+import PartList from '@components/PartList.astro';
 
 <LessonHeader lesson={frontmatter.lesson} />
 
-Your first session with your instructor won’t involve any actual ground training. That surprises some students, but it’s intentional. This session is about getting to know each other, going over the course as a whole, and setting expectations so you build habits that lead to success from the very start.
+Read both parts before your first session. The second one ends with the
+paperwork and the book list, which is what you need to bring with you.
 
-Plan on talking. Your instructor will want to know why you’re here and what got you into aviation. You’ll get a course overview, a conversation about what’s expected of you and what you can expect in return, and the administrative tasks required to get you started. This lesson walks you through all of it so you show up prepared.
-
-## Let’s Be Honest About This Program
-
-This is not an easy program. It can be a lot of fun, but it asks you to learn an immense amount in a very short time. The industry calls it “knowledge through a firehose,” and in my experience as an instructor, that has held true every single time.
-
-Before you start, I want to clear up two misconceptions I see constantly. Both are 100% false.
-
-**Misconception #1: “I can accelerate the program and get the same depth of skill and knowledge.”**
-
-Here’s what Private Pilot – Helicopter realistically looks like:
-
-- **Part-time (20-30 hours per week set aside for training):** about 4-5 months on average, with roughly 65 hours of ground and 65 hours of flight. The FAA’s published national average is just over 70 flight hours for private. There is no published average for ground hours.
-- **Full-time (40-50 hours per week):** you can shorten that timeline. The fastest reasonable completion is 2.5 to 3 months, and it takes basically living at the flight school and studying like it’s your profession. I’ve seen both approaches work very successfully.
-
-What is _not_ reasonable is finishing private in 1-2 months and in fewer hours. If a school tells you otherwise, they’re cutting corners, and cutting corners in aviation is a deadly path. Your goal is to become a safe, competent pilot. No amount of time saved is worth more than that.
-
-**Misconception #2: “I can study ground on my own and save money.”**
-
-This is also false in every case, and anyone who tells you differently is, again, cutting corners.
-
-If you’re in a Part 141 program, you might be tempted to enroll under Part 61 to avoid the required 141 ground hours. That actually costs you _more_, and most students don’t realize it. Here’s why:
-
-1. **Part 61 requires 5 additional hours of solo time.** Helicopter rental isn’t cheap. That alone costs more than the entire 141 ground requirement.
-2. **Part 61 does not mean you skip ground training.** It just doesn’t attach an hour requirement to it. Your instructor is still required to teach and log ground training on specific subject areas. There’s no required amount per subject, but there is still _some_ amount required.
-3. **Your instructor can’t recommend you for a practical exam until they determine you’re proficient and prepared.** That means they need to be comfortable with the depth of _your_ knowledge, and that takes ground time.
-4. **Every single flight includes ground instruction.** Preflight systems quizzing and post-flight debriefs are ground instruction. Don’t discount them.
-5. **You’ll be evaluated either way.** Pre-solo evaluations, end-of-course evaluations in preparation for your checkride, and reviews along the way add up. Under either part, the total will _always_ exceed the required 141 ground time.
-
-You are not saving money by studying on your own and skipping ground with your instructor. Again, the average ground time for private completion is approximately 65 hours.
-
-## Self-Study Still Matters
-
-None of this means you shouldn’t self-study. Self-study is required to complete private, regardless of the part you train under. Whether you use free official resources or pay for additional study software, it will only help you. For the FAA written exam in particular, commercial test prep software remains the best method.
-
-But the role of self-study is to _prepare_ you, not to replace ground training. Your instructor’s job is to expand your knowledge. You’ll learn faster, and retain more, if you study ahead and use your session time for review, discussion, scenarios, and questions rather than sitting through a lecture. I’ve seen students come in expecting to self-study their way through, and they were quickly humbled. The standards for certification are a high bar, and getting there takes a lot of effort combined with good instruction.
-
-## Why Expectations Matter
-
-Most people have no idea what it takes to become a professional pilot. Reddit and other forums, friends and family, and age-old industry myths can all give you a false picture. Our goal from the very beginning is to give you an honest, realistic one, because that’s what lets you and your instructor build a realistic training plan and completion date.
-
-Every student is different. The hours and timelines above are averages, and that’s all they are. Some people finish faster and in fewer hours. Some take longer and need more hours, or any combination of the two. Your training plan will be built on averages and adjusted as you go.
-
-That means you should always know where you stand compared to where you should be at this point in training. Your instructor won’t sugarcoat a lack of progress. If you’re behind standards, you’ll hear about it, and improvement steps start immediately, along with an updated training plan and cost analysis. If you turn out to be a slower learner, the program may cost you more overall. That’s why it’s so important to dedicate at _least_ 20-30 hours a week to this program. Any less leads to slow or inadequate progress, and a longer, more costly program. There’s also a point where you’re doing _too much_ to learn effectively. The goal is to land in the sweet spot and adjust if needed.
-
-## What We Expect of Each Other
-
-Your instructor will give you 110%, and they expect the same from you.
-
-**What you can expect from your instructor:**
-
-- Clear debriefs after every session
-- Clear direction on what to study and prepare for next
-- Coordination of your training schedule, including rescheduling flights after cancellations, to keep you on your agreed training plan
-- Training that is fun and challenging, with honest feedback on your progress
-
-**What your instructor expects from you:**
-
-- Study between sessions
-- Questions, consistently, throughout training
-- Arrive 30-45 minutes before flights to prepare
-- Arrive 10 minutes early and prepared for ground sessions
-- Show up to every scheduled event, barring extraordinary circumstances like illness
-
-## Your Training Plan
-
-In your first session, you and your instructor will start building your plan. Here’s how it comes together.
-
-**1. The big picture.** Your Part 141 TCO minimums or Part 61 minimums serve as your checklist. Your plan will also include every endorsement leading up to your practical exam and every test you’ll take: the written exam, stage checks, end-of-course tests, and the practical exam itself.
-
-**2. Milestones and short-term goals.** The big picture gets broken into milestones with progress checks along the way. For private, the first goal is solo. That should be your initial and _only_ focus: the knowledge and flight skills, the pre-solo written and review, and the pre-solo evaluation. Looking at the whole picture at once is too much. After solo, you’ll work toward cross-country and the other minimums, then proficiency and remaining tests, and finally the practical exam.
-
-**3. Put it on paper.** Your plan should be something you can review consistently. Progress is tracked by comparing the flight and ground time used against what’s left, over the time that’s left, to confirm your weekly schedule is still feasible. For private, expect to fly 3-5 times per week with several ground sessions on top of that.
-
-## What Training Will Feel Like
-
-Fun. Excitement. Frustration. Doubt. All of these are a normal part of making it through. Your instructor is there to make training enjoyable and challenging, to make sure you’re progressing consistently, and to tell you honestly whether you are.
-
-## A Few Final Words
-
-- **Be consistent.** Both frequency (how often you train) and recency (how long since you last trained) make a big difference in learning. Gaps and inconsistency will cost you.
-- **Find your people.** Form a small study group if you can, or join one online. Group learning improves retention and keeps motivation up.
-- **Be ready for anything.** Cancellations are a regular part of aviation, no matter the school or sector. Bring all your ground and flight materials to every session. You _will_ have flights cancelled for maintenance, weather, and more. If you’re prepared and a ground session is due, you may be able to use that time. Otherwise, use the block as study time.
-- **Develop a pilot-in-command mentality early.** After an initial amount of flight training, your instructor will expect you to handle flight duties to the extent you’ve learned them. You’ll be operating the aircraft alone in the near future, and your instructor won’t always be there. The sooner you start working toward self-sufficiency, the better off you’ll be, all the way through the end of training.
-- **Protect your reputation.** Aviation is a very small industry, and your reputation travels with you. Your attitude will be noticed as you progress, and it can be the difference between being hirable and struggling to find your first job, or later jobs. The recipe is simple: be professional and polite. Attitude is arguably more important than absolute mastery.
-
-## Administrative Tasks for Your First Session
-
-Your instructor will walk you through the paperwork. Here’s what to expect so you can come prepared:
-
-- **Student pilot certificate:** Your instructor will help you complete the application.
-- **TSA documents:** These will be verified to make sure they’re valid, and any records required by regulation will be kept. Bring the documents you’ll need to prove your identity and citizenship status.
-- **Medical certificate:** Your instructor will make sure your medical is valid, or guide you through the process of getting one. There’s no point in getting started only to find out you’ve been denied a medical that could take months or years to resolve. If you have any concerns about your health history, raise them early.
-- **Tour:** You’ll get a walk-through of the operation so you know where to go for ground sessions, flights, and any simulators, and how to show up and prepare for each event.
-
-## Preparing for Training
-
-Here are the official materials you’ll use throughout the course:
-
-- **RFM/POH:** the Rotorcraft Flight Manual / Pilot’s Operating Handbook, essentially the owner’s manual for your helicopter. If you fly Robinsons, their flight manuals are free on their website.
-- **FAR/AIM:** the regulations (the rules you’re legally bound by) combined with the Aeronautical Information Manual, which contains information you’ll see here and in other books.
-- **Handbooks:** the Helicopter Flying Handbook and the Pilot’s Handbook of Aeronautical Knowledge. Later you’ll add the Aviation Weather Handbook and more.
-- **Headset:** you’ll need an adequate one. Bose or Lightspeed are recommended, and yes, it makes a difference.
-
-You can access most of these materials for free on the FAA’s website. Your school will also provide its curriculum, safety procedures, and any other resources it uses.
-
-Come to your first session ready to talk, ask questions, and start building habits that will carry you through the program.
-
-<KeyNotes>
-- **Part-time (20–30 hr/week): 4–5 months**, roughly 65 hours ground and 65 hours flight. **Full-time (40–50 hr/week): 2.5–3 months** at the fastest reasonable pace. Anything shorter means corners are being cut.
-- **Part 61 does not let you skip ground training.** It removes the hour *requirement*, not the obligation — and it adds 5 hours of solo flight, which costs more than the Part 141 ground requirement it was meant to avoid.
-- **Your instructor cannot recommend you for a practical exam** until they have determined you are proficient and prepared. That determination takes ground time with them.
-- **Frequency and recency both matter.** Expect to fly 3–5 times per week for private, with ground sessions on top.
-- **First goal is solo — nothing else.** Knowledge, flight skills, the pre-solo written and review, and the pre-solo evaluation. Cross-country and the remaining minimums come after.
-- **Bring every book and document to every session.** Cancellations are routine; a prepared student converts a scrubbed flight into a ground lesson.
-</KeyNotes>
-
-<Homework due="Before your first session">
-1. Gather your **identity and citizenship documents** for TSA verification.
-2. Confirm your **medical certificate** is valid, or start the application. Raise any health history concerns with your instructor *now*, not after you have paid for training.
-3. Download the free FAA publications: the **Helicopter Flying Handbook (FAA-H-8083-21)** and the **Pilot's Handbook of Aeronautical Knowledge (FAA-H-8083-25)**.
-4. Download the **RFM/POH** for the helicopter you will fly. Robinson publishes theirs free.
-5. Get a **FAR/AIM** — current edition, paper or digital.
-6. Write down **why you are here** and what you want out of aviation. Your instructor will ask, and the answer shapes your training plan.
-7. Block out your weekly training hours on a real calendar and bring it. You and your instructor will build the training plan around it.
-</Homework>
-
-<QuizBlock slug="private-helicopter/l01" />
-
-<LessonProgress lessonId="/curriculum/private-helicopter/l01-introduction-to-the-course/" client:load />
+<PartList course="private-helicopter" kind="ground" kindNumber={1} />

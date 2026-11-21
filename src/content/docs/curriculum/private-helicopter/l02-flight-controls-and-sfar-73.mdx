@@ -32,7 +32,7 @@ lesson:
 
 import LessonHeader from '@components/LessonHeader.astro';
 import LessonAudio from '@components/LessonAudio.astro';
-import LessonParts from '@components/LessonParts.astro';
+import PartList from '@components/PartList.astro';
 
 <LessonHeader lesson={frontmatter.lesson} />
 
@@ -45,4 +45,4 @@ import LessonParts from '@components/LessonParts.astro';
 This is the longest lesson in week 1, and the one students come back to most.
 Work through the parts in order — each one assumes the one before it.
 
-<LessonParts course="private-helicopter" kind="ground" kindNumber={2} />
+<PartList course="private-helicopter" kind="ground" kindNumber={2} />

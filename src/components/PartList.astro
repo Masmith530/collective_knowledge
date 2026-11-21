@@ -1,64 +1,79 @@
 ---
 /**
- * LessonParts — the part list on a split lesson's overview page.
+ * PartList — the part list on a split lesson's or split article's overview page.
  *
- * This is the page's reason to exist. A reader who picks "Ground 2" lands here
- * rather than in the middle of part 1, and this is what tells them what the
- * lesson covers and how far through it they are.
+ * This is the overview page's reason to exist. A reader who picks "Ground 2",
+ * or "Flight Controls" under Robinson R22, lands here rather than in the middle
+ * of part 1, and this tells them what it covers and how far through they are.
  *
- * It reads `getCourseOutline()` like everything else that needs the week →
- * lesson → part structure, so it cannot disagree with the sidebar about which
- * parts belong to this lesson or what order they come in.
+ * One component for both pillars rather than two that drift: the shape of the
+ * thing — numbered parts, each a page, with reading times and ticks — is
+ * identical, only the lookup differs. Pass a lesson (`course` + `kind` +
+ * `kindNumber`) or an article (`article`).
  *
- * Reading time comes from each part's own body through the same helper the
- * lesson header uses, so the total here and the per-page figure there are the
- * same number computed the same way.
+ * The lookups are `getCourseOutline()` and `getSubjectOutline()`, like
+ * everything else needing that structure, so this cannot disagree with the
+ * sidebar about which parts belong or what order they come in. Reading time
+ * comes from each part's own body through the same helper the lesson header
+ * uses, so the total here and the per-page figure there are one calculation.
  */
 import { getCollection } from 'astro:content';
 import { getCourseOutline } from '../lib/lessons';
+import { getSubjectOutline } from '../lib/subjects';
 import { readingMinutes } from '../lib/reading-time';
 
 interface Props {
-	/** Course slug, e.g. `private-helicopter`. */
-	course: string;
-	kind: 'ground' | 'flight' | 'sim';
-	kindNumber: number;
+	/** Lesson mode: the course slug, e.g. `private-helicopter`. */
+	course?: string;
+	kind?: 'ground' | 'flight' | 'sim';
+	kindNumber?: number;
+	/** Article mode: the `topic.article` slug shared by the article's pages. */
+	article?: string;
 }
 
-const { course, kind, kindNumber } = Astro.props;
+const { course, kind, kindNumber, article } = Astro.props;
 
-const weeks = await getCourseOutline(course);
-const lesson = weeks
-	.flatMap((w) => w.lessons)
-	.find((l) => l.kind === kind && l.kindNumber === kindNumber);
+let parts: { part: number; title: string; href: string }[] = [];
 
-// Reading time per part, keyed by href. One pass over the course's pages.
-const pages = await getCollection('docs', ({ data }) => data.lesson?.course === course);
+if (article) {
+	const found = (await getSubjectOutline())
+		.flatMap((area) => area.groups)
+		.flatMap((group) => group.articles)
+		.find((a) => a.key === article);
+	parts = found?.parts ?? [];
+} else if (course && kind && kindNumber) {
+	const found = (await getCourseOutline(course))
+		.flatMap((w) => w.lessons)
+		.find((l) => l.kind === kind && l.kindNumber === kindNumber);
+	parts = found?.parts ?? [];
+}
+
+// Reading time per part, keyed by href. One pass over the docs collection.
+const pages = await getCollection('docs');
 const minutesByHref = new Map(
 	pages.map((p) => [`/${p.id}/`, p.body ? readingMinutes(p.body) : undefined]),
 );
 
-const parts = (lesson?.parts ?? []).map((part) => ({
-	...part,
-	minutes: minutesByHref.get(part.href),
-}));
+const rows = parts.map((part) => ({ ...part, minutes: minutesByHref.get(part.href) }));
+const totalMinutes = rows.reduce((sum, p) => sum + (p.minutes ?? 0), 0);
 
-const totalMinutes = parts.reduce((sum, p) => sum + (p.minutes ?? 0), 0);
+// "In this lesson" / "In this article" — name the thing the reader is in.
+const heading = article ? 'In this article' : 'In this lesson';
 ---
 
 {
-	parts.length > 0 && (
-		<nav class="ck-lp not-content" aria-label="Parts of this lesson">
+	rows.length > 0 && (
+		<nav class="ck-lp not-content" aria-label={heading}>
 			<div class="ck-lp-head">
-				<h2 class="ck-lp-title">In this lesson</h2>
+				<h2 class="ck-lp-title">{heading}</h2>
 				<p class="ck-lp-sum">
-					{parts.length} parts
+					{rows.length} parts
 					{totalMinutes > 0 && <> · about {totalMinutes} min reading</>}
 				</p>
 			</div>
 
 			<ol class="ck-lp-list">
-				{parts.map((part) => (
+				{rows.map((part) => (
 					<li>
 						<a href={part.href} class="ck-lp-item" data-ck-lesson={part.href}>
 							<span class="ck-lp-n" aria-hidden="true">

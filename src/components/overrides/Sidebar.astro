@@ -24,9 +24,8 @@
  *    is expanded — the full outline expanded at once was too tall to navigate.
  *    Subject areas stay expanded because they are only two levels deep.
  */
-import { getCollection } from 'astro:content';
 import { COURSES } from '../../lib/courses';
-import { SUBJECT_AREAS } from '../../lib/subjects';
+import { getSubjectOutline } from '../../lib/subjects';
 import { getCourseOutline } from '../../lib/lessons';
 
 const path = Astro.url.pathname;
@@ -51,15 +50,17 @@ const course = COURSES.find((c) => path.startsWith(c.href)) ?? openCourses[0];
 const weeks = course ? await getCourseOutline(course.slug) : [];
 
 // ─── Subject areas ───
-const articles = (await getCollection('docs', ({ data }) => Boolean(data.topic))).sort(
-	(a, b) => a.data.topic!.order - b.data.topic!.order,
-);
-const areas = SUBJECT_AREAS.map((area) => ({
-	...area,
-	items: articles
-		.filter((a) => a.data.topic!.category === area.slug)
-		.map((a) => ({ href: `/${a.id}/`, title: a.data.title })),
-})).filter((a) => a.items.length > 0);
+//
+// Three levels now: area → airframe group → article, and an article may itself
+// have parts. Built by `getSubjectOutline()` so this cannot disagree with the
+// subject index about which article sits under which airframe.
+const areas = await getSubjectOutline();
+
+// A "General" heading above the only group in an area labels nothing. It earns
+// its place as soon as an area holds both general and airframe-specific
+// articles, which is the distinction a reader most needs to see.
+const showGroups = (groups: { general: boolean }[]) =>
+	groups.length > 1 || !groups[0]?.general;
 
 const here = (href: string) => path === href;
 
@@ -294,20 +295,70 @@ const jumpSections = section ? [section] : (['courses', 'subjects'] as const);
 						{areas.map((area) => (
 							<div class="ck-sb-group">
 								<p class="ck-sb-heading">{area.label}</p>
-								<ul>
-									{area.items.map((item) => (
-										<li>
-											<a
-												href={item.href}
-												class="ck-sb-link"
-												data-ck-lesson={item.href}
-												aria-current={here(item.href) ? 'page' : undefined}
-											>
-												{item.title}
-											</a>
-										</li>
-									))}
-								</ul>
+
+								{area.groups.map((group) => (
+									<div class="ck-sb-sub">
+										{showGroups(area.groups) && (
+											<p class="ck-sb-subheading">{group.label}</p>
+										)}
+										<ul>
+											{group.articles.map((item) => {
+												const split = item.parts.length > 0;
+												const inThisArticle =
+													item.pageIds.includes(path) || item.overviewHref === path;
+												return (
+													<li>
+														<a
+															href={item.href}
+															class="ck-sb-link"
+															/*
+															 * Only a single-page article is itself a page that can
+															 * be read; a split article's ticks belong to its parts,
+															 * and the row would wear the ✓ on its own line.
+															 */
+															data-ck-lesson={split ? undefined : item.href}
+															aria-current={
+																!split && here(item.href)
+																	? 'page'
+																	: split && inThisArticle
+																		? 'true'
+																		: undefined
+															}
+															data-ck-in={split && inThisArticle ? '' : undefined}
+														>
+															{item.title}
+														</a>
+
+														{/*
+														  Parts appear only for the article you are in — the same
+														  rule the course outline follows, and the reason three
+														  levels of subject navigation stay navigable. Expanding
+														  every article at once is what made the course outline
+														  unusable before.
+														*/}
+														{split && inThisArticle && (
+															<ul class="ck-sb-parts">
+																{item.parts.map((part) => (
+																	<li>
+																		<a
+																			href={part.href}
+																			class="ck-sb-link ck-sb-part"
+																			data-ck-lesson={part.href}
+																			aria-current={here(part.href) ? 'page' : undefined}
+																		>
+																			<span class="ck-sb-partn">{part.part}</span>
+																			<span>{part.title}</span>
+																		</a>
+																	</li>
+																))}
+															</ul>
+														)}
+													</li>
+												);
+											})}
+										</ul>
+									</div>
+								))}
 							</div>
 						))}
 
@@ -574,6 +625,28 @@ const jumpSections = section ? [section] : (['courses', 'subjects'] as const);
 	}
 
 	/* ── Lesson rows ── */
+	/*
+	 * The airframe inside a subject area — a third rung, so it has to read as
+	 * quieter than `.ck-sb-heading` above it and louder than the article links
+	 * below. Indented rather than merely restyled: at this size weight alone
+	 * does not show nesting.
+	 */
+	.ck-sb-sub {
+		margin-top: 0.5rem;
+	}
+
+	.ck-sb-subheading {
+		margin: 0 0 0.15rem 0.6rem;
+		font-size: 0.75rem;
+		font-weight: 650;
+		color: var(--color-text-secondary);
+	}
+
+	.ck-sb-sub ul {
+		margin-inline-start: 0.5rem;
+		border-inline-start: 1px solid var(--color-border-muted);
+	}
+
 	.ck-sb-lesson {
 		display: flex;
 		flex-direction: column;

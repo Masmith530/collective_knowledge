@@ -41,7 +41,9 @@ Two pillars, deliberately different:
 
 2. **Subject Areas** (`/subjects/`, `src/content/docs/subjects/`) — reference
    articles covering one subject in full, with no assumption about where the
-   reader is.
+   reader is. Grouped **area → airframe → article**: Aircraft Systems →
+   Robinson R22 → Flight Controls. See "Subject articles" below — the airframe
+   rung is load-bearing, not decoration.
 
 ### Why "Subject Areas" and not "Handbook"
 
@@ -144,7 +146,10 @@ itself.
    took two clicks — expand, then click part 1. The constraint that produced
    `<details>` has not changed and is still met: the whole outline expanded at
    once was too tall to navigate, and still only one lesson's parts are ever
-   shown. Subject areas stay expanded because they are only two levels deep.
+   shown. **Subject articles follow the same rule**, now that the subject tree is
+   area → airframe → article → part: an article's parts render only for the
+   article you are in. Expanding all of them is what made the course outline
+   unusable, and three rungs of navigation have even less room for it.
 
    **Every lesson row carries one status badge** — a ring plus a fraction —
    built from `lesson.pageIds`, the lesson's *completable* pages. It replaced
@@ -302,6 +307,13 @@ owns it:
   sidebar and the course page both read it; when they each built the week →
   lesson → part grouping themselves they could disagree, and a lesson showing up
   in the wrong week in one of two places is the kind of bug nobody notices.
+- **Subject structure** → `getSubjectOutline()` in `src/lib/subjects.ts`, which
+  does the same job for area → airframe → article → part. The sidebar and the
+  subject index both read it. An article appearing under the wrong airframe is
+  worse than a lesson in the wrong week: a reader may act on it.
+- **A list of parts** → `PartList.astro`, which serves a split lesson and a
+  split article from one component. The shape is identical — numbered pages,
+  reading times, ticks — and only the lookup differs.
 - **A lesson's name** → `lessonLabel()`. The only place that formats one.
 - **Progress** → `src/lib/progress.ts`. Never touch `localStorage` directly.
 - **Ticking a finished page** → `src/lib/completion-marks.ts`. Anything carrying
@@ -526,6 +538,39 @@ Two rules it must keep:
   "Part 1 of 5".
 
 Single-page lessons do not get one — there is nothing to land in front of.
+
+### Subject articles: area → airframe → article → part
+
+The reference side has the same depth as the course side, and for a reason that
+matters more here than tidiness.
+
+**Articles divide into general and airframe-specific, and the division is
+real.** How a swashplate turns control inputs into blade pitch is true of every
+helicopter that has one. How *this* aircraft's governor behaves, what its RPM
+limits are, which safety notices apply — true of exactly one. Mixing them in a
+flat list makes a reader guess which they are reading, which is the worst
+outcome available in material someone may act on.
+
+So `topic.airframe` puts an article under that aircraft inside its area, and
+articles naming none are general and sort first, because the specific ones build
+on them. Airframes are listed in `src/lib/airframes.ts`. A **group heading is
+suppressed when an area has only the general group** — "General" above the only
+list labels nothing.
+
+Use `airframe` when the content is true of that aircraft and not of helicopters
+at large. A swashplate article that happens to use an R22 as its example is
+still general.
+
+**Long articles split like lessons**, with the same three fields under `topic`:
+`article` (the slug grouping the pages, the way `kind` + `kindNumber` groups a
+lesson's), `part`, and `overview` on the landing page. Everything linking to the
+article points at the overview. An overview stays out of `pageIds` for the same
+reason a lesson's does.
+
+Reference articles split at a **lower word count than lessons**, and that is
+correct rather than sloppy: a lesson page is sized to one sitting, but someone
+looking something up wants to land on the bit they came for. Split on the
+subject seam, not at a word count.
 
 ### Lesson length: a page is one sitting
 
@@ -753,6 +798,8 @@ Two lists *are* explicit, so that something can be named before it has content:
 - `src/lib/courses.ts` — courses, so a course can be named before it is written.
 - `src/lib/subjects.ts` — subject areas, so an area can be named before it has
   articles.
+- `src/lib/airframes.ts` — airframes, so an aircraft can be named before it has
+  articles. A group with none is not rendered.
 
 A planned course has no page, so **only `status: 'open'` courses may be linked**
 — and `CourseCatalog` also requires the course to have at least one lesson, so

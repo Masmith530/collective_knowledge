@@ -1,123 +1,23 @@
 ---
-title: Flight Controls
-description: The complete mechanism behind the cyclic, collective, pedals, and throttle — swashplate, pitch links, phase lag, correlator, and governor.
+title: Pedals, Power, and Handling
+description: The tail rotor and pedals, the throttle correlator and governor, the secondary effects of every input, and why smooth control is a structural requirement.
+sidebar:
+  order: 32
 topic:
   category: systems
-  order: 1
+  airframe: r22
+  article: r22-flight-controls
+  articleTitle: Flight Controls
+  part: 2
+  order: 2
   status: draft
   references:
     - FAA-H-8083-21 Helicopter Flying Handbook, Ch. 4
-    - 'R22/R44 POH Section 7 — Systems Description'
-  introducedIn:
-    - L2
+    - 'R22 Pilot''s Operating Handbook Section 7 — Systems Description'
+    - 'Robinson R22 Maintenance Manual — Chapter 67, Rotor Flight Controls'
 ---
 
 import { Aside } from '@astrojs/starlight/components';
-
-This article covers the flight controls in full — what each one does, and the
-mechanism that makes it happen. [Ground 2](/curriculum/private-helicopter/l02p1-flight-controls/)
-introduces enough of this to put your hands on the controls; this is the rest of it.
-
-<Aside type="caution">
-Mechanisms vary between airframes. This describes the common arrangement in a
-light piston helicopter with a teetering main rotor, which is what most students
-learn in. Your aircraft's POH Section 7 is authoritative for your aircraft.
-</Aside>
-
-## The problem the controls have to solve
-
-A rotor blade produces lift as a function of its angle of attack. To control a
-helicopter you need to change that angle — sometimes on every blade at once,
-sometimes on each blade differently depending on where it is in its rotation.
-
-That is the whole job:
-
-- **Change every blade's pitch equally** → the rotor produces more or less total
-  thrust → the helicopter climbs or descends. This is **collective** pitch.
-- **Change each blade's pitch depending on its azimuth** (where it is around the
-  circle) → the rotor produces more thrust on one side than the other → the disc
-  tilts → the helicopter moves. This is **cyclic** pitch.
-
-Everything mechanical in the control system exists to deliver those two
-behaviours through the same set of blades at the same time.
-
-## The swashplate
-
-The swashplate is the component that translates your stationary control inputs
-into pitch changes on blades that are spinning several hundred times a minute.
-
-It is two plates riding on a common bearing around the mast:
-
-- The **stationary star** (lower) does not rotate. Your cyclic and collective
-  push-pull tubes connect here.
-- The **rotating star** (upper) turns with the mast. **Pitch links** run from it
-  up to the pitch horns on each blade grip.
-
-Because the two plates share a bearing, the rotating star copies the stationary
-star's *attitude and height* while still turning with the rotor.
-
-That gives two independent movements:
-
-| Swashplate movement | What the blades do | Control |
-| --- | --- | --- |
-| Slides **up or down** the mast | Every pitch link rises or falls equally, so all blades change pitch by the same amount | Collective |
-| **Tilts** about the mast | Each pitch link rises and falls once per revolution, so each blade's pitch cycles with azimuth | Cyclic |
-
-### Collective pitch
-
-Raise the collective and the whole swashplate slides up the mast. Every pitch
-link is pushed up by the same distance, so every blade increases pitch by the
-same amount, everywhere in its rotation. Total rotor thrust increases.
-
-This also increases rotor drag, which is why collective and power are
-inseparable — see [Throttle, correlator, and governor](#throttle-correlator-and-governor).
-
-### Cyclic pitch
-
-Move the cyclic and the swashplate tilts. Now the rotating star is high on one
-side of the circle and low on the other. A given blade therefore gets more pitch
-as it passes through one part of its rotation and less as it passes through the
-opposite part — once per revolution, continuously.
-
-The side of the disc with more pitch produces more lift. The disc tilts toward
-the side producing less, thrust tilts with it, and the helicopter accelerates in
-that direction.
-
-<Aside type="tip" title="The disc is the useful abstraction">
-You are not steering the fuselage. You are tilting the rotor disc, and the
-fuselage follows because it is hanging underneath the thrust vector. Thinking in
-terms of "where is the disc pointed" makes most control questions answer
-themselves.
-</Aside>
-
-## Phase lag, and why rigging hides it
-
-Here is the part that confuses nearly everyone, and it is worth getting straight
-once.
-
-A rotor blade is a rotating mass. Apply a force to it and the maximum
-*displacement* does not occur where you applied the force — it occurs roughly 90°
-later in the direction of rotation. In a fully articulated rotor this is usually
-explained through **gyroscopic precession**; in a flapping rotor it is more
-accurately the result of the blade responding to a once-per-revolution pitch
-change against its own flapping dynamics. Either way the practical consequence is
-the same:
-
-> To tilt the disc in a given direction, the maximum pitch change must be applied
-> about 90° of rotation *before* that direction.
-
-So why does pushing the cyclic forward tilt the disc forward, rather than 90° off?
-
-**Because the designers already accounted for it.** The pitch links, pitch horns,
-and swashplate are deliberately rigged so that the mechanical phase offset
-cancels the aerodynamic one. The disc goes where the stick goes.
-
-This matters for two reasons:
-
-1. **You never have to think about it in flight**, and you should not try to.
-2. **You will be asked about it on a checkride**, because it explains why the
-   control linkage looks the way it does rather than being a simple direct
-   connection.
 
 ## Pedals and the tail rotor
 
