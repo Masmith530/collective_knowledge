@@ -1,16 +1,25 @@
 ---
 /**
- * CourseCatalog — the course grid on the home page.
+ * CourseCatalog — the course list on `/curriculum/`.
  *
- * A two-column grid rather than a full-width vertical list: a list of wide rows
- * reads as "endless" once there are more than about four, and a grid stays
- * scannable up to roughly eight. Past that, the header nav and the per-course
- * sidebar are the real navigation and this becomes a shortcut, not the index.
+ * A grid rather than a full-width vertical list: a list of wide rows reads as
+ * "endless" once there are more than about four, and a grid stays scannable up
+ * to roughly eight. Past that, the header nav and the per-course sidebar are
+ * the real navigation and this becomes a shortcut, not the index.
+ *
+ * **Only open courses get a card.** Planned ones used to render as dashed cards
+ * in the same grid, which at launch meant three quarters of this page was
+ * placeholder — the page read as an empty site rather than a small one. They
+ * are named in a single line underneath instead: still honest about where the
+ * project is going, without giving a plan the same footprint as a course
+ * somebody can actually read. As a course opens it moves from that line into
+ * the grid, and when the last one does the line disappears on its own.
  *
  * Lesson counts come from the collection, so the grid cannot drift out of date.
  */
 import { getCollection } from 'astro:content';
 import { COURSES } from '../lib/courses';
+import { listSentence } from '../lib/format';
 
 const lessons = await getCollection('docs', ({ data }) => Boolean(data.lesson));
 
@@ -24,43 +33,66 @@ for (const page of lessons) {
 	lessonKeys.get(course)!.add(`${kind}-${kindNumber}`);
 	weekNums.get(course)!.add(week);
 }
+
+// A course is readable only if it is marked open *and* actually has lessons —
+// a course flipped to open before anything is written would otherwise link to
+// an empty outline.
+const isReadable = (slug: string, status: string) =>
+	status === 'open' && (lessonKeys.get(slug)?.size ?? 0) > 0;
+
+const open = COURSES.filter((c) => isReadable(c.slug, c.status));
+const planned = COURSES.filter((c) => !isReadable(c.slug, c.status));
+
+// "Private Pilot — Helicopter" reads as a title; in a run-on sentence the
+// qualifier is noise, so trim it: "Instrument, Commercial and Flight Instructor".
+const plannedNames = planned.map((c) => c.title.replace(/\s*—\s*Helicopter$/, ''));
 ---
 
 <ul class="ck-cat not-content">
 	{
-		COURSES.map((course) => {
+		open.map((course) => {
 			const n = lessonKeys.get(course.slug)?.size ?? 0;
 			const w = weekNums.get(course.slug)?.size ?? 0;
-			const open = course.status === 'open' && n > 0;
-			const Tag = open ? 'a' : 'div';
 			return (
 				<li>
-					<Tag class:list={['ck-cat-card', { 'is-open': open }]} {...(open ? { href: course.href } : {})}>
+					<a class="ck-cat-card" href={course.href}>
 						<div class="ck-cat-head">
 							<h3>{course.title}</h3>
-							{open ? (
-								<span class="ck-cat-badge is-open">
-									{n} lesson{n === 1 ? '' : 's'}
-									{w > 0 ? ` · ${w} week${w === 1 ? '' : 's'}` : ''}
-								</span>
-							) : (
-								<span class="ck-cat-badge">Planned</span>
-							)}
+							<span class="ck-cat-badge">
+								{n} lesson{n === 1 ? '' : 's'}
+								{w > 0 ? ` · ${w} week${w === 1 ? '' : 's'}` : ''}
+							</span>
 						</div>
 						<p>{course.blurb}</p>
-						{open && (
-							<span class="ck-cat-go">
-								Open course <span aria-hidden="true">→</span>
-							</span>
-						)}
-					</Tag>
+						<span class="ck-cat-go">
+							Open course <span aria-hidden="true">→</span>
+						</span>
+					</a>
 				</li>
 			);
 		})
 	}
 </ul>
 
+{
+	plannedNames.length > 0 && (
+		<p class="ck-cat-planned not-content">
+			{listSentence(plannedNames)} {plannedNames.length === 1 ? 'is' : 'are'} planned.
+		</p>
+	)
+}
+
 <style>
+	/*
+	 * Intentionally breakpoint-free. `auto-fit` + `minmax` already gives one
+	 * column on a phone, two on a tablet and three on a wide desktop, and it
+	 * does it against the *container* rather than the viewport — so it stays
+	 * right inside the content column whatever the sidebar is doing.
+	 *
+	 * Do not convert this to media queries. An intrinsic layout that needs no
+	 * breakpoint is better than one that has them; reach for `theme()` only
+	 * where the layout genuinely cannot work this out for itself.
+	 */
 	.ck-cat {
 		list-style: none;
 		margin: 0;
@@ -89,15 +121,16 @@ for (const page of lessons) {
 		transition: border-color 150ms ease, box-shadow 150ms ease, transform 150ms ease;
 	}
 
-	.ck-cat-card.is-open:hover {
-		border-color: color-mix(in srgb, var(--color-accent) 45%, var(--color-border));
+	.ck-cat-card:hover {
+		border-color: var(--color-border-accent);
 		box-shadow: var(--ck-shadow);
 		transform: translateY(-1px);
 	}
 
-	.ck-cat-card:not(.is-open) {
-		background: var(--color-canvas-subtle);
-		border-style: dashed;
+	.ck-cat-planned {
+		margin: 1.5rem 0 0;
+		font-size: 0.8125rem;
+		color: var(--color-text-muted);
 	}
 
 	.ck-cat-head {
@@ -118,24 +151,15 @@ for (const page of lessons) {
 		color: var(--color-text-primary);
 	}
 
-	.ck-cat-card:not(.is-open) .ck-cat-head h3 {
-		color: var(--color-text-secondary);
-	}
-
 	.ck-cat-badge {
 		flex-shrink: 0;
 		padding: 0.15rem 0.5rem;
 		border-radius: 999px;
-		border: 1px solid var(--color-border);
+		border: 1px solid transparent;
+		background: var(--color-accent-soft);
 		font-size: 0.6875rem;
 		font-weight: 650;
 		white-space: nowrap;
-		color: var(--color-text-muted);
-	}
-
-	.ck-cat-badge.is-open {
-		background: var(--color-accent-soft);
-		border-color: transparent;
 		color: var(--color-accent);
 	}
 
@@ -154,7 +178,7 @@ for (const page of lessons) {
 		color: var(--color-accent);
 	}
 
-	.ck-cat-card.is-open:hover .ck-cat-go span {
+	.ck-cat-card:hover .ck-cat-go span {
 		display: inline-block;
 		transform: translateX(2px);
 		transition: transform 150ms ease;

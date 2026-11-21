@@ -3,7 +3,7 @@
   "type": "module",
   "version": "0.1.0",
   "private": true,
-  "description": "Free community resource and study guide for helicopter pilot training.",
+  "description": "Free ground school and study guide for helicopter pilot training.",
   "scripts": {
     "dev": "astro dev",
     "start": "astro dev",
@@ -11,7 +11,9 @@
     "preview": "astro preview",
     "astro": "astro",
     "test": "node --experimental-strip-types --no-warnings test/progress.test.mjs",
-    "check": "astro check"
+    "check": "node scripts/check-tokens.mjs && astro check",
+    "lint:tokens": "node scripts/check-tokens.mjs",
+    "og:image": "node scripts/make-og-image.mjs"
   },
   "dependencies": {
     "@astrojs/react": "^7.0.1",

@@ -1,65 +1,127 @@
 ---
+
 /**
  * Hero override.
  *
- * Says what the site *is* — free, open, community-written training for
- * helicopter pilots and the people teaching them. It deliberately does not
+ * Says what the site *is* — free, open ground school for helicopter pilots and
+ * the people teaching them. It deliberately does not
  * pitch the pedagogy: "learn it in building blocks" was selling a method to
  * someone who has not yet decided to be here, and the method shows itself once
  * they are reading a course.
  *
+ * It says **ground school**, not "flight training". That is not a stylistic
+ * preference: 14 CFR 61.1 defines flight training as instruction received from
+ * an authorized instructor *in flight in an aircraft*, and ground training as
+ * everything else. No website can deliver the former — it is a category error,
+ * not just a loose word — and on a site whose credibility rests on being
+ * precise about regulations, the headline was the worst place to be imprecise.
+ * "Ground school" stays correct even once `kind: flight` lessons exist, because
+ * what a page can carry is the briefing for a flight lesson, never the lesson.
+ *
  * Both actions point at index pages rather than a specific course, so neither
  * goes stale as courses are added.
+ *
+ * The buttons name the reader's *intent*, not our two content collections.
+ * "Browse courses" / "View subject areas" named the taxonomy, and to someone
+ * who has never been here that reads as whole-and-part — "a course is the
+ * thing, subjects must be bits of it" — which is not the distinction at all.
+ * The real axis is teaching order versus reference, so: "Start a course" and
+ * "Look something up".
+ *
+ * The subline sets up that fork in the same order as the buttons: first clause
+ * to the first button, second clause to the second. Both use the wording the
+ * section indexes already use about themselves, so the button and the page it
+ * lands on agree.
+ *
+ * Do not "fix" these labels back to match the section headings. The headings are
+ * taxonomy and should stay Courses / Subject Areas; the buttons are an
+ * invitation and should stay intent.
+ *
+ * Four elements, and no fifth. There used to be a rounded "pill" above the
+ * headline reading "Community built · Open source · Always free", with a green
+ * status dot. It went because it said nothing the next two lines do not say
+ * better: "free" and "open" are in the headline, "community-written" and "no
+ * accounts, no ads, no paywalls" are in the subline. A reader met the same three
+ * claims three times before reaching a button. The dot was worse than
+ * redundant — a green dot is the convention for "service is up", which this was
+ * not reporting.
+ *
+ * If something new is proposed for this hero, the test is whether it says
+ * something the headline and subline do not.
+ *
+ * The last line does two jobs neither of the others does: it names who writes
+ * this, and it says the work is ongoing. Authorship is there because the site
+ * used to say "community-written", which stopped being true when the source
+ * went private — and a named, credentialled instructor is a far stronger signal
+ * to a student than "community" ever was, because "community" could mean
+ * anyone. Make it plural when that is actually the case, and not before.
+ *
+ * ATP and Gold Seal CFII are aviation credentials, not jargon: this audience
+ * reads them the way a developer reads a well-known library. The ban on jargon
+ * is about *our plumbing* — repositories, hosting, build steps — not about the
+ * subject the site teaches. Note the phrasing keeps "helicopter" attached to
+ * "instructor" and lists the certificates separately, so it does not claim a
+ * rotorcraft ATP specifically.
+ *
+ * It deliberately does **not** count anything.
+ *
+ * It briefly did — a computed "2 lessons and 1 reference article so far". That
+ * was accurate and self-maintaining, and still wrong for a launch: a specific
+ * small number is an anchor a reader cannot un-see, where "lesson by lesson"
+ * sets the same expectation without inviting arithmetic. The honest scale is
+ * still one click away on the course page, which counts lessons and weeks from
+ * the collection. Put a count back here when the numbers flatter the work;
+ * `CourseCatalog.astro` has the counting rule (a four-part lesson is one
+ * lesson).
  */
 ---
 
 <section class="ck-hero">
-	<p class="ck-eyebrow">
-		<span class="ck-dot" aria-hidden="true"></span>
-		Community built · Open source · Always free
-	</p>
-
-	<h1>Free, open flight training<br class="ck-br" /> for helicopter pilots.</h1>
+	<h1>Free, open ground school<br class="ck-br" /> for helicopter pilots.</h1>
 
 	<p class="ck-sub">
-		Community-written ground courses for student pilots — and for the instructors
-		teaching them. No accounts, no ads, no paywalls.
+		Week-by-week lessons in the order a student actually needs them — plus
+		reference articles that cover a subject in full, for looking something up.
+		For student pilots, and the instructors teaching them.
 	</p>
 
 	<div class="ck-actions">
-		<a href="/curriculum/" class="ck-btn ck-btn-primary">Browse courses</a>
-		<a href="/subjects/" class="ck-btn ck-btn-secondary">View subject areas</a>
+		<a href="/curriculum/" class="ck-btn ck-btn-primary">Start a course</a>
+		<a href="/subjects/" class="ck-btn ck-btn-secondary">Look something up</a>
 	</div>
+
+	<p class="ck-scale">
+		Written lesson by lesson by a working helicopter instructor — ATP, Gold Seal CFII.
+	</p>
 </section>
 
+{/*
+  Outside the hero, and the only links on this page besides the two actions.
+
+  Every other page reaches these from the sidebar footer, but the home page uses
+  Starlight's `splash` template and therefore renders no sidebar at all — so
+  without this, the one page a first-time reader lands on is the only page with
+  no route to the licence or the disclaimer. That is also the page where someone
+  wondering "what's the catch?" goes looking.
+
+  This is not the fine print that was removed. That was a hedge in the hero
+  ("study material only — not an FAA-approved course"), which undersold the
+  work. These are two quiet links.
+*/}
+<p class="ck-home-links">
+	<a href="/start-here/why-this-is-free/">Why this is free</a>
+	<span aria-hidden="true">·</span>
+	<a href="/start-here/disclaimer/">Disclaimer &amp; licensing</a>
+</p>
+
 <style>
+	@reference "../../styles/global.css";
+
 	.ck-hero {
 		max-width: 46rem;
 		margin: 0 auto;
 		padding: clamp(3rem, 10vmin, 6rem) 0 clamp(1rem, 3vmin, 2rem);
 		text-align: center;
-	}
-
-	.ck-eyebrow {
-		display: inline-flex;
-		align-items: center;
-		gap: 0.45rem;
-		margin: 0 0 1.15rem;
-		padding: 0.28rem 0.8rem;
-		border: 1px solid var(--color-border);
-		border-radius: 999px;
-		background: var(--color-canvas-subtle);
-		font-size: 0.75rem;
-		font-weight: 550;
-		color: var(--color-text-secondary);
-	}
-
-	.ck-dot {
-		width: 6px;
-		height: 6px;
-		border-radius: 50%;
-		background: var(--color-ok);
-		flex-shrink: 0;
 	}
 
 	.ck-hero h1 {
@@ -87,13 +149,59 @@
 		margin-top: 1.85rem;
 	}
 
+	/* Quiet on purpose. It is a fact a reader should have, not a selling point
+	   and not an apology. */
+	.ck-scale {
+		margin: 1.35rem 0 0;
+		font-size: 0.8125rem;
+		color: var(--color-text-muted);
+	}
+
+	.ck-home-links {
+		display: flex;
+		flex-wrap: wrap;
+		justify-content: center;
+		gap: 0.5rem;
+		margin: 3.5rem 0 0;
+		font-size: 0.8125rem;
+		color: var(--color-text-muted);
+	}
+
+	.ck-home-links a {
+		color: var(--color-text-muted);
+		text-decoration: none;
+	}
+
+	.ck-home-links a:hover {
+		color: var(--color-accent);
+		text-decoration: underline;
+		text-underline-offset: 0.2em;
+	}
+
 	.ck-br {
 		display: none;
 	}
 
-	@media (min-width: 40rem) {
+	/* ─── RESPONSIVE ───────────────────────────────────────
+	   The headline sizes itself with clamp(), so only the things clamp cannot
+	   express get a breakpoint. */
+
+	/* The hand-placed line break only helps once the line is long enough to
+	   want breaking; below this it fights the natural wrap. */
+	@media (width >= theme(--breakpoint-sm)) {
 		.ck-br {
 			display: inline;
+		}
+	}
+
+	/* Phones: two side-by-side buttons wrap to two lines of different widths,
+	   which reads as a mistake. Stack them full-width instead — and they become
+	   proper thumb targets at the same time. */
+	@media (width < theme(--breakpoint-xs)) {
+		.ck-actions {
+			flex-direction: column;
+			align-items: stretch;
+			gap: 0.5rem;
 		}
 	}
 </style>

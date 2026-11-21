@@ -1,16 +1,36 @@
 # Collective Knowledge — project rules
 
-Free, community-built helicopter flight training. Read this before changing
-anything in this repo.
+Free helicopter ground school, written by a working instructor. Read this
+before changing anything in this repo.
 
 ## What this project is
 
-**Free, open, community-written flight training for helicopter pilots — and for
-the instructors teaching them.** That is the pitch, and it is what the home page
-says. It is *not* "learn it in building blocks": the pedagogy is real and it is
-why the courses are ordered the way they are, but it is a method, not a reason
-for a stranger to stay on the page. The method shows itself once they are
-reading.
+**Free, open ground school for helicopter pilots — and for the instructors
+teaching them.** That is the pitch, and it is what the home page says. It is
+*not* "learn it in building blocks": the pedagogy is real and it is why the
+courses are ordered the way they are, but it is a method, not a reason for a
+stranger to stay on the page. The method shows itself once they are reading.
+
+### It is not "community-written", and the source is private
+
+It used to say community-written. It no longer does, anywhere a reader can see,
+because the repository is private and there is no way for a stranger to
+contribute — so the claim was not true. **"Written by a working helicopter
+instructor" replaced it**, which is both accurate and a stronger signal to a
+student: "community" could mean anyone.
+
+"Open" stays, and refers to the **licence**, not the source. The content is
+CC BY-SA: anyone may copy, teach from and build on what the site publishes.
+That is what an open educational resource is, and it does not require the
+repository to be public.
+
+Keep the singular until it is actually false. If other instructors start
+writing, make it plural then.
+
+**No reader-facing links to the source.** There is no `editLink`, no `social`
+entry and no icon in the header — see the note in `astro.config.mjs`. They
+would point somewhere a reader cannot go, and even public they were wrong for
+this audience. Corrections reach the author directly.
 
 Two pillars, deliberately different:
 
@@ -62,28 +82,125 @@ itself.
    course — a "Start the Private Pilot course" button goes stale the moment a
    second course exists.
 
+   Those links are **hidden below the `nav` breakpoint (50rem)**, and that is
+   not a gap: below 50rem Starlight shows a hamburger and the sidebar becomes a
+   drawer, and the drawer carries the section jump at its bottom. Above it the
+   sidebar is permanent and the header carries the nav. The reveal is pinned to
+   Starlight's own breakpoint — see [`docs/breakpoints.md`](docs/breakpoints.md)
+   before moving it, because any other value leaves a band of widths with no
+   section nav at all, or two.
+
+   **Keep them, even though the sidebar also offers a section jump.** They are
+   not duplicates; they do different jobs, and the header's job got *more*
+   important once the sidebar jump moved to the bottom:
+
+   - The header is the only section nav that is **always visible**. A course
+     outline with several weeks of lessons is taller than the viewport, so the
+     sidebar's jump is frequently below the fold. Removing the header nav would
+     mean no visible way to change section without scrolling the sidebar first.
+   - The header shows **both** sections and marks the current one with
+     `aria-current`. That is the "where am I" signal the sidebar deliberately
+     gives up by only ever naming the other section.
+   - The home page uses Starlight's `splash` template and therefore renders
+     **no sidebar at all**. Its hero buttons cover section entry, but the header
+     is the only persistent nav there.
+   - It costs nothing on mobile, where it is hidden anyway.
+
 3. **The sidebar is rendered by `Sidebar.astro`, not the `sidebar` config**, and
    is context aware: a course's week-by-week outline inside a course, the subject
    list inside Subject Areas, and the course list on `/curriculum/` itself.
 
-   Its top is a **two-item section switcher, not a "← back" link.** A back link
-   was actively confusing: you can reach Subject Areas straight from the home
-   page, so "← Curriculum" offered to send you back somewhere you had never
-   been. A switcher states where you are and where else you can go, and reads
-   the same from any entry point.
+   **Its bottom block is pinned to the bottom edge** (`margin-top: auto` on
+   `.ck-sb-bottom`, with `.ck-sb` as a `flex: 1` column). It holds, in order: a
+   single jump to the other section, then "Why this is free" and
+   "Disclaimer & licensing". When the outline is short this sits on the bottom
+   edge; when the outline is long enough to scroll it falls below the last
+   lesson, which is the right place for it either way.
 
-   **Inside a course, multi-part lessons are collapsed and only the current one
-   is expanded** (`<details open={...}>`). The whole outline expanded at once was
-   too tall to navigate. Subject areas stay expanded because they are only two
-   levels deep.
+   That block lives **outside the three-way branch** in the markup. The fine
+   links were previously written out inside two of the three branches, which
+   meant Subject Areas pages carried no footer at all — and nobody noticed,
+   because the markup looked complete in both places you were likely to read.
+
+   **The section jump is drawer-only** — `display: none` from `nav` up. Above
+   that breakpoint the header carries Courses and Subject Areas, so rendering it
+   too would put two section navs on one screen; below it the header's links are
+   hidden and this is the only way to change section. One section nav at every
+   width. It is a single link naming the other section, not a switcher and not a
+   "← back" link: a back link was actively confusing, since you can reach
+   Subject Areas straight from the home page and "← Curriculum" offered to send
+   you back somewhere you had never been.
+
+   **Inside a course the sidebar starts with "← All courses".** Without it there
+   is no way back to the course list: "Course overview" only goes up to the
+   course's own page, and the bottom jump goes to the other *section*. That gap
+   appeared when the two-tab switcher became a one-way jump, and it is the kind
+   of thing only a reader notices.
+
+   **A multi-part lesson is a link, not a disclosure.** The row goes to the
+   lesson's first part (`lesson.href` already resolves to "itself, or its first
+   part"), and the part list renders only for the lesson you are actually in. It
+   used to be `<details>`: the row expanded but did not navigate, so starting a
+   lesson took two clicks — expand, then click part 1. The constraint that
+   produced `<details>` has not changed and is still met: the whole outline
+   expanded at once was too tall to navigate, and still only one lesson's parts
+   are ever shown. Subject areas stay expanded because they are only two levels
+   deep.
+
+   **The site-information pages get their own branch, and that is a stopgap.**
+   `/start-here/*` belongs to neither section, so without a branch it fell
+   through to the course outline and `?? openCourses[0]` showed Private Pilot
+   from anywhere on the site. It now shows an "About this site" list — but what
+   is actually wanted is to **keep the sidebar the reader already had** and just
+   highlight the footer link. That needs to survive a static build, so see the
+   `TODO(matthew)` on the `inStartHere` branch in `Sidebar.astro` for the three
+   options before changing it.
+
+   **Exactly one `aria-current="page"` per page.** It marks the page you are on,
+   nothing else. A split lesson's row therefore carries `data-ck-in` instead —
+   "this is the lesson you are inside" — and the header's section links use
+   `aria-current="true"`, the generic form, because Courses points at the index
+   rather than at where you are. Getting this wrong is invisible on screen and
+   tells a screen reader there are two current pages.
+
+   It is **the same component either side of `nav`** — a permanent left column
+   above, Starlight's full-width drawer below. One markup tree. The drawer is
+   full-height too, so the pinned bottom block sits on the bottom edge there as
+   well, which on a phone is the easiest part of the panel to reach.
 
    The `sidebar` config in `astro.config.mjs` still exists because **Starlight's
-   prev/next pagination reads it.** Keep it in true reading order.
+   prev/next pagination reads it.** Keep it in true reading order, and keep it
+   holding *only pages that belong in a sequence*. **Subject Areas is
+   deliberately not in it:** listing it chained the two sections into one flat
+   list, so `/subjects/` advertised "Previous: Low RPM Recovery & Rotor Stall"
+   and the course's last lesson pointed "Next" at an unrelated reference
+   article. A subject article assumes nothing about where the reader is, so
+   there is no next one — having no pagination there is correct, not a gap.
 
 4. **The home page is the hero and nothing else** — a headline, one sentence, and
-   the two section buttons, plus a one-line disclaimer. Course cards, feature
-   grids and "why this exists" copy were all removed from it; the catalog lives
-   at `/curriculum/`.
+   the two section buttons. Course cards, feature grids and "why this exists"
+   copy were all removed from it; the catalog lives at `/curriculum/`.
+
+   **The buttons name intent, not the taxonomy.** They read "Start a course" and
+   "Look something up", not "Browse courses" and "View subject areas". Naming the
+   two collections tells a first-time reader nothing — worse, it reads as
+   whole-and-part ("a course is the thing; subjects must be pieces of it"), which
+   is the opposite of the real distinction. The axis is **teaching order versus
+   reference**, and the section indexes already say so about themselves ("the
+   same material in teaching order"; "for looking something up"). The home page
+   just uses their words.
+
+   Section *headings* stay Courses and Subject Areas — that is the taxonomy, and
+   `Subject Areas` is chosen deliberately (see below). Buttons are an invitation.
+   Do not collapse the two into one wording.
+
+   **No fine print either.** It used to carry a "study material only — not an
+   FAA-approved course" line. That hedged the work instead of describing it:
+   this *is* real instruction, written by instructors, and the honest
+   distinction is that it is not *official* — which is a point to make properly
+   on the licensing page, not to lead a landing page with. Licensing and the
+   disclaimer are linked from the sidebar footer on every other page, which is
+   where someone looks for them.
 
 **`Header.astro` must keep its `Search` import.** An earlier version dropped it,
 which left Pagefind building a search index on every deploy with no UI able to
@@ -98,6 +215,14 @@ explicitly chosen dark. Starlight's default falls back to the OS
 `:root` in `global.css` is the light palette, so the page is correct even with
 JavaScript disabled, and the provider's inline script runs before first paint so
 there is no flash.
+
+**Dark is a neutral charcoal, not a navy.** It was rebuilt from a blue-tinted
+slate whose surfaces and greys leaned 21-41 points towards blue (channel spread),
+which is what made it read as generic "GitHub dark". The neutrals now sit at 2-8
+— a touch cool so it looks like charcoal rather than concrete, and no further. If
+you add a dark neutral, keep it in that range and re-measure. The **accent stays
+blue in both themes**: it is the site's one accent colour, and a neutral charcoal
+is what lets it carry.
 
 ### Contrast is measured, not guessed
 
@@ -116,6 +241,58 @@ component.** Check both themes before considering a UI change done.
 
 `border` and `border-muted` are decorative separators. Anything a reader clicks
 or types into uses `border-strong`, which meets the 3:1 rule.
+
+Text on a **filled accent** background uses `--color-on-accent`, never `#fff`.
+The dark theme's accent is a light blue, so white on it measures 2.54:1 — this
+was a real failure in four places. See the note at the end of `docs/contrast.md`.
+
+### Never duplicate what a shared token or component already provides
+
+This is the rule that the three sections above are each one instance of, and it
+is enforced: **`npm run lint:tokens`** (part of `npm run check`) fails the build
+on a violation. Every check in it exists because the thing it catches had already
+happened here, invisibly, and shipped:
+
+| Found | Consequence |
+| --- | --- |
+| `var(--ck-radius)` / `--ck-radius-sm` in 4 places — never defined | Those corners were silently square |
+| `#d29922` pasted into one component, twice | 2.41:1 contrast, light-theme only |
+| `rgba(2, 6, 12, 0.66)` in two modals | Two scrims free to drift apart |
+| `color: #fff` on an accent fill, 4 places | 2.54:1 in dark; 1.80:1 on hover |
+| Five hand-written media queries at 30, 34, 34, 40 and 50rem | No two components agreed where a phone ends |
+
+None of that is visible in a diff. All of it is visible to a reader.
+
+So, before adding a value or a block of markup, look for the thing that already
+owns it:
+
+- **Breakpoints** → the `@theme` block in `global.css`, used via
+  `theme(--breakpoint-…)`. Never a literal width. See
+  [`docs/breakpoints.md`](docs/breakpoints.md).
+- **Colour, radius, shadow, measure, tap target** → the tokens in `global.css`.
+  Never a literal. If no token fits, add one *there* with a comment, and
+  re-measure contrast.
+- **Course structure** → `getCourseOutline()` in `src/lib/lessons.ts`. The
+  sidebar and the course page both read it; when they each built the week →
+  lesson → part grouping themselves they could disagree, and a lesson showing up
+  in the wrong week in one of two places is the kind of bug nobody notices.
+- **A lesson's name** → `lessonLabel()`. The only place that formats one.
+- **Progress** → `src/lib/progress.ts`. Never touch `localStorage` directly.
+- **Markup** → extend the existing component rather than adding a parallel one.
+  `KeyNotes` and `Homework` are separate because they serve different moments,
+  not because one was easier to copy.
+
+Two corollaries worth stating, because they are the common ways round the rule:
+
+1. **A theme-specific override is a missing token.** The quiz had a base rule
+   plus a `:root[data-theme='light']` override of the same property, purely
+   because there was no name for "text on an accent fill". One token replaced
+   both rules.
+2. **Prefer no breakpoint to a shared one.** `CourseCatalog` is responsive with
+   `auto-fit` + `minmax` and has no media query at all; it responds to its
+   container rather than the viewport, which is strictly better. Tap targets use
+   `@media (pointer: coarse)`, not a width — a touchscreen laptop needs them at
+   1440px. Reach for `theme()` only when the layout cannot work it out itself.
 
 ### Looking modern
 
@@ -149,6 +326,46 @@ total cost at zero:
 
 If a proposed feature cannot be done for free and statically, it does not go in.
 
+### How the project is funded, and where that may be said
+
+The maintainer also runs **Flight Token**, a weight and balance and performance
+app for helicopter pilots, sold by **subscription** — say "a subscription", not
+"buying it". ("Weight and balance" is one term — never write it as "weight,
+balance and performance", which reads as three separate things.) That is the project's funding model, and it is
+deliberately the only one: it needs no ad network, no third-party script and no
+reader data, so it is the one option that does not violate the rules above.
+
+It lives on [`why-this-is-free`](src/content/docs/start-here/why-this-is-free.mdx),
+linked from the sidebar footer. The rules for it:
+
+- **Not on the home page.** The home page converts a stranger into a reader in
+  one screen, and anything else competes with that. A reader should meet the app
+  *after* they have evidence the material is good, not before.
+- **No superlatives about it.** No "best on the market", no "hands down".
+  Describe what it does and let the reader judge. This site's whole posture is
+  cited sources and status badges that admit when a page is a draft; an unsourced
+  claim about the maintainer's own product next to that makes the courses read as
+  a funnel.
+- **Do not invent the counterfactual.** An earlier draft said a subscription
+  "lets me spend evenings writing lessons instead of chasing sponsors". Neither
+  half was true — the hours were overstated and nobody was ever going to chase
+  sponsors. It read well, which is exactly why it survived a few passes. State
+  the relationship and stop: a subscription helps cover the time this takes.
+  Invented colour in the funding pitch is the easiest place on the site to lose
+  a reader's trust, because it is the one paragraph they are already reading
+  sceptically.
+- **Say it funds *time*, not hosting.** Hosting is effectively free and that is a
+  non-negotiable above — claiming the app pays a server bill would be untrue and
+  a reader can tell. What is scarce is the hours it takes to write a lesson
+  correctly.
+- **Keep it away from the instruction.** Never put the app in or directly after a
+  weight-and-balance or performance lesson. The disclaimer says not to use this
+  material for flight planning; teaching W&B and then linking a W&B tool blurs
+  that line. Funding explanation and instruction stay structurally separate.
+- **Always give the reader an out.** The page ends by telling them to use the
+  courses regardless. That line is what makes the rest read as generous rather
+  than conditional — do not remove it.
+
 ### Safety and accuracy
 
 This is aviation training material that people will act on. Accuracy is a safety
@@ -164,15 +381,60 @@ property, not a quality metric.
   says, say so, or read it at [eCFR](https://www.ecfr.gov/). Never paraphrase a
   reg from memory into something that reads as authoritative.
 - The [disclaimer](src/content/docs/start-here/disclaimer.mdx) must stay linked
-  from the home page and the sidebar footer.
+  from the **sidebar footer**, which puts it on every course and subject page.
+  It is deliberately *not* on the home page any more — see the home page note
+  under "Navigation".
+- **This site is ground school, never "flight training".** 14 CFR 61.1 defines
+  flight training as instruction received from an authorized instructor *in
+  flight in an aircraft*, and ground training as everything else. A website
+  cannot deliver the first one — so "flight training" in our own copy is a
+  category error, not a loose synonym, and it is the sort of imprecision a CFI
+  or an examiner notices immediately on a site that otherwise cites its
+  regulations carefully. The home page headline said it for months; so did the
+  site-wide meta description, the README and this file. Use **ground school**
+  (vernacular, warmer) or **ground training** (matches the regulation's term).
+  This stays true once `kind: flight` lessons exist: what a page can carry is
+  the briefing for a flight lesson, never the flight lesson.
+- **Never name the plumbing in reader-facing copy.** The audience is student
+  pilots and instructors, not developers. No repository, no GitHub, no hosting
+  provider, no "static site", no servers, databases, APIs, build steps, free
+  tiers or `localStorage`. `why-this-is-free` once explained the hosting setup
+  to justify the site being free; it told a student pilot nothing and made a
+  page about *them* read as though written for someone else. Say what a thing
+  means for the reader instead — "nothing behind it charges by the visitor", not
+  "static output on a free tier"; "saved on the device you're reading on", not
+  "progress lives in localStorage". This file and the `docs/` folder are for
+  maintainers and are exempt.
+- **Say "not official", not "not real".** The instruction here is real and
+  written by instructors; what it lacks is FAA *approval*, and an authorized
+  instructor's endorsement is a thing only that instructor can give. Write the
+  precise limitation. Hedging language that implies the material is merely notes
+  is both inaccurate and worse for the reader, who then can't tell which
+  cautions are the load-bearing ones.
 
 ### Copyright
 
 - FAA publications are public domain — quote and link freely.
 - **Manufacturer publications (RFM/POH, safety notices, service bulletins) are
   copyrighted.** Cite and link; never reproduce them wholesale.
-- Content is **CC BY-SA 4.0**; code is **MIT**. See `LICENSE` and
-  `LICENSE-CONTENT`.
+- **Keep site-wide policy pages airframe-agnostic.** Name a manufacturer in a
+  lesson that actually teaches that aircraft — Robinson in the SFAR 73 and
+  mast-bumping material, for instance — but not in the disclaimer or anywhere
+  else stating general policy. The disclaimer used to point at Robinson's
+  publications by name, which framed the whole site as Robinson-specific. The
+  courses lean that way today; the project does not promise to.
+- Content is **CC BY-SA 4.0** (`LICENSE-CONTENT`). That is the one that matters
+  and the one the site states.
+- The `LICENSE` file is MIT for the code. It is **moot while the repository is
+  private** — nobody can obtain the code, so there is nobody for the grant to
+  apply to. The site no longer mentions it, because telling a reader the code
+  is MIT while giving them no way to get it is noise at best. Leave the file; it
+  costs nothing and becomes meaningful again if the source is ever published.
+- **State the licence in plain English first, formal name second.** The
+  disclaimer page leads with what a reader may actually do — print it, teach
+  from it, build on it, charge for their instruction — then names CC BY-SA. An
+  instructor deciding whether they may use this in a class should not have to
+  read a licence deed to find out.
 
 ## Course structure and naming
 
@@ -354,7 +616,7 @@ no toolchain install is needed. Full recipe and the bitrate table are in
 | --- | --- | --- |
 | Framework | Astro 7 (static) | Zero-JS by default, free to host anywhere |
 | Docs theme | Starlight 0.43 | Sidebar, search, a11y for free |
-| Styling | Tailwind 4 + CSS custom properties | Tokens in `src/styles/global.css` |
+| Styling | Tailwind 4 + CSS custom properties | Tokens *and breakpoints* in `src/styles/global.css` |
 | Interactivity | React 19 islands | Only the quiz and progress UI |
 | Search | Pagefind (built in) | Static index, no service |
 | Host | Cloudflare Pages | Free tier, static |
@@ -362,15 +624,17 @@ no toolchain install is needed. Full recipe and the bitrate table are in
 Node is pinned to **22** (`.nvmrc`, `.node-version`).
 
 ```sh
-npm run dev     # http://localhost:4321
-npm run build   # static output to dist/
-npm run check   # astro check — must stay at 0 errors
-npm test        # progress module tests
-du -sh public/audio   # media weight — see docs/media.md before this passes ~250 MB
+npm run dev          # http://localhost:4321
+npm run build        # static output to dist/
+npm run check        # token guard + astro check — must stay at 0 errors
+npm run lint:tokens  # the guard alone: shared tokens, breakpoints, no literals
+npm test             # progress module tests
+du -sh public/audio  # media weight — see docs/media.md before this passes ~250 MB
 ```
 
 `npm test` needs no framework and no build step: Node strips the TypeScript
-types itself via `--experimental-strip-types`.
+types itself via `--experimental-strip-types`. `scripts/check-tokens.mjs` has no
+dependencies either — it is plain Node, so it costs nothing to run in CI.
 
 ## Conventions
 
@@ -426,11 +690,31 @@ pages** — use or extend the component instead.
 
 Two lists *are* explicit, so that something can be named before it has content:
 
-- `src/lib/courses.ts` — courses, so a course can show as "Planned".
-- `src/lib/subjects.ts` — subject areas, so an area can be listed as planned.
-  An area with no articles is not rendered as an empty section.
+- `src/lib/courses.ts` — courses, so a course can be named before it is written.
+- `src/lib/subjects.ts` — subject areas, so an area can be named before it has
+  articles.
 
-A planned course has no page, so **only `status: 'open'` courses may be linked.**
+A planned course has no page, so **only `status: 'open'` courses may be linked**
+— and `CourseCatalog` also requires the course to have at least one lesson, so
+flipping `status` early cannot produce a link to an empty outline.
+
+#### Real content gets real estate; plans get a line
+
+**Never give a plan the same footprint as something a reader can actually use.**
+Planned courses used to render as dashed cards in the same grid as real ones,
+and planned subject areas as a heading plus five bullets with blurbs. At launch
+that meant three quarters of `/curriculum/` was placeholder: the pages read as
+an *empty* site rather than a small one, which is a worse and less accurate
+impression than the truth.
+
+Both now collapse to one muted sentence — "Instrument, Commercial and Flight
+Instructor are planned." The roadmap is still stated, because hiding it would
+be the dishonest version, but it takes a line rather than a grid. This also
+scales on its own: as each course opens it moves from the sentence into the
+grid, and when the last one does the sentence disappears.
+
+`listSentence()` in `src/lib/format.ts` builds those lists — shared, because
+both components need it and two copies can disagree about the serial comma.
 
 ### Lesson page shape
 
@@ -470,8 +754,18 @@ encyclopedic. Explain the mechanism, not just the facts.
 
 - Run `npm run build`, `npm run check`, and `npm test` before claiming a change
   works.
+- **Always commit and push when a piece of work is finished.** Do not leave
+  completed work sitting in the working tree at the end of a session — this is
+  standing permission, so there is no need to ask each time. Two conditions:
+  the three commands above must pass first, and **never commit a file likely to
+  hold secrets** (`.env`, credentials, `.claude/settings.local.json`). If the
+  current branch is `main`, branch before committing.
 - When adding a schema field, document it with a comment in
   `src/content.config.ts` — that file is the reference for contributors.
 - Prefer extending an existing component over adding a parallel one.
+- **Check a UI change at each breakpoint and in both themes before calling it
+  done.** The scale and what changes at each size are in
+  [`docs/breakpoints.md`](docs/breakpoints.md); 380px, 768px, 800px and 1280px
+  catch nearly everything, because 800px is where the sidebar appears.
 - Status badges are the site's honesty mechanism. Never upgrade a status to make
   the site look more finished than it is.

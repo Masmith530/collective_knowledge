@@ -50,7 +50,17 @@ const NAV = [
 					<a
 						href={item.href}
 						class="ck-nav-link"
-						aria-current={path.startsWith(item.match) ? 'page' : undefined}
+						/*
+						  "page" only when this link IS the current page. Inside a
+						  lesson, Courses points at the index, not at where you are —
+						  claiming "page" there gave every page two aria-current="page"
+						  elements and told a screen reader the header link was the
+						  current page. "true" is the generic form, and is what marks
+						  the section you are in.
+						*/
+						aria-current={
+							path === item.href ? 'page' : path.startsWith(item.match) ? 'true' : undefined
+						}
 					>
 						{item.label}
 					</a>
@@ -59,20 +69,14 @@ const NAV = [
 		</nav>
 	</div>
 
+	{/*
+	  No source-code link here. The readers are student pilots and instructors,
+	  not developers — a GitHub icon is at best noise to them, and the project is
+	  not run in the open, so it would also point somewhere they cannot go.
+	*/}
 	<div class="ck-hdr-right">
 		<div class="ck-search"><Search /></div>
 		<ThemeToggle />
-		<a
-			href="https://github.com/Masmith530/collective_knowledge"
-			class="ck-icon-link"
-			aria-label="GitHub repository"
-		>
-			<svg width="18" height="18" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true">
-				<path
-					d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-2.91-.88-2.91-2.84 0-.56.2-1.02.53-1.38-.05-.13-.23-.66.05-1.37 0 0 .43-.14 1.41.53a4.8 4.8 0 0 1 2.62 0c.98-.67 1.41-.53 1.41-.53.28.71.1 1.24.05 1.37.33.36.53.82.53 1.38 0 1.97-1.14 2.64-2.92 2.84.3.26.56.76.56 1.54 0 1.11-.01 2.01-.01 2.29 0 .21.15.46.55.38A7.99 7.99 0 0 0 16 8c0-4.42-3.58-8-8-8Z"
-				></path>
-			</svg>
-		</a>
 	</div>
 </div>
 
@@ -80,6 +84,8 @@ const NAV = [
 <div class="ck-read-progress" aria-hidden="true"><span id="ck-read-bar"></span></div>
 
 <style>
+	@reference "../../styles/global.css";
+
 	.ck-hdr {
 		display: flex;
 		align-items: center;
@@ -145,7 +151,9 @@ const NAV = [
 		color: var(--color-text-primary);
 	}
 
-	.ck-nav-link[aria-current='page'] {
+	/* Any aria-current value: "page" on the index itself, "true" anywhere else
+	   in that section. Both mean "you are here" and both get the highlight. */
+	.ck-nav-link[aria-current] {
 		background: var(--color-accent-soft);
 		color: var(--color-accent);
 	}
@@ -159,23 +167,6 @@ const NAV = [
 
 	.ck-search {
 		min-width: 0;
-	}
-
-	.ck-icon-link {
-		display: none;
-		place-items: center;
-		width: 34px;
-		height: 34px;
-		border-radius: var(--ck-r-sm);
-		border: 1px solid transparent;
-		color: var(--color-text-secondary);
-		transition: background 130ms ease, color 130ms ease;
-	}
-
-	.ck-icon-link:hover {
-		background: var(--color-canvas-subtle);
-		border-color: var(--color-border);
-		color: var(--color-text-primary);
 	}
 
 	/* Reading progress sits on the header's bottom edge. */
@@ -195,10 +186,37 @@ const NAV = [
 		transition: width 90ms linear;
 	}
 
-	@media (min-width: 50rem) {
-		.ck-nav,
-		.ck-icon-link {
+	/*
+	 * RESPONSIVE
+	 *
+	 * `nav` is the structural breakpoint, and it is Starlight's, not ours: below
+	 * it Starlight shows a fixed hamburger at the inline end and reserves header
+	 * padding for it, and the sections live in the drawer (Sidebar.astro puts the
+	 * section jump at its bottom). At and above it the sidebar is permanent, so
+	 * the header carries the section nav instead. Putting our reveal on any
+	 * other value opens a band with no section nav at all, or two.
+	 */
+	@media (width >= theme(--breakpoint-nav)) {
+		.ck-nav {
 			display: flex;
+		}
+	}
+
+	/* Phones. The wordmark competes with the search field and the hamburger for
+	   about 320px; the mark alone still identifies the site, and the link keeps
+	   its aria-label, so nothing is lost to a screen reader. */
+	@media (width < theme(--breakpoint-xs)) {
+		.ck-wordmark-text {
+			display: none;
+		}
+	}
+
+	/* Below the sidebar switch, Starlight's search collapses to an icon-only
+	   button and a fixed hamburger appears at the inline end. Three small
+	   controls in a row need less gap than two wide ones. */
+	@media (width < theme(--breakpoint-nav)) {
+		.ck-hdr {
+			gap: 0.6rem;
 		}
 	}
 </style>

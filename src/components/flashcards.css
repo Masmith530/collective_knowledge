@@ -1,5 +1,9 @@
 /* Flashcard deck styles. Tokens only — tracks light and dark automatically. */
 
+/* Pulls in the theme so `theme(--breakpoint-*)` resolves below. Emits nothing
+   on its own. */
+@reference "../styles/global.css";
+
 /* ─── Resting card ──────────────────────────────────────── */
 .ck-fc-card {
 	display: flex;
@@ -101,7 +105,7 @@
 }
 
 .ck-fc-dialog::backdrop {
-	background: rgba(2, 6, 12, 0.66);
+	background: var(--ck-backdrop);
 	backdrop-filter: blur(3px);
 }
 
@@ -231,8 +235,7 @@
 
 .ck-fc-done-n {
 	margin: 2rem 0 0;
-	font-size: 2.1rem
-	;
+	font-size: 2.1rem;
 	font-weight: 700;
 	line-height: 1;
 	font-variant-numeric: tabular-nums;
@@ -260,10 +263,80 @@
 	color: var(--color-warn);
 }
 
-@media (max-width: 34rem) {
+/*
+ * ─── RESPONSIVE ─────────────────────────────────────────
+ *
+ * Deliberately the same shape as the quiz's responsive block: the two study
+ * tools are one system and a reader should not find them behaving differently
+ * on the same phone. Both read their breakpoints from `theme()`.
+ */
+
+/* Phones and small tablets: the resting card's label and button, and the
+   Again/Got it pair, stop fitting side by side. */
+@media (width < theme(--breakpoint-sm)) {
 	.ck-fc-card,
 	.ck-fc-actions {
 		flex-direction: column;
 		align-items: stretch;
+	}
+}
+
+/* Phones. Edge to edge, same as the quiz — and the card face gets the height
+   the browser actually gives us rather than a guess at 100vh. */
+@media (width < theme(--breakpoint-xs)) {
+	/* `width: 100%`, not `100vw` — see the note in quiz.css. */
+	.ck-fc-dialog {
+		width: 100%;
+		max-width: 100%;
+		height: 100dvh;
+		max-height: 100dvh;
+		margin: 0;
+		border: 0;
+		border-radius: 0;
+		display: flex;
+		flex-direction: column;
+	}
+
+	/* The face is the whole point of the screen, so give it the slack — and let
+	   it scroll on its own, so a long answer never pushes the Again / Got it
+	   buttons off the bottom. The dialog is the flex column above, so the
+	   header and footer stay put without needing `position: sticky`. */
+	.ck-fc-face {
+		flex: 1;
+		min-height: 0;
+		overflow-y: auto;
+	}
+
+	/* The end-of-deck screen replaces the face, so it takes the same slack. */
+	.ck-fc-done {
+		flex: 1;
+		min-height: 0;
+		overflow-y: auto;
+		display: flex;
+		flex-direction: column;
+		justify-content: center;
+	}
+
+	.ck-fc-head,
+	.ck-fc-foot,
+	.ck-fc-warn {
+		padding-inline: 1rem;
+	}
+}
+
+/* Tablet portrait: trim the side margin, cap on dynamic viewport height. */
+@media (width >= theme(--breakpoint-xs)) and (width < theme(--breakpoint-md)) {
+	.ck-fc-dialog {
+		width: min(38rem, calc(100vw - 1.5rem));
+		max-height: 90dvh;
+	}
+}
+
+/* Touch, at any width — matches the quiz. The card face is already far larger
+   than any tap minimum, so only the close button needs raising. */
+@media (pointer: coarse) {
+	.ck-fc-close {
+		width: var(--ck-tap);
+		height: var(--ck-tap);
 	}
 }

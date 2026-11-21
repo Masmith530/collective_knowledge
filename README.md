@@ -1,7 +1,11 @@
 # Collective Knowledge
 
-**Free, community-built helicopter flight training.** No accounts, no ads, no
-paywalls — and no running costs, which is what makes that promise credible.
+**Free helicopter ground school, written by a working instructor.** No accounts,
+no ads, no paywalls — and no running costs, which is what makes that promise
+credible.
+
+This repository is **private**. "Open" on the site refers to the content
+licence (CC BY-SA), not to the source — see CLAUDE.md.
 
 Live site: https://collectiveknowledge.pages.dev
 
@@ -126,7 +130,9 @@ automatically.
 ## Contributing
 
 Corrections are the most valuable contribution — especially from instructors.
-Every page has an *Edit page* link straight to the file on GitHub.
+The site has no *Edit page* link and no source link anywhere a reader can see:
+the repository is private, and the audience is pilots rather than developers.
+Corrections reach the author directly.
 
 Read [`CLAUDE.md`](CLAUDE.md) for the project rules before making changes.
 

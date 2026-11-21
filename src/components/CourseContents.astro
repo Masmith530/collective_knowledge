@@ -98,6 +98,8 @@ const pageIds = allPageIds(weeks);
 </script>
 
 <style>
+	@reference "../styles/global.css";
+
 	.ck-cc-week + .ck-cc-week {
 		margin-top: 2.25rem;
 	}
@@ -106,8 +108,7 @@ const pageIds = allPageIds(weeks);
 		margin: 0 0 0.75rem;
 		border: 0;
 		padding: 0;
-		font-size: 0.7rem
-		;
+		font-size: 0.7rem;
 		font-weight: 700;
 		letter-spacing: 0.1em;
 		text-transform: uppercase;
@@ -252,13 +253,42 @@ const pageIds = allPageIds(weeks);
 		color: var(--color-text-muted);
 	}
 
-	@media (max-width: 34rem) {
+	/* ─── RESPONSIVE ───────────────────────────────────────
+	   The outline is the densest layout on the site: a fixed-width kind chip, a
+	   title, a description and a duration on one row. */
+
+	/* Phones and small tablets. The duration goes first — it is the least
+	   load-bearing thing in the row, and dropping it buys the title a line. The
+	   parts list loses its deep indent, which existed only to line up under the
+	   chip. */
+	@media (width < theme(--breakpoint-sm)) {
 		.ck-cc-dur {
 			display: none;
 		}
 
 		.ck-cc-parts {
 			padding-left: 1.1rem;
+		}
+	}
+
+	/* Narrow phones. A 4.6rem chip beside a title leaves roughly 11rem for the
+	   title at 320px, which breaks most lesson names across three lines. Put the
+	   chip on its own line above the title instead. */
+	@media (width < theme(--breakpoint-xs)) {
+		.ck-cc-item {
+			flex-direction: column;
+			gap: 0.5rem;
+			padding: 0.9rem 1rem;
+		}
+
+		.ck-cc-kind {
+			min-width: 0;
+			align-self: flex-start;
+			padding-inline: 0.45rem;
+		}
+
+		.ck-cc-parts {
+			padding: 0 0.5rem 0.5rem 0.9rem;
 		}
 	}
 </style>

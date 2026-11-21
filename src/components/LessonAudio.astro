@@ -145,4 +145,14 @@ if (MEDIA_IS_LOCAL) {
 		line-height: 1.6;
 		color: var(--color-text-secondary);
 	}
+
+	/* ─── RESPONSIVE ───────────────────────────────────────
+	   The player is already fluid (`width: 100%`), so it needs no width
+	   breakpoint. What it needs is height on a touch device: scrubbing a
+	   20-minute recording with a 38px-tall native control is fiddly. */
+	@media (pointer: coarse) {
+		.ck-audio audio {
+			height: var(--ck-tap);
+		}
+	}
 </style>

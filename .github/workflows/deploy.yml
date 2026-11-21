@@ -20,7 +20,8 @@ jobs:
       - name: Install
         run: npm ci
 
-      - name: Typecheck
+      # Token/breakpoint guard (scripts/check-tokens.mjs) + astro check.
+      - name: Lint and typecheck
         run: npm run check
 
       - name: Test

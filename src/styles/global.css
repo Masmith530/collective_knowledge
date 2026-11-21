@@ -8,6 +8,43 @@
 @import 'tailwindcss/utilities.css' layer(utilities);
 
 /*
+ * BREAKPOINTS — the single source of truth for the whole site.
+ *
+ * CSS custom properties are illegal inside `@media`, so a breakpoint cannot be
+ * shared as a `var()`. Tailwind's `theme()` function solves it: it is resolved
+ * at build time, so a component writes the *name* and the compiler substitutes
+ * the value. Any component with a media query must therefore reference this
+ * file and use `theme()` — never a literal width:
+ *
+ *   <style>
+ *     @reference "../styles/global.css";
+ *
+ *     @media (width >= theme(--breakpoint-md)) { ... }
+ *   </style>
+ *
+ * Because these live in `@theme`, Tailwind's own responsive utility prefixes
+ * (`md:`, `lg:`, `nav:` …) read the same numbers. One definition, three
+ * consumers: media queries, utility classes, and `var()` for JS.
+ *
+ * Two of these are STRUCTURAL — they are Starlight's own layout switches, not
+ * ours. Starlight hardcodes 50rem and 72rem internally, so moving a layout rule
+ * off those values opens a band where our CSS and Starlight's disagree. Do not
+ * retune `nav` or `wide` to a rounder number.
+ */
+@theme {
+	--breakpoint-xs: 30rem; /*  480px — large phone, phone landscape */
+	--breakpoint-sm: 40rem; /*  640px — small tablet, portrait */
+	--breakpoint-md: 48rem; /*  768px — tablet, portrait */
+	--breakpoint-nav: 50rem; /*  800px — STRUCTURAL: Starlight swaps the hamburger
+	                                     + drawer for the persistent sidebar */
+	--breakpoint-lg: 64rem; /* 1024px — tablet landscape, small laptop */
+	--breakpoint-wide: 72rem; /* 1152px — STRUCTURAL: Starlight starts centring the
+	                                     content column in the space left over */
+	--breakpoint-xl: 80rem; /* 1280px — desktop */
+	--breakpoint-2xl: 96rem; /* 1536px — wide desktop */
+}
+
+/*
  * THEME TOKENS
  *
  * Light is the default (see ThemeToggle.astro).
@@ -27,6 +64,23 @@
 	--ck-r: 12px;
 	--ck-r-lg: 16px;
 	--ck-measure: 70ch;
+
+	/* Minimum comfortable touch target. 44px is the figure both Apple's HIG and
+	   the WCAG 2.2 target-size guidance land on. Applied under
+	   `@media (pointer: coarse)` rather than at a width breakpoint — a touch
+	   laptop needs big targets at 1440px, and a phone keyboard user does not
+	   stop needing them in landscape. */
+	--ck-tap: 2.75rem;
+
+	/* Modal scrim. Deliberately one value for both themes: it sits over
+	   arbitrary page content, not over a themed surface, so it has nothing to
+	   adapt to. Shared because the quiz and the flashcard deck are two modals
+	   that must look like one system.
+
+	   Neutral, not the blue-black it used to be — over charcoal that tint was
+	   visible as a wash, and over the light theme it did nothing a plain dark
+	   scrim does not do. */
+	--ck-backdrop: rgba(8, 8, 9, 0.66);
 }
 
 /* ─── LIGHT (default) ───────────────────────────────────── */
@@ -48,6 +102,17 @@
 	--color-accent-soft: #eff4ff;
 	--color-accent-ring: rgba(37, 99, 235, 0.14);
 
+	/* Text and icons that sit ON an accent fill (primary button, the current
+	   part chip). It is a token and not `#fff` because the dark theme's accent
+	   is a *light* blue — white on it measures 2.5:1, which is why this exists. */
+	--color-on-accent: #ffffff; /*  5.2:1 on accent, 6.7:1 on accent-strong */
+
+	/* The accent-tinted edge a card takes on hover. A token because it is an
+	   *interactive* border and so owes 3:1 — it used to be
+	   `color-mix(accent 45%, border)` written out in two components, which
+	   measured 2.22:1 here and had never met that rule. */
+	--color-border-accent: #5c88e4; /*  3.44:1 on canvas, 3.29:1 on subtle */
+
 	--color-ok: #15803d; /*  5.0:1 */
 	--color-warn: #a16207; /*  4.9:1 */
 	--color-bad: #b91c1c; /*  6.5:1 */
@@ -67,35 +132,55 @@
 	color-scheme: light;
 }
 
-/* ─── DARK ──────────────────────────────────────────────── */
+/*
+ * ─── DARK ───────────────────────────────────────────────
+ *
+ * A neutral charcoal, not a navy. The earlier palette was built on blue-tinted
+ * slate — every surface and every grey carried a 21-41 point channel spread
+ * towards blue, which is what made it read as "GitHub dark" rather than as a
+ * dark reference. The neutrals below sit at a 2-8 point spread: a touch cool, so
+ * it looks like charcoal rather than sepia or bare concrete, and no further.
+ *
+ * The accent stays blue in both themes. It is the site's one accent colour (see
+ * "Looking modern" in CLAUDE.md) and a blue accent is what a neutral charcoal is
+ * *for* — it has nothing to compete with now.
+ */
 :root[data-theme='dark'] {
-	--color-canvas: #0b1120;
-	--color-canvas-subtle: #111a2b;
-	--color-surface: #172034;
-	--color-border: #223049;
-	--color-border-muted: #1a2437;
-	--color-border-strong: #6b7d94; /* 4.47:1 on canvas, 3.86:1 on surface */
+	--color-canvas: #17181a;
+	--color-canvas-subtle: #1e1f21;
+	--color-surface: #252729;
+	--color-border: #343638;
+	--color-border-muted: #26282a;
+	--color-border-strong: #84888c; /* 4.98:1 on canvas, 4.20:1 on surface */
 
-	--color-text-primary: #e8eef7; /* 16.1:1 */
-	--color-text-secondary: #a3b3c9; /*  8.8:1 */
-	--color-text-muted: #8798b0; /*  6.4:1 */
+	--color-text-primary: #e9eaeb; /* 14.8:1 */
+	--color-text-secondary: #b3b6b9; /*  8.7:1 */
+	--color-text-muted: #929598; /*  5.9:1 */
 
-	--color-accent: #60a5fa; /*  7.4:1 */
+	--color-accent: #60a5fa; /*  7.0:1 */
 	--color-accent-strong: #93c5fd;
 	--color-accent-soft: rgba(96, 165, 250, 0.12);
 	--color-accent-ring: rgba(96, 165, 250, 0.22);
 
-	--color-ok: #4ade80; /* 10.8:1 */
-	--color-warn: #fbbf24; /* 11.3:1 */
-	--color-bad: #fb7185; /*  7.0:1 */
-	--color-info: #c4b5fd;
+	/* Dark, not white: the accent here is a light blue. Tracks `canvas`. */
+	--color-on-accent: #17181a; /*  7.0:1 on accent, 9.9:1 on accent-strong */
+
+	--color-border-accent: #517eb6; /*  4.24:1 canvas, 3.93:1 subtle, 3.58:1 surface */
+
+	--color-ok: #4ade80; /* 10.2:1 */
+	--color-warn: #fbbf24; /* 10.6:1 */
+	--color-bad: #fb7185; /*  6.6:1 */
+	--color-info: #c4b5fd; /*  9.6:1 */
 
 	--color-ok-soft: rgba(74, 222, 128, 0.1);
 	--color-warn-soft: rgba(251, 191, 36, 0.1);
 	--color-bad-soft: rgba(251, 113, 133, 0.1);
 
-	--color-nav-bg: rgba(11, 17, 32, 0.82);
+	/* Tracks `canvas` — the header blurs the page behind it, so a navy tint here
+	   put a blue wash over charcoal content. */
+	--color-nav-bg: rgba(23, 24, 26, 0.82);
 
+	/* Already neutral: these are pure black, so they carry no cast. */
 	--ck-shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.3);
 	--ck-shadow: 0 1px 3px rgba(0, 0, 0, 0.4), 0 4px 12px -2px rgba(0, 0, 0, 0.3);
 	--ck-shadow-lg: 0 2px 6px rgba(0, 0, 0, 0.4), 0 16px 40px -8px rgba(0, 0, 0, 0.55);
@@ -149,7 +234,11 @@
 /* ─── Base ──────────────────────────────────────────────── */
 html {
 	scroll-behavior: smooth;
-	scroll-padding-top: 5rem;
+	/* Derived from Starlight's own nav height rather than a hardcoded 5rem.
+	   The header is `position: fixed`, and its height is not the same on every
+	   breakpoint — a literal here left anchored headings tucked under the bar
+	   on mobile. */
+	scroll-padding-top: calc(var(--sl-nav-height) + 1rem);
 }
 
 body {
@@ -194,7 +283,7 @@ body {
 .sl-markdown-content :is(h2, h3, h4) {
 	letter-spacing: -0.02em;
 	color: var(--color-text-primary);
-	scroll-margin-top: 5rem;
+	scroll-margin-top: calc(var(--sl-nav-height) + 1rem);
 }
 
 .sl-markdown-content h2 {
@@ -319,7 +408,7 @@ body {
 
 .ck-btn-primary {
 	background: var(--color-accent);
-	color: #fff;
+	color: var(--color-on-accent);
 	border-color: var(--color-accent);
 	box-shadow: var(--ck-shadow-sm);
 }
@@ -351,16 +440,60 @@ body {
 	transform: none;
 }
 
-/* ─── Home page fine print ──────────────────────────────── */
-/* Lives here rather than in a <style> block on index.mdx: MDX parses the
-   contents of a raw <style> tag as JSX and chokes on CSS declarations. */
-.ck-home-fine {
-	max-width: 34rem;
-	margin: 2.5rem auto 0;
-	text-align: center;
-	font-size: 0.8125rem;
-	line-height: 1.6;
-	color: var(--color-text-muted);
+/*
+ * ─── RESPONSIVE: site-wide ──────────────────────────────
+ *
+ * Only rules that apply to *prose and shared primitives* live here. Anything
+ * specific to one component belongs in that component, using `@reference` plus
+ * `theme()` so it reads from the same scale. See `docs/breakpoints.md`.
+ */
+
+/* Phones. A long word in a heading — "autorotation", "aerodynamics" — is wider
+   than a 320px screen, and the default is to overflow rather than break. */
+@media (width < theme(--breakpoint-xs)) {
+	.sl-markdown-content :is(h1, h2, h3, h4) {
+		overflow-wrap: break-word;
+		hyphens: auto;
+	}
+
+	.sl-markdown-content h2 {
+		font-size: 1.3125rem;
+		margin-top: 2.25rem;
+	}
+
+	.sl-markdown-content h3 {
+		font-size: 1.0625rem;
+		margin-top: 1.75rem;
+	}
+}
+
+/* Tables are the one prose element that cannot reflow: a performance chart has
+   the columns it has. Below tablet, let it scroll inside the measure instead of
+   widening the whole page and giving every lesson a horizontal scrollbar. */
+@media (width < theme(--breakpoint-md)) {
+	.sl-markdown-content table:not(:where(.not-content *)) {
+		display: block;
+		width: 100%;
+		overflow-x: auto;
+		-webkit-overflow-scrolling: touch;
+		font-size: 0.875rem;
+	}
+
+	/* Cells keep their content on one line so the scroll is the thing that
+	   gives, not the columns. Without this the table still "fits" but every
+	   column collapses to a word or two per line, which for a limits or
+	   performance table is harder to read than scrolling it. */
+	.sl-markdown-content table:not(:where(.not-content *)) :is(th, td) {
+		white-space: nowrap;
+	}
+}
+
+/* Touch. Not a width query: a touch laptop needs big targets at 1440px, and a
+   phone in landscape does not stop needing them. */
+@media (pointer: coarse) {
+	.ck-btn {
+		min-height: var(--ck-tap);
+	}
 }
 
 /* ─── Reduced motion ───────────────────────────────────── */

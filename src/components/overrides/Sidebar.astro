@@ -25,6 +25,16 @@ const path = Astro.url.pathname;
 const inSubjects = path.startsWith('/subjects/');
 // The catalog page itself lists courses rather than one course's outline.
 const atCatalog = path === '/curriculum/';
+// Site-information pages belong to neither section. Without a branch of their
+// own they fell through to the course outline, where `?? openCourses[0]` picked
+// the first open course — so opening the disclaimer from anywhere on the site
+// dumped you into the Private Pilot outline.
+const inStartHere = path.startsWith('/start-here/');
+
+const SITE_PAGES = [
+	{ href: '/start-here/why-this-is-free/', label: 'Why this is free' },
+	{ href: '/start-here/disclaimer/', label: 'Disclaimer & licensing' },
+];
 // Only open courses are navigable — a planned course has no page to link to.
 const openCourses = COURSES.filter((c) => c.status === 'open');
 
@@ -44,17 +54,70 @@ const areas = SUBJECT_AREAS.map((area) => ({
 })).filter((a) => a.items.length > 0);
 
 const here = (href: string) => path === href;
+
+// The section you are *not* in. The bottom of the sidebar offers a single jump
+// to it rather than a two-item switcher, so the link always names a destination
+// you are not already at.
+//
+// The site-information pages are in neither section, so there is no "other" one
+// to toggle to. They get Courses — not as a fallback but as a choice: it is the
+// primary content, and it is where someone who has finished reading the licence
+// is most likely headed. (Desktop never sees this; the header carries both.)
+const otherSection =
+	inSubjects || inStartHere
+		? { label: 'Courses', href: '/curriculum/' }
+		: { label: 'Subject Areas', href: '/subjects/' };
 ---
 
 <nav class="ck-sb" aria-label="Site navigation">
-	{/* Section switcher */}
-	<div class="ck-switch" role="group" aria-label="Section">
-		<a href="/curriculum/" aria-current={!inSubjects ? 'true' : undefined}>Courses</a>
-		<a href="/subjects/" aria-current={inSubjects ? 'true' : undefined}>Subjects</a>
-	</div>
-
+	<div class="ck-sb-main">
 	{
-		atCatalog ? (
+		inStartHere ? (
+			/*
+			 * TODO(matthew): this branch is a stopgap — replace it.
+			 *
+			 * WANTED: opening "Why this is free" or "Disclaimer & licensing"
+			 * should KEEP the sidebar the reader already had (their course
+			 * outline, or the subject list) and simply highlight the link in the
+			 * pinned footer. Swapping in a sidebar of its own loses their place,
+			 * which is the same complaint as the original bug — it just replaced
+			 * a wrong course outline with a correct-but-unrelated list.
+			 *
+			 * WHY IT IS NOT DONE: the site is static, so the server cannot know
+			 * which section the reader came from. Three ways to get there, in
+			 * rough order of preference:
+			 *
+			 *   1. Remember the last section in `sessionStorage` (the sidebar
+			 *      already runs a small script for completion ticks) and render
+			 *      BOTH outlines, hiding one. Costs page weight on two pages and
+			 *      needs a sensible default for a cold visit — probably the
+			 *      course outline, since that is the primary content.
+			 *   2. `document.referrer` on load — simpler, but blank on a direct
+			 *      visit or a privacy-stripped referrer, so it still needs 1's
+			 *      default.
+			 *   3. Give each page a `?from=` link everywhere it appears. Honest
+			 *      and JS-free, but it puts a query string on a shareable URL.
+			 *
+			 * Whichever is chosen, keep the footer links where they are and keep
+			 * `aria-current` on the one you are on — that part is already right.
+			 */
+			<>
+				<p class="ck-sb-course">About this site</p>
+				<ul>
+					{SITE_PAGES.map((p) => (
+						<li>
+							<a
+								href={p.href}
+								class="ck-sb-link"
+								aria-current={here(p.href) ? 'page' : undefined}
+							>
+								{p.label}
+							</a>
+						</li>
+					))}
+				</ul>
+			</>
+		) : atCatalog ? (
 			<>
 				<p class="ck-sb-course">All courses</p>
 				<ul>
@@ -70,9 +133,6 @@ const here = (href: string) => path === href;
 						</li>
 					))}
 				</ul>
-				<div class="ck-sb-foot">
-					<a href="/start-here/disclaimer/" class="ck-sb-link ck-sb-fine">Disclaimer &amp; licensing</a>
-				</div>
 			</>
 		) : inSubjects ? (
 			<>
@@ -104,6 +164,17 @@ const here = (href: string) => path === href;
 			</>
 		) : (
 			<>
+				{/*
+				  Up one level. Without it there is no way back to the course list
+				  from inside a course: "Course overview" only goes up to this
+				  course's own page, and the jump at the bottom goes to the other
+				  *section*, not to the courses index.
+				*/}
+				<a href="/curriculum/" class="ck-sb-link ck-sb-up">
+					<span class="ck-sb-up-arrow" aria-hidden="true">←</span>
+					All courses
+				</a>
+
 				<p class="ck-sb-course">{course?.title}</p>
 				{course && (
 					<a
@@ -119,27 +190,49 @@ const here = (href: string) => path === href;
 					<div class="ck-sb-group">
 						<p class="ck-sb-heading">Week {week.week}</p>
 						<ul>
-							{week.lessons.map((lesson) =>
-								lesson.parts.length === 0 ? (
+							{week.lessons.map((lesson) => {
+								const split = lesson.parts.length > 0;
+								// `lesson.href` is the lesson itself, or its first part.
+								const inThisLesson = lesson.pageIds.includes(path);
+								return (
 									<li>
 										<a
 											href={lesson.href}
 											class="ck-sb-link ck-sb-lesson"
-											data-ck-lesson={lesson.href}
-											aria-current={here(lesson.href) ? 'page' : undefined}
+											// Only a single-page lesson is a page that can be "done";
+											// a split lesson's ticks belong to its parts.
+											data-ck-lesson={split ? undefined : lesson.href}
+											// Exactly one element may be aria-current="page". For a
+											// split lesson that is the part you are on, not this row —
+											// the row gets the generic "true", meaning "the lesson you
+											// are in". It links to part 1, so on part 1 that is a link
+											// to the current page and needs to say so.
+											aria-current={
+												!split && here(lesson.href)
+													? 'page'
+													: split && inThisLesson
+														? 'true'
+														: undefined
+											}
+											data-ck-in={split && inThisLesson ? '' : undefined}
 										>
 											<span class="ck-sb-kind">{lesson.label}</span>
-											<span>{lesson.title}</span>
-										</a>
-									</li>
-								) : (
-									<li>
-										<details open={lesson.pageIds.includes(path)}>
-											<summary>
-												<span class="ck-sb-kind">{lesson.label}</span>
+											<span class="ck-sb-lrow">
 												<span class="ck-sb-ltitle">{lesson.title}</span>
-												<span class="ck-sb-count">{lesson.parts.length}</span>
-											</summary>
+												{split && <span class="ck-sb-count">{lesson.parts.length} parts</span>}
+											</span>
+										</a>
+
+										{/*
+										  Parts appear only for the lesson you are actually in.
+										  Clicking a lesson takes you to its first part, which is
+										  what opens this list — one click to start a lesson,
+										  instead of expanding a disclosure and then clicking
+										  again. The whole outline expanded at once was too tall
+										  to navigate, which is the constraint that has not
+										  changed.
+										*/}
+										{split && inThisLesson && (
 											<ul class="ck-sb-parts">
 												{lesson.parts.map((part) => (
 													<li>
@@ -155,22 +248,54 @@ const here = (href: string) => path === href;
 													</li>
 												))}
 											</ul>
-										</details>
+										)}
 									</li>
-								),
-							)}
+								);
+							})}
 						</ul>
 					</div>
 				))}
 
 				{weeks.length === 0 && <p class="ck-sb-empty">No lessons yet.</p>}
-
-				<div class="ck-sb-foot">
-					<a href="/start-here/disclaimer/" class="ck-sb-link ck-sb-fine">Disclaimer &amp; licensing</a>
-				</div>
 			</>
 		)
 	}
+	</div>
+
+	{/*
+	  Pinned to the bottom of the sidebar (`margin-top: auto`), not trailing the
+	  outline. When the outline is short this sits on the bottom edge; when it is
+	  long enough to scroll, it falls below the last lesson, which is the right
+	  place for it either way.
+
+	  It is outside the branch on purpose. The fine links used to be written out
+	  inside two of the three branches, which meant Subject Areas pages — the
+	  third — carried no footer at all, and nobody noticed because the markup
+	  looked complete in both places you were likely to read. One copy, every
+	  section.
+	*/}
+	<div class:list={['ck-sb-bottom', { 'is-bare': inStartHere }]}>
+		<a href={otherSection.href} class="ck-sb-jump">
+			<span>{otherSection.label}</span>
+			<span class="ck-sb-jump-arrow" aria-hidden="true">→</span>
+		</a>
+
+		{/*
+		  Suppressed on the site-information pages themselves, where the same two
+		  links are the main list above — one sidebar should not show a link
+		  twice. Rendered from `SITE_PAGES` either way, so the two places cannot
+		  drift apart.
+		*/}
+		{!inStartHere && (
+			<div class="ck-sb-fines">
+				{SITE_PAGES.map((p) => (
+					<a href={p.href} class="ck-sb-link ck-sb-fine">
+						{p.label}
+					</a>
+				))}
+			</div>
+		)}
+	</div>
 </nav>
 
 <script>
@@ -195,9 +320,28 @@ const here = (href: string) => path === href;
 </script>
 
 <style>
+	@reference "../../styles/global.css";
+
+	/*
+	 * A column that fills the sidebar's height, so the bottom block can be
+	 * pinned to the bottom edge with `margin-top: auto`. Starlight's
+	 * `.sidebar-content` is already `height: 100%` with `min-height: max-content`,
+	 * so `flex: 1` fills a short outline and a long one simply grows and scrolls.
+	 */
 	.ck-sb {
-		padding: 1.1rem 0 2rem;
+		display: flex;
+		flex-direction: column;
+		flex: 1;
+		/* Only a little bottom padding: Starlight's `.sidebar-content` is a flex
+		   column with `gap: 1rem` and a trailing `::after`, so it already leaves
+		   about 1rem below this nav. More here and the pinned block stops
+		   looking pinned. */
+		padding: 1.1rem 0 0.35rem;
 		font-size: 0.875rem;
+	}
+
+	.ck-sb-main {
+		flex: 0 0 auto;
 	}
 
 	.ck-sb ul {
@@ -208,39 +352,6 @@ const here = (href: string) => path === href;
 
 	.ck-sb li {
 		margin: 0;
-	}
-
-	/* ── Section switcher ── */
-	.ck-switch {
-		display: grid;
-		grid-template-columns: 1fr 1fr;
-		gap: 2px;
-		margin-bottom: 1.35rem;
-		padding: 2px;
-		border: 1px solid var(--color-border);
-		border-radius: var(--ck-r-sm);
-		background: var(--color-canvas-subtle);
-	}
-
-	.ck-switch a {
-		padding: 0.4rem 0.5rem;
-		border-radius: 6px;
-		font-size: 0.8125rem;
-		font-weight: 600;
-		text-align: center;
-		text-decoration: none;
-		color: var(--color-text-muted);
-		transition: background 120ms ease, color 120ms ease;
-	}
-
-	.ck-switch a:hover {
-		color: var(--color-text-primary);
-	}
-
-	.ck-switch a[aria-current] {
-		background: var(--color-canvas);
-		color: var(--color-text-primary);
-		box-shadow: var(--ck-shadow-sm);
 	}
 
 	.ck-sb-course {
@@ -286,6 +397,25 @@ const here = (href: string) => path === href;
 		font-size: 0.8125rem;
 	}
 
+	/* Up one level, to the course list. Quieter than the outline it sits above —
+	   it is an escape hatch, not a destination you are being sold. */
+	.ck-sb-up {
+		display: flex;
+		align-items: center;
+		gap: 0.4rem;
+		margin-bottom: 0.9rem;
+		font-size: 0.8125rem;
+		color: var(--color-text-muted);
+	}
+
+	.ck-sb-up:hover {
+		color: var(--color-accent);
+	}
+
+	.ck-sb-up-arrow {
+		flex-shrink: 0;
+	}
+
 	.ck-sb-group {
 		margin-top: 1rem;
 	}
@@ -318,67 +448,40 @@ const here = (href: string) => path === href;
 		color: color-mix(in srgb, var(--color-accent) 75%, var(--color-text-muted));
 	}
 
-	/* ── Collapsible multi-part lesson ── */
-	.ck-sb details > summary {
+	/* ── Multi-part lesson ── */
+	/*
+	  No disclosure widget. The row is an ordinary link to the lesson's first
+	  part, and the part list below renders only for the lesson you are in — so
+	  there is nothing to expand and nothing to toggle.
+	*/
+	.ck-sb-lrow {
 		display: flex;
-		align-items: center;
-		flex-wrap: wrap;
-		gap: 0.1rem 0.4rem;
-		padding: 0.4rem 0.6rem;
-		border-radius: var(--ck-r-sm);
-		cursor: pointer;
-		list-style: none;
-		color: var(--color-text-secondary);
-		transition: background 120ms ease;
-	}
-
-	.ck-sb details > summary::-webkit-details-marker {
-		display: none;
-	}
-
-	.ck-sb details > summary:hover {
-		background: var(--color-canvas-subtle);
-	}
-
-	.ck-sb details > summary::before {
-		content: '';
-		order: -1;
-		width: 0;
-		height: 0;
-		border-left: 4.5px solid currentColor;
-		border-top: 3.5px solid transparent;
-		border-bottom: 3.5px solid transparent;
-		color: var(--color-text-muted);
-		flex-shrink: 0;
-		margin-inline-end: 0.1rem;
-		transition: transform 150ms ease;
-	}
-
-	.ck-sb details[open] > summary::before {
-		transform: rotate(90deg);
-	}
-
-	.ck-sb details > summary .ck-sb-kind {
-		flex-basis: 100%;
-		margin-inline-start: 0.7rem;
+		align-items: baseline;
+		justify-content: space-between;
+		gap: 0.5rem;
 	}
 
 	.ck-sb-ltitle {
-		flex: 1;
 		min-width: 0;
-		color: var(--color-text-primary);
-		font-weight: 550;
 	}
 
 	.ck-sb-count {
 		flex-shrink: 0;
-		padding: 0 0.35rem;
-		border-radius: 999px;
-		background: var(--color-canvas-subtle);
-		border: 1px solid var(--color-border);
 		font-size: 0.65rem;
-		font-weight: 700;
+		font-weight: 600;
 		color: var(--color-text-muted);
+		white-space: nowrap;
+	}
+
+	/* The lesson you are inside, when the page you are on is one of its parts.
+	   Deliberately lighter than aria-current='page', which belongs to the part. */
+	.ck-sb-lesson[data-ck-in] {
+		background: var(--color-canvas-subtle);
+	}
+
+	.ck-sb-lesson[data-ck-in] .ck-sb-ltitle {
+		color: var(--color-text-primary);
+		font-weight: 600;
 	}
 
 	.ck-sb-parts {
@@ -411,13 +514,63 @@ const here = (href: string) => path === href;
 	.ck-sb-part[aria-current='page'] .ck-sb-partn {
 		background: var(--color-accent);
 		border-color: var(--color-accent);
-		color: #fff;
+		color: var(--color-on-accent);
 	}
 
-	.ck-sb-foot {
-		margin-top: 1.75rem;
+	/* ── Pinned bottom ── */
+	.ck-sb-bottom {
+		margin-top: auto; /* this is what pins it to the bottom edge */
 		padding-top: 0.9rem;
-		border-top: 1px solid var(--color-border-muted);
+		/* `border` not `border-muted`: this divides the outline from the site-level
+		   links below it, which is a real separation rather than a hairline
+		   between list items. */
+		border-top: 1px solid var(--color-border);
+	}
+
+	/*
+	 * The jump to the other section — **drawer only**, hidden from `nav` up.
+	 *
+	 * At and above that breakpoint the header carries Courses and Subject Areas,
+	 * so showing this as well would be two section navs on one screen. Below it
+	 * the header's links are hidden and this is the only way to change section,
+	 * so it cannot simply be deleted. One section nav at every width.
+	 *
+	 * A single link naming where it goes, rather than a two-item switcher — you
+	 * are never offered the section you are already in. The arrow is what makes
+	 * it read as "go there" and not as a label for what follows.
+	 */
+	.ck-sb-jump {
+		display: flex;
+		align-items: center;
+		justify-content: space-between;
+		gap: 0.5rem;
+		padding: 0.5rem 0.6rem;
+		border-radius: var(--ck-r-sm);
+		font-size: 0.875rem;
+		font-weight: 600;
+		text-decoration: none;
+		color: var(--color-text-primary);
+		transition: background 120ms ease, color 120ms ease;
+	}
+
+	.ck-sb-jump:hover {
+		background: var(--color-accent-soft);
+		color: var(--color-accent);
+	}
+
+	.ck-sb-jump-arrow {
+		flex-shrink: 0;
+		color: var(--color-text-muted);
+		transition: transform 150ms ease, color 120ms ease;
+	}
+
+	.ck-sb-jump:hover .ck-sb-jump-arrow {
+		color: var(--color-accent);
+		transform: translateX(2px);
+	}
+
+	.ck-sb-fines {
+		margin-top: 0.5rem;
 	}
 
 	.ck-sb-fine {
@@ -428,5 +581,63 @@ const here = (href: string) => path === href;
 	.ck-sb-empty {
 		margin: 0 0.6rem;
 		color: var(--color-text-muted);
+	}
+
+	/*
+	 * ─── RESPONSIVE ───────────────────────────────────────
+	 *
+	 * This component is two different things either side of `nav`: below it,
+	 * Starlight renders it as a full-width drawer over the page; at and above,
+	 * it is the permanent left column. Same markup either way, and because the
+	 * drawer is also full-height, the pinned bottom block sits on the bottom
+	 * edge there too — which on a phone is the easiest place in the panel to
+	 * reach.
+	 */
+
+	/* Drawer. It has the whole screen width, so it can afford to be roomier and
+	   bigger-typed than a 300px column. */
+	@media (width < theme(--breakpoint-nav)) {
+		.ck-sb {
+			padding-top: 0.5rem;
+			font-size: 0.9375rem;
+		}
+
+		.ck-sb-jump {
+			padding-block: 0.65rem;
+		}
+
+		/* A full-width row at a phone's line length is a long way to travel for
+		   a one-line link, so cap the list to a comfortable measure. */
+		.ck-sb > * {
+			max-width: 32rem;
+		}
+	}
+
+	/* The header's section nav appears here, so the drawer's jump retires. */
+	@media (width >= theme(--breakpoint-nav)) {
+		.ck-sb-jump {
+			display: none;
+		}
+
+		/* On the site-information pages the bottom block holds only that jump, so
+		   once it is hidden the block is empty — without this it would still draw
+		   its divider and padding against nothing. */
+		.ck-sb-bottom.is-bare {
+			border-top: 0;
+			padding-top: 0;
+		}
+	}
+
+	/* Touch. Sidebar rows are the densest set of links on the site; at 0.4rem of
+	   block padding they are about 30px tall, which is a miss-prone target. */
+	@media (pointer: coarse) {
+		.ck-sb-link {
+			min-height: var(--ck-tap);
+			align-content: center;
+		}
+
+		.ck-sb-part {
+			min-height: 2.25rem;
+		}
 	}
 </style>

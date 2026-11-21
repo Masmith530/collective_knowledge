@@ -2,6 +2,10 @@
    scoped <style> available. All colours come from the verified theme tokens in
    global.css, so the quiz tracks light/dark automatically. */
 
+/* Pulls in the theme so `theme(--breakpoint-*)` resolves below. Emits nothing
+   on its own. */
+@reference "../styles/global.css";
+
 .sr-only {
 	position: absolute;
 	width: 1px;
@@ -24,7 +28,7 @@
 	margin: 2.5rem 0 1rem;
 	padding: 1.25rem 1.4rem;
 	border: 1px solid var(--color-border);
-	border-radius: var(--ck-radius);
+	border-radius: var(--ck-r);
 	background: var(--color-canvas-subtle);
 }
 
@@ -70,7 +74,7 @@
 /* ─── Modal shell ───────────────────────────────────────── */
 .ck-quiz-dialog {
 	width: min(42rem, calc(100vw - 2rem));
-	max-height: min(85vh, 54rem);
+	max-height: min(85dvh, 54rem);
 	padding: 0;
 	border: 1px solid var(--color-border);
 	border-radius: 12px;
@@ -80,7 +84,7 @@
 }
 
 .ck-quiz-dialog::backdrop {
-	background: rgba(2, 6, 12, 0.66);
+	background: var(--ck-backdrop);
 	backdrop-filter: blur(3px);
 }
 
@@ -88,7 +92,7 @@
 .ck-quiz-results {
 	display: flex;
 	flex-direction: column;
-	max-height: min(85vh, 54rem);
+	max-height: min(85dvh, 54rem);
 }
 
 /* ─── Running ───────────────────────────────────────────── */
@@ -133,7 +137,7 @@
 	display: grid;
 	place-items: center;
 	border: 1px solid var(--color-border);
-	border-radius: var(--ck-radius-sm);
+	border-radius: var(--ck-r-sm);
 	background: transparent;
 	color: var(--color-text-secondary);
 	font-size: 0.8rem;
@@ -169,7 +173,7 @@
 	width: 100%;
 	padding: 0.7rem 0.9rem;
 	border: 1px solid var(--color-border-strong);
-	border-radius: var(--ck-radius-sm);
+	border-radius: var(--ck-r-sm);
 	background: var(--color-canvas);
 	color: var(--color-text-primary);
 	font: inherit;
@@ -204,14 +208,13 @@
 	color: var(--color-text-secondary);
 }
 
+/* One rule, both themes. This was two — a base using `--color-canvas` plus a
+   light-theme override — because there was no token for "text on an accent
+   fill". That is what `--color-on-accent` is for. */
 .ck-quiz-choice[data-selected] .ck-quiz-letter {
 	border-color: var(--color-accent);
 	background: var(--color-accent);
-	color: var(--color-canvas);
-}
-
-:root[data-theme='light'] .ck-quiz-choice[data-selected] .ck-quiz-letter {
-	color: #fff;
+	color: var(--color-on-accent);
 }
 
 .ck-quiz-run-foot {
@@ -265,8 +268,7 @@
 	margin: 0;
 	padding: 1.1rem 1.4rem 0.5rem;
 	border: 0;
-	font-size: 0.75rem
-	;
+	font-size: 0.75rem;
 	font-weight: 700;
 	letter-spacing: 0.08em;
 	text-transform: uppercase;
@@ -335,13 +337,82 @@
 	font-size: 0.8125rem;
 }
 
-@media (max-width: 30rem) {
+/*
+ * ─── RESPONSIVE ─────────────────────────────────────────
+ *
+ * Breakpoints come from `theme()` so the quiz and the flashcard deck — two
+ * modals that must behave identically — cannot drift apart. See
+ * `docs/breakpoints.md`.
+ */
+
+/* Phones. A centred card with a margin is the wrong shape for a one-question-
+   at-a-time flow on a 5" screen: it wastes the edges and the browser chrome
+   eats the bottom. Go edge to edge and let the choices have the room. */
+@media (width < theme(--breakpoint-xs)) {
+	.ck-quiz-card {
+		flex-direction: column;
+		align-items: stretch;
+	}
+
+	/* `width: 100%` rather than `100vw`: a modal dialog's containing block is
+	   already the viewport, and 100vw additionally counts a classic scrollbar. */
+	.ck-quiz-dialog {
+		width: 100%;
+		max-width: 100%;
+		height: 100dvh;
+		max-height: 100dvh;
+		margin: 0;
+		border: 0;
+		border-radius: 0;
+	}
+
+	/* `.ck-quiz-run` is a flex column whose only scrolling child is the choice
+	   list, so Back/Next stay on screen without `position: sticky`. */
+	.ck-quiz-run,
+	.ck-quiz-results {
+		max-height: 100dvh;
+		height: 100dvh;
+	}
+
 	.ck-quiz-bar {
 		width: 7rem;
 	}
 
-	.ck-quiz-card {
-		flex-direction: column;
-		align-items: stretch;
+	.ck-quiz-run-head,
+	.ck-quiz-run-q,
+	.ck-quiz-choices,
+	.ck-quiz-run-foot,
+	.ck-quiz-score,
+	.ck-quiz-review-title,
+	.ck-quiz-review {
+		padding-inline: 1rem;
+	}
+}
+
+/* Tablet portrait and down: the dialog is still a card, but 2rem of side margin
+   is more than a tablet needs to give up. */
+@media (width >= theme(--breakpoint-xs)) and (width < theme(--breakpoint-md)) {
+	.ck-quiz-dialog {
+		width: min(42rem, calc(100vw - 1.5rem));
+		max-height: min(90dvh, 54rem);
+	}
+
+	.ck-quiz-run,
+	.ck-quiz-results {
+		max-height: min(90dvh, 54rem);
+	}
+}
+
+/* Touch, at any width. 30px is below every published minimum for a tap target,
+   and the close button is the one control a reader stabs at in a hurry. */
+@media (pointer: coarse) {
+	.ck-quiz-close {
+		width: var(--ck-tap);
+		height: var(--ck-tap);
+	}
+
+	.ck-quiz-choice {
+		min-height: var(--ck-tap);
+		padding-block: 0.85rem;
 	}
 }

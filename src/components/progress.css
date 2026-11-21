@@ -1,5 +1,9 @@
 /* Progress UI — lesson completion control and course progress bar. */
 
+/* Pulls in the theme so `theme(--breakpoint-*)` resolves below. Emits nothing
+   on its own. */
+@reference "../styles/global.css";
+
 /* ─── End-of-lesson control ─────────────────────────────── */
 .ck-lp {
 	display: flex;
@@ -10,7 +14,7 @@
 	margin: 1.5rem 0 0;
 	padding: 1.1rem 1.4rem;
 	border: 1px solid var(--color-border);
-	border-radius: var(--ck-radius);
+	border-radius: var(--ck-r);
 	background: var(--color-canvas-subtle);
 }
 
@@ -106,6 +110,36 @@
 	margin: 0.5rem 0 0;
 	font-size: 0.75rem;
 	color: var(--color-text-muted);
+}
+
+/* ─── RESPONSIVE ────────────────────────────────────────── */
+
+/* Phones. "3 of 12 lessons complete" and a Reset button on one baseline leaves
+   the label nowhere to wrap; stack them. The completion checkbox gets a full
+   row so the whole strip is the tap target, not just the 18px box. */
+@media (width < theme(--breakpoint-xs)) {
+	.ck-cp-row {
+		flex-direction: column;
+		align-items: flex-start;
+		gap: 0.4rem;
+	}
+
+	.ck-lp {
+		padding: 1rem 1.1rem;
+	}
+}
+
+/* Touch: the label is the control here — `<label>` wraps the input — so giving
+   it the height gives the whole row a usable target. */
+@media (pointer: coarse) {
+	.ck-lp-check {
+		min-height: var(--ck-tap);
+	}
+
+	.ck-cp-reset {
+		min-height: 2rem;
+		padding-inline: 0.75rem;
+	}
 }
 
 /* ─── Sidebar completion ticks ──────────────────────────── */
