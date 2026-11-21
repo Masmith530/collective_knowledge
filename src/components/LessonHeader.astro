@@ -26,11 +26,16 @@ const { lesson } = Astro.props;
 // without its surrounding slashes, which is how the docs loader names entries.
 const selfId = Astro.url.pathname.replace(/^\/+|\/+$/g, '');
 const self = await getEntry('docs', selfId);
-const readingTime = self?.body ? readingMinutes(self.body) : undefined;
+// An overview page is a few lines of framing plus a list of its parts, so its
+// own reading time is both tiny and misleading. `LessonParts` states the total
+// for the lesson, which is the number that actually helps.
+const readingTime = lesson.overview || !self?.body ? undefined : readingMinutes(self.body);
 
 // Count sibling parts so the page can say "Part 2 of 4" without that total
-// being duplicated into every part's frontmatter.
+// being duplicated into every part's frontmatter, and find the lesson's
+// overview page so a part can link back up to it.
 let partLabel: string | undefined;
+let overviewHref: string | undefined;
 if (lesson.part) {
 	const siblings = await getCollection(
 		'docs',
@@ -39,7 +44,14 @@ if (lesson.part) {
 			data.lesson?.kind === lesson.kind &&
 			data.lesson?.kindNumber === lesson.kindNumber,
 	);
-	partLabel = `Part ${lesson.part} of ${siblings.length}`;
+	// Parts only. The overview page shares the lesson's kind and number but is
+	// not one of its parts, and counting it made a four-part lesson say
+	// "Part 1 of 5".
+	const parts = siblings.filter((e) => e.data.lesson?.part);
+	partLabel = `Part ${lesson.part} of ${parts.length}`;
+
+	const overview = siblings.find((e) => e.data.lesson?.overview);
+	if (overview) overviewHref = `/${overview.id}/`;
 }
 
 const meta = [
@@ -62,10 +74,21 @@ const meta = [
 		}
 	</p>
 
+	{/*
+	  The lesson this part belongs to. A link when the lesson has an overview
+	  page, which is also the only part list a reader can reach without opening
+	  the sidebar — on a phone the sidebar is a drawer, so from inside part 2
+	  this is the way back to "what else is in this lesson".
+	*/}
 	{
 		lesson.lessonTitle && lesson.part && (
 			<p class="ck-lh-parent">
-				from <strong>{lesson.lessonTitle}</strong>
+				from{' '}
+				{overviewHref ? (
+					<a href={overviewHref}>{lesson.lessonTitle}</a>
+				) : (
+					<strong>{lesson.lessonTitle}</strong>
+				)}
 			</p>
 		)
 	}
@@ -112,9 +135,22 @@ const meta = [
 		color: var(--color-text-muted);
 	}
 
-	.ck-lh-parent strong {
+	.ck-lh-parent strong,
+	.ck-lh-parent a {
 		color: var(--color-text-secondary);
 		font-weight: 600;
+	}
+
+	/* A link, so it needs to look like one on hover. Underline rather than a
+	   colour change: at this size a colour shift alone is easy to miss. */
+	.ck-lh-parent a {
+		text-decoration: none;
+	}
+
+	.ck-lh-parent a:hover {
+		color: var(--color-accent);
+		text-decoration: underline;
+		text-underline-offset: 0.2em;
 	}
 
 	.ck-lh-obj {

@@ -1,0 +1,48 @@
+---
+title: Flight Controls & SFAR 73
+description: What each control does, the rules that exist because of how these aircraft behave, and the two ways a rotor system gets you into trouble.
+sidebar:
+  order: 20
+lesson:
+  course: private-helicopter
+  week: 1
+  order: 2
+  kind: ground
+  kindNumber: 2
+  overview: true
+  lessonTitle: Flight Controls & SFAR 73
+  status: draft
+  duration: 2–3 hr ground (all parts)
+  objectives:
+    - Name the three axes of flight and the control that governs each
+    - Describe correct hand and foot placement on the cyclic, collective, and pedals
+    - Perform a positive three-step exchange of controls
+    - Explain why SFAR 73 exists and what it requires of you
+    - Recognise the onset of low rotor RPM and apply the recovery without hesitating
+  references:
+    - FAA-H-8083-21 Helicopter Flying Handbook, Ch. 4
+    - '14 CFR Part 61, SFAR No. 73 — Robinson R-22/R-44 Special Training and Experience Requirements'
+    - 'R22/R44 POH Section 7 — Systems Description'
+  airframes: [r22, r44]
+  audio:
+    src: /audio/private-helicopter/ground-2.m4a
+    duration: 54 min
+    covers: all four parts of this lesson
+---
+
+import LessonHeader from '@components/LessonHeader.astro';
+import LessonAudio from '@components/LessonAudio.astro';
+import LessonParts from '@components/LessonParts.astro';
+
+<LessonHeader lesson={frontmatter.lesson} />
+
+<LessonAudio
+	src={frontmatter.lesson.audio.src}
+	duration={frontmatter.lesson.audio.duration}
+	covers={frontmatter.lesson.audio.covers}
+/>
+
+This is the longest lesson in week 1, and the one students come back to most.
+Work through the parts in order — each one assumes the one before it.
+
+<LessonParts course="private-helicopter" kind="ground" kindNumber={2} />

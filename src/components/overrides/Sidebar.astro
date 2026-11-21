@@ -176,15 +176,24 @@ const jumpSections = section ? [section] : (['courses', 'subjects'] as const);
 									{week.lessons.map((lesson) => {
 										const split = lesson.parts.length > 0;
 										// `lesson.href` is the lesson itself, or its first part.
-										const inThisLesson = lesson.pageIds.includes(path);
+										// `pageIds` is completable pages only, so the overview page —
+									// which is deliberately not one — has to be named separately
+									// or standing on it would collapse the lesson's part list.
+									const inThisLesson =
+										lesson.pageIds.includes(path) || lesson.overviewHref === path;
 										return (
 											<li>
 												<a
 													href={lesson.href}
 													class="ck-sb-link ck-sb-lesson"
-													// Only a single-page lesson is a page that can be "done";
-													// a split lesson's ticks belong to its parts.
-													data-ck-lesson={split ? undefined : lesson.href}
+													/*
+													 * No `data-ck-lesson` here, deliberately. The ✓ it draws is a `::after`
+													 * on the link, and this link is a flex *column* — so on a finished
+													 * single-page lesson the tick landed as a third row under the title
+													 * instead of beside it. Every lesson row reports through the badge
+													 * below instead, which also makes a one-page lesson and a four-part
+													 * one look alike.
+													 */
 													// Exactly one element may be aria-current="page". For a
 													// split lesson that is the part you are on, not this row —
 													// the row gets the generic "true", meaning "the lesson you
@@ -203,33 +212,39 @@ const jumpSections = section ? [section] : (['courses', 'subjects'] as const);
 													<span class="ck-sb-lrow">
 														<span class="ck-sb-ltitle">{lesson.title}</span>
 														{/*
-										  A split lesson's row reports progress through the lesson, not
-										  just how long it is. "4 parts" was a fact about the lesson; the
-										  reader wants a fact about themselves, and the row cannot carry
-										  the ✓ that every other row uses — completion belongs to the
-										  parts, so the lesson is a fraction rather than a yes or no.
-										  The count is still there, as the denominator.
+														  One status badge on every lesson row, whatever its shape. "4 parts" was
+														  a fact about the lesson; a reader wants a fact about themselves. The
+														  part count survives as the denominator.
 
-										  Server-rendered at zero, which is honest: progress is read from
-										  the device and the server has none. A reader with no JavaScript
-										  has no saved progress either, so an empty ring is the truth for
-										  them and stays the truth. `markDone` fills it in.
+														  `pageIds` is the right input rather than `parts`: it is the lesson's
+														  completable pages either way — the four parts, or the single page a
+														  one-page lesson consists of — so both kinds report the same way, and a
+														  row does not change shape on the day a lesson is split into parts. The
+														  fraction shows only when there is more than one page to count; "1/1"
+														  says nothing the filled ring does not.
 
-										  The ring is decoration and the fraction is small, so the real
-										  text is the visually-hidden sentence — "2 of 4 parts complete"
-										  reads as something, where "2/4" out of context does not.
-										*/}
-										{split && (
-											<span
-												class="ck-sb-prog"
-												data-ck-parts={lesson.parts.map((part) => part.href).join(' ')}
-												data-ck-prog="none"
-											>
-												<span class="ck-sb-ring" aria-hidden="true" />
-												<span class="ck-sb-count" aria-hidden="true">0/{lesson.parts.length}</span>
-												<span class="sr-only">0 of {lesson.parts.length} parts complete</span>
-											</span>
-										)}
+														  Server-rendered at zero, which is honest: progress is read from the
+														  device and the server has none. A reader with no JavaScript has no
+														  saved progress either, so an empty ring is the truth for them and
+														  stays the truth.
+
+														  The ring and the fraction are decoration; the visually-hidden sentence
+														  is the real text, because "2/4" out of context reads as nothing and an
+														  empty ring reads as less than that.
+														*/}
+														{lesson.pageIds.length > 0 && (
+															<span
+																class="ck-sb-prog"
+																data-ck-parts={lesson.pageIds.join(' ')}
+																data-ck-prog="none"
+															>
+																<span class="ck-sb-ring" aria-hidden="true" />
+																{lesson.pageIds.length > 1 && (
+																	<span class="ck-sb-count" aria-hidden="true">0/{lesson.pageIds.length}</span>
+																)}
+																<span class="sr-only">Not started</span>
+															</span>
+														)}
 													</span>
 												</a>
 
@@ -377,49 +392,50 @@ const jumpSections = section ? [section] : (['courses', 'subjects'] as const);
 }
 
 <script>
-	function markDone() {
-		let lessons: Record<string, string> = {};
-		try {
-			const raw = localStorage.getItem('ck-progress-v1');
-			if (raw) lessons = JSON.parse(raw).lessons ?? {};
-		} catch {
-			return;
-		}
-		for (const el of document.querySelectorAll('.ck-sb [data-ck-lesson]')) {
-			const id = el.getAttribute('data-ck-lesson');
-			if (id && lessons[id]) el.setAttribute('data-ck-done', '');
-			else el.removeAttribute('data-ck-done');
-		}
+	import { completions, markCompletions, onProgress } from '../../lib/completion-marks';
 
-		/*
-		 * Split lessons, whose row cannot be ticked — completion belongs to the
-		 * parts — so the row shows how far through them you are instead. The part
-		 * paths are on the badge rather than counted from the DOM, because the part
-		 * list only renders for the lesson you are actually in.
-		 */
+	/*
+	 * Ticks and rings. The tick half is shared with the course contents, the
+	 * subject index and a lesson's part list — four places that each used to
+	 * carry their own copy of the same loop, reading storage directly.
+	 *
+	 * The rings are the sidebar's own: a lesson row reports how far through the
+	 * lesson you are. The page paths are written on the badge rather than counted
+	 * from the DOM, because a split lesson's parts are only rendered for the
+	 * lesson you are actually in.
+	 */
+	onProgress(() => {
+		const lessons = completions();
+		markCompletions(document, lessons);
+
 		for (const el of document.querySelectorAll<HTMLElement>('.ck-sb [data-ck-parts]')) {
-			const parts = (el.getAttribute('data-ck-parts') ?? '').split(' ').filter(Boolean);
-			if (parts.length === 0) continue;
+			const pages = (el.getAttribute('data-ck-parts') ?? '').split(' ').filter(Boolean);
+			if (pages.length === 0) continue;
 
-			const done = parts.filter((href) => lessons[href]).length;
-			el.style.setProperty('--ck-p', String(done / parts.length));
-			el.setAttribute(
-				'data-ck-prog',
-				done === 0 ? 'none' : done === parts.length ? 'done' : 'some',
-			);
+			const done = pages.filter((href) => lessons[href]).length;
+			const state = done === 0 ? 'none' : done === pages.length ? 'done' : 'some';
 
+			el.style.setProperty('--ck-p', String(done / pages.length));
+			el.setAttribute('data-ck-prog', state);
+
+			// Absent on a single-page lesson, where "1/1" would add nothing.
 			const count = el.querySelector('.ck-sb-count');
-			if (count) count.textContent = `${done}/${parts.length}`;
+			if (count) count.textContent = `${done}/${pages.length}`;
 
-			// The sentence a screen reader actually reads; the fraction is decorative.
+			// The sentence a screen reader actually reads. A one-page lesson is done
+			// or not; a split one is a fraction.
 			const label = el.querySelector('.sr-only');
-			if (label) label.textContent = `${done} of ${parts.length} parts complete`;
+			if (label) {
+				label.textContent =
+					pages.length === 1
+						? state === 'done'
+							? 'Complete'
+							: 'Not started'
+						: `${done} of ${pages.length} parts complete`;
+			}
 		}
-	}
-	markDone();
-	document.addEventListener('astro:page-load', markDone);
-	window.addEventListener('ck:progress', markDone);
-	window.addEventListener('storage', markDone);
+	});
+
 
 	/*
 	 * Section memory — the recording half.

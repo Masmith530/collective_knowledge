@@ -68,23 +68,14 @@ const planned = areas.filter((a) => a.items.length === 0);
 </div>
 
 <script>
-	function markDone() {
-		let lessons: Record<string, string> = {};
-		try {
-			const raw = localStorage.getItem('ck-progress-v1');
-			if (raw) lessons = JSON.parse(raw).lessons ?? {};
-		} catch {
-			return;
-		}
-		for (const el of document.querySelectorAll('.ck-sx [data-ck-lesson]')) {
-			const id = el.getAttribute('data-ck-lesson');
-			if (id && lessons[id]) el.setAttribute('data-ck-done', '');
-			else el.removeAttribute('data-ck-done');
-		}
-	}
-	markDone();
-	document.addEventListener('astro:page-load', markDone);
-	window.addEventListener('ck:progress', markDone);
+	import { watchCompletions } from '../lib/completion-marks';
+
+	/*
+	 * Tick the pages this reader has finished. One shared implementation —
+	 * this component used to carry its own copy of the loop, reading storage
+	 * directly, as did two others.
+	 */
+	watchCompletions();
 </script>
 
 <style>

@@ -48,6 +48,23 @@ const lesson = z.object({
 	part: z.number().int().positive().optional(),
 
 	/**
+	 * Marks this page as a split lesson's landing page rather than one of its
+	 * parts: the page a reader arrives at when they pick the lesson.
+	 *
+	 * Set it with the same `kind` and `kindNumber` as the parts and no `part`.
+	 * Everything that links to a lesson — the sidebar row, the course contents —
+	 * then points here instead of at part 1, so a reader meets the recording and
+	 * the shape of the lesson before being dropped into the middle of it.
+	 *
+	 * An overview page is not a sitting and carries no prose of its own worth
+	 * completing, so it is deliberately left out of `pageIds` and therefore out
+	 * of the progress denominator. Only the parts count.
+	 *
+	 * Single-page lessons do not get one: there is nothing to land in front of.
+	 */
+	overview: z.boolean().default(false),
+
+	/**
 	 * The umbrella lesson title, used as the group heading when the lesson is
 	 * split into parts. The page's own `title` is then the part's title.
 	 */

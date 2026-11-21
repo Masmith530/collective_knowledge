@@ -137,24 +137,50 @@ itself.
    appeared when the two-tab switcher became a one-way jump, and it is the kind
    of thing only a reader notices.
 
-   **A multi-part lesson is a link, not a disclosure.** The row goes to the
-   lesson's first part (`lesson.href` already resolves to "itself, or its first
-   part"), and the part list renders only for the lesson you are actually in. It
-   used to be `<details>`: the row expanded but did not navigate, so starting a
-   lesson took two clicks — expand, then click part 1. The constraint that
-   produced `<details>` has not changed and is still met: the whole outline
-   expanded at once was too tall to navigate, and still only one lesson's parts
-   are ever shown. Subject areas stay expanded because they are only two levels
-   deep.
+   **A multi-part lesson is a link, not a disclosure.** The row navigates
+   (`lesson.href` resolves to "its overview page, its first part, or itself"),
+   and the part list renders only for the lesson you are actually in. It used to
+   be `<details>`: the row expanded but did not navigate, so starting a lesson
+   took two clicks — expand, then click part 1. The constraint that produced
+   `<details>` has not changed and is still met: the whole outline expanded at
+   once was too tall to navigate, and still only one lesson's parts are ever
+   shown. Subject areas stay expanded because they are only two levels deep.
 
-   **The site-information pages get their own branch, and that is a stopgap.**
-   `/start-here/*` belongs to neither section, so without a branch it fell
-   through to the course outline and `?? openCourses[0]` showed Private Pilot
-   from anywhere on the site. It now shows an "About this site" list — but what
-   is actually wanted is to **keep the sidebar the reader already had** and just
-   highlight the footer link. That needs to survive a static build, so see the
-   `TODO(matthew)` on the `inStartHere` branch in `Sidebar.astro` for the three
-   options before changing it.
+   **Every lesson row carries one status badge** — a ring plus a fraction —
+   built from `lesson.pageIds`, the lesson's *completable* pages. It replaced
+   "4 parts", which stated a fact about the lesson where a reader wants a fact
+   about themselves. It also fixed two things that were only visible on screen:
+   a single-page lesson got a `::after` ✓ on a row that is a flex *column*, so a
+   finished lesson wore its tick on a third line underneath the title; and a
+   one-page lesson and a four-part one reported completely differently. Both now
+   use the ring, the fraction appears only when there is more than one page to
+   count, and the ring turns `--color-ok` when the lesson is done so it reads
+   like the ✓ used everywhere else. Do not put `data-ck-lesson` back on a lesson
+   row — that is what drew the wrapping tick.
+
+   **The site-information pages keep the sidebar the reader already had.**
+   `/start-here/*` belongs to neither section. Without a branch it fell through
+   to the course outline, where `?? openCourses[0]` showed Private Pilot from
+   anywhere on the site; a branch of its own replaced that with an "About this
+   site" list, which was correct and still wrong — clicking a link in the pinned
+   footer should not rearrange the furniture you clicked it in.
+
+   Both outlines are therefore rendered on those two pages and one is revealed.
+   Every page in a section records which one in `sessionStorage`; the pages in
+   neither read it back. **Courses is the markup default**, so a cold visit, a
+   shared link and a reader with no JavaScript all land on the primary content.
+   The reveal is an `is:inline` script for the same reason `ThemeProvider` uses
+   one — a bundled module is deferred, so the reader would watch the Courses
+   outline appear and then be replaced. It only ever switches *away* from the
+   default, so there is nothing to flash on a normal visit.
+
+   **No rendered "back" link on those pages.** With the outline left in place it
+   would duplicate navigation already on screen, and "back" cannot be honest on
+   a page reached from a search result.
+
+   Known limit: the outline shown is the first open course. With one open course
+   that is always right; when a second opens, remember the course alongside the
+   section and render an outline per open course, same reveal mechanism.
 
    **Exactly one `aria-current="page"` per page.** It marks the page you are on,
    nothing else. A split lesson's row therefore carries `data-ck-in` instead —
@@ -278,6 +304,13 @@ owns it:
   in the wrong week in one of two places is the kind of bug nobody notices.
 - **A lesson's name** → `lessonLabel()`. The only place that formats one.
 - **Progress** → `src/lib/progress.ts`. Never touch `localStorage` directly.
+- **Ticking a finished page** → `src/lib/completion-marks.ts`. Anything carrying
+  `data-ck-lesson="<page path>"` gets `data-ck-done` when that page is complete;
+  call `watchCompletions()` once from the component and style the attribute.
+  The sidebar, course contents, subject index and lesson part list had each
+  grown their own copy of the same loop, each reading storage directly — four
+  copies free to disagree, and nothing in CI was looking at script the way
+  `lint:tokens` looks at CSS.
 - **Markup** → extend the existing component rather than adding a parallel one.
   `KeyNotes` and `Homework` are separate because they serve different moments,
   not because one was easier to copy.
@@ -469,6 +502,31 @@ their head to know where they are.
 
 If a part still feels too big, add another part — do not add a level.
 
+### A split lesson has an overview page
+
+A lesson split into parts gets a landing page: `overview: true` in the `lesson`
+block, same `kind` and `kindNumber` as its parts, no `part`. Everything that
+links to the lesson — the sidebar row, the course contents — points there
+instead of at part 1, so a reader meets the recording and the shape of the
+lesson before being dropped into the middle of it. It also gives a phone reader
+a part list they can reach without opening the drawer, which the sidebar alone
+could not.
+
+**This is not a fifth level.** It is the Lesson level finally having a page of
+its own; the hierarchy is still Course → Week → Lesson → Part.
+
+Two rules it must keep:
+
+- **An overview is navigation, not a sitting.** It stays out of `pageIds`, so
+  it is not in the progress denominator and cannot be "completed". Only parts
+  count. `LessonHeader` also suppresses its reading time, which would be a
+  misleading minute or two; `LessonParts` states the lesson's total instead.
+- **Anything counting parts must exclude it.** It shares the lesson's `kind`
+  and `kindNumber`, so a naive sibling count made a four-part lesson say
+  "Part 1 of 5".
+
+Single-page lessons do not get one — there is nothing to land in front of.
+
 ### Lesson length: a page is one sitting
 
 Target roughly **1,000-2,000 words / 5-10 minutes** per page. Ground 2 was
@@ -591,7 +649,9 @@ Behaviour:
 ### Audio recordings
 
 A lesson may carry a companion recording via an `audio` block in frontmatter,
-rendered by `LessonAudio.astro` on **part 1** of a split lesson.
+rendered by `LessonAudio.astro`. On a split lesson it goes on the **overview
+page**, not on part 1: the recording covers the whole lesson, and the overview
+is where a reader lands.
 
 The binding constraint is **Cloudflare Pages' hard 25 MiB per-file limit** (every
 plan). So: audio only, mono, target ~20 MB. `afconvert` is built into macOS, so
@@ -729,9 +789,16 @@ Every curriculum lesson follows the same order:
 6. `<QuizBlock slug="course/lNN" />` — the graded quiz
 7. `<LessonProgress lessonId="/page/path/" />` — completion control
 
-On a split lesson, the recording (`<LessonAudio>`) goes on **part 1** just below
-the header, and the review tools (flashcards, quiz, homework) go on the **last**
-part under a `## Review` heading, because they cover the whole lesson.
+On a split lesson the pieces are spread across three places, by what each one
+covers:
+
+- the **overview page** carries the header, the recording (`<LessonAudio>`) and
+  `<LessonParts>` — whole-lesson things, and it is where a reader lands;
+- each **part** carries its own prose and Key Notes;
+- the **last part** carries the review tools (homework, flashcards, quiz) under
+  a `## Review` heading, because they cover the whole lesson and that is where
+  a reader finishes it. They are deliberately *not* on the overview: a reader
+  who has just read part 4 should not have to navigate back to be tested.
 
 `LessonProgress` is the checkbox only. Navigation to the next page is Starlight's
 prev/next pagination, which renders directly below it — do not add a "next" button

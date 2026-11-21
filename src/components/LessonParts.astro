@@ -1,0 +1,224 @@
+---
+/**
+ * LessonParts — the part list on a split lesson's overview page.
+ *
+ * This is the page's reason to exist. A reader who picks "Ground 2" lands here
+ * rather than in the middle of part 1, and this is what tells them what the
+ * lesson covers and how far through it they are.
+ *
+ * It reads `getCourseOutline()` like everything else that needs the week →
+ * lesson → part structure, so it cannot disagree with the sidebar about which
+ * parts belong to this lesson or what order they come in.
+ *
+ * Reading time comes from each part's own body through the same helper the
+ * lesson header uses, so the total here and the per-page figure there are the
+ * same number computed the same way.
+ */
+import { getCollection } from 'astro:content';
+import { getCourseOutline } from '../lib/lessons';
+import { readingMinutes } from '../lib/reading-time';
+
+interface Props {
+	/** Course slug, e.g. `private-helicopter`. */
+	course: string;
+	kind: 'ground' | 'flight' | 'sim';
+	kindNumber: number;
+}
+
+const { course, kind, kindNumber } = Astro.props;
+
+const weeks = await getCourseOutline(course);
+const lesson = weeks
+	.flatMap((w) => w.lessons)
+	.find((l) => l.kind === kind && l.kindNumber === kindNumber);
+
+// Reading time per part, keyed by href. One pass over the course's pages.
+const pages = await getCollection('docs', ({ data }) => data.lesson?.course === course);
+const minutesByHref = new Map(
+	pages.map((p) => [`/${p.id}/`, p.body ? readingMinutes(p.body) : undefined]),
+);
+
+const parts = (lesson?.parts ?? []).map((part) => ({
+	...part,
+	minutes: minutesByHref.get(part.href),
+}));
+
+const totalMinutes = parts.reduce((sum, p) => sum + (p.minutes ?? 0), 0);
+---
+
+{
+	parts.length > 0 && (
+		<nav class="ck-lp not-content" aria-label="Parts of this lesson">
+			<div class="ck-lp-head">
+				<h2 class="ck-lp-title">In this lesson</h2>
+				<p class="ck-lp-sum">
+					{parts.length} parts
+					{totalMinutes > 0 && <> · about {totalMinutes} min reading</>}
+				</p>
+			</div>
+
+			<ol class="ck-lp-list">
+				{parts.map((part) => (
+					<li>
+						<a href={part.href} class="ck-lp-item" data-ck-lesson={part.href}>
+							<span class="ck-lp-n" aria-hidden="true">
+								{part.part}
+							</span>
+							<span class="ck-lp-body">
+								<span class="ck-lp-name">{part.title}</span>
+								{part.minutes && <span class="ck-lp-min">{part.minutes} min</span>}
+							</span>
+							{/*
+							  Ticked by the shared completion marker, like every other
+							  `[data-ck-lesson]` on the site — so a part finished in
+							  another tab shows here without a reload, and this component
+							  owns no copy of that logic.
+							*/}
+							<span class="ck-lp-tick" aria-hidden="true" />
+						</a>
+					</li>
+				))}
+			</ol>
+		</nav>
+	)
+}
+
+<style>
+	@reference "../styles/global.css";
+
+	.ck-lp {
+		margin: 2rem 0;
+	}
+
+	.ck-lp-head {
+		display: flex;
+		align-items: baseline;
+		justify-content: space-between;
+		gap: 0.75rem;
+		flex-wrap: wrap;
+		margin-bottom: 0.75rem;
+	}
+
+	.ck-lp-title {
+		margin: 0;
+		font-size: 1rem;
+		font-weight: 650;
+		letter-spacing: -0.01em;
+		color: var(--color-text-primary);
+	}
+
+	.ck-lp-sum {
+		margin: 0;
+		font-size: 0.8125rem;
+		color: var(--color-text-muted);
+	}
+
+	.ck-lp-list {
+		display: flex;
+		flex-direction: column;
+		gap: 0.4rem;
+		margin: 0;
+		padding: 0;
+		list-style: none;
+		counter-reset: none;
+	}
+
+	/*
+	 * A row, not a card grid. These are read top to bottom in order — the one
+	 * place on the site where sequence is the whole point — and a grid would
+	 * invite the eye to pick one.
+	 */
+	.ck-lp-item {
+		display: flex;
+		align-items: center;
+		gap: 0.75rem;
+		padding: 0.7rem 0.85rem;
+		border: 1px solid var(--color-border);
+		border-radius: var(--ck-r);
+		background: var(--color-surface);
+		text-decoration: none;
+		color: var(--color-text-primary);
+		transition:
+			border-color 140ms ease,
+			box-shadow 140ms ease,
+			transform 140ms ease;
+	}
+
+	.ck-lp-item:hover {
+		border-color: var(--color-border-strong);
+		box-shadow: var(--ck-shadow);
+	}
+
+	.ck-lp-n {
+		flex-shrink: 0;
+		display: grid;
+		place-items: center;
+		width: 1.6rem;
+		height: 1.6rem;
+		border-radius: var(--ck-r-sm);
+		background: var(--color-canvas-subtle);
+		border: 1px solid var(--color-border);
+		font-size: 0.75rem;
+		font-weight: 700;
+		color: var(--color-text-muted);
+	}
+
+	.ck-lp-body {
+		display: flex;
+		align-items: baseline;
+		justify-content: space-between;
+		gap: 0.75rem;
+		flex: 1;
+		min-width: 0;
+	}
+
+	.ck-lp-name {
+		font-weight: 550;
+		line-height: 1.4;
+	}
+
+	.ck-lp-min {
+		flex-shrink: 0;
+		font-size: 0.75rem;
+		color: var(--color-text-muted);
+		white-space: nowrap;
+	}
+
+	/*
+	 * Reserves its space whether or not the part is done, so the rows do not
+	 * shift sideways as a reader works through the lesson.
+	 */
+	.ck-lp-tick {
+		flex-shrink: 0;
+		width: 1rem;
+		text-align: center;
+		font-weight: 700;
+		color: var(--color-ok);
+	}
+
+	.ck-lp-item[data-ck-done] {
+		border-color: var(--color-ok);
+	}
+
+	.ck-lp-item[data-ck-done] .ck-lp-tick::after {
+		content: '✓';
+	}
+
+	.ck-lp-item[data-ck-done] .ck-lp-n {
+		background: var(--color-ok-soft);
+		border-color: var(--color-ok);
+		color: var(--color-ok);
+	}
+
+	@media (pointer: coarse) {
+		.ck-lp-item {
+			min-height: var(--ck-tap);
+		}
+	}
+</style>
+
+<script>
+	import { watchCompletions } from '../lib/completion-marks';
+
+	watchCompletions();
+</script>

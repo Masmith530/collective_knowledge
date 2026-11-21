@@ -42,10 +42,25 @@ export interface OutlineLesson {
 	title: string;
 	description?: string;
 	duration?: string;
-	/** Where the lesson link goes: itself, or its first part. */
+	/**
+	 * Where the lesson link goes, in order of preference: its overview page, its
+	 * first part, or (for a single-page lesson) itself.
+	 */
 	href: string;
+	/**
+	 * The split lesson's landing page, when it has one.
+	 *
+	 * Separate from `pageIds` on purpose: an overview is navigation, not a
+	 * sitting, so it must not count towards progress. The sidebar still needs to
+	 * know about it to recognise "you are inside this lesson".
+	 */
+	overviewHref?: string;
 	parts: OutlinePart[];
-	/** Every page belonging to this lesson, for progress counting. */
+	/**
+	 * Every *completable* page in this lesson — its parts, or itself when it has
+	 * none. This is the progress denominator, which is why the overview page is
+	 * not in it.
+	 */
 	pageIds: string[];
 }
 
@@ -99,15 +114,33 @@ export async function getCourseOutline(course: string): Promise<OutlineWeek[]> {
 			week.lessons.push(lesson);
 		}
 
+		if (l.overview) {
+			// Navigation, not a sitting: it is where the lesson link lands, but it
+			// is not a page anyone completes, so it stays out of `pageIds`.
+			lesson.overviewHref = href;
+			lesson.description = entry.data.description ?? lesson.description;
+			lesson.duration = l.duration ?? lesson.duration;
+			continue;
+		}
+
 		lesson.pageIds.push(href);
 
 		if (l.part) {
 			lesson.parts.push({ part: l.part, title: entry.data.title, href });
 			lesson.parts.sort((a, b) => a.part - b.part);
-			// A multi-part lesson's own link points at its first part.
-			lesson.href = lesson.parts[0].href;
 			// Keep the umbrella description if any part supplied one.
 			lesson.duration = lesson.duration ?? l.duration;
+		}
+	}
+
+	/*
+	 * Resolve each lesson's link last, rather than as pages arrive. Doing it in
+	 * the loop meant whichever page happened to come last won, and an overview
+	 * page has no `part` to sort it reliably ahead of part 1.
+	 */
+	for (const week of weeks) {
+		for (const lesson of week.lessons) {
+			lesson.href = lesson.overviewHref ?? lesson.parts[0]?.href ?? lesson.href;
 		}
 	}
 

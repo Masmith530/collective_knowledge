@@ -23,25 +23,14 @@ lesson:
     - FAA-H-8083-21 Helicopter Flying Handbook, Ch. 4
     - 'R22/R44 POH Section 7 — Systems Description'
   airframes: [r22, r44]
-  audio:
-    src: /audio/private-helicopter/ground-2.m4a
-    duration: 54 min
-    covers: all four parts of this lesson
 ---
 
 import KeyNotes from '@components/KeyNotes.astro';
 import LessonProgress from '@components/LessonProgress.tsx';
 import LessonHeader from '@components/LessonHeader.astro';
-import LessonAudio from '@components/LessonAudio.astro';
 import { Aside } from '@astrojs/starlight/components';
 
 <LessonHeader lesson={frontmatter.lesson} />
-
-<LessonAudio
-	src={frontmatter.lesson.audio.src}
-	duration={frontmatter.lesson.audio.duration}
-	covers={frontmatter.lesson.audio.covers}
-/>
 
 Flying a helicopter requires coordinating multiple inputs at the same time. Before we get
 there, we need to understand the axes of flight we're actually controlling.
