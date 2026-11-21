@@ -440,6 +440,82 @@ body {
 	transform: none;
 }
 
+/* ─── Cards ─────────────────────────────────────────────── */
+/*
+ * The one card treatment, shared by the course catalog, the course outline, a
+ * lesson's or article's part list, and the subject index. Four components had
+ * each written their own and they had already drifted: three different hover
+ * treatments, two radii, and one with no resting elevation at all.
+ *
+ * Why these three properties together, rather than a border alone — which is
+ * what was there, and is why the cards read as text in a box:
+ *
+ *   - `surface`, not `canvas`. In light they are the same white, but in dark
+ *     surface sits above the page and the card lifts on its own. A card drawn
+ *     in the page's own background colour is not a card.
+ *   - A **resting** shadow. `--ck-shadow-sm` is barely visible by design and it
+ *     is what separates the card from a white page. Elevation only on hover
+ *     means the thing looks like a card exclusively when the pointer is
+ *     already on it, which is too late to invite the click.
+ *   - A hairline border. On its own `--color-border` is about 1.1:1 on white
+ *     and all but invisible; with the shadow under it, it reads as an edge.
+ *     Do not reach for `border-strong` here — that is the 3:1 token for things
+ *     a reader types into, and at card size it looks like a table.
+ *
+ * Hover adds lift rather than changing colour, so nothing competes with the
+ * one accent. `transform` is safe: the global reduced-motion rule already
+ * flattens every transition on the site.
+ */
+.ck-card {
+	position: relative;
+	display: block;
+	background: var(--color-surface);
+	border: 1px solid var(--color-border);
+	border-radius: var(--ck-r);
+	box-shadow: var(--ck-shadow-sm);
+	text-decoration: none;
+	color: inherit;
+	transition:
+		border-color 150ms ease,
+		box-shadow 150ms ease,
+		transform 150ms ease;
+}
+
+.ck-card:hover,
+.ck-card:focus-within {
+	border-color: var(--color-border-accent);
+	box-shadow: var(--ck-shadow);
+	transform: translateY(-1px);
+}
+
+/* Pressed. Returning it to the resting state is what makes the card feel like
+   a physical control rather than a rectangle that happens to be a link. */
+.ck-card:active {
+	box-shadow: var(--ck-shadow-sm);
+	transform: translateY(0);
+}
+
+/*
+ * The "this goes somewhere" chevron. A card-sized target with no affordance
+ * reads as a panel, and on the outline rows there was nothing at all — the
+ * whole row was a link and nothing said so.
+ *
+ * `aria-hidden` at the call site: it is punctuation, not content, and the
+ * link text already says where it goes.
+ */
+.ck-card-go {
+	flex-shrink: 0;
+	color: var(--color-text-muted);
+	transition:
+		transform 150ms ease,
+		color 150ms ease;
+}
+
+.ck-card:hover .ck-card-go {
+	color: var(--color-accent);
+	transform: translateX(2px);
+}
+
 /*
  * ─── RESPONSIVE: site-wide ──────────────────────────────
  *

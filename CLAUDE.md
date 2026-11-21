@@ -342,6 +342,10 @@ owns it:
   grown their own copy of the same loop, each reading storage directly — four
   copies free to disagree, and nothing in CI was looking at script the way
   `lint:tokens` looks at CSS.
+- **A clickable card** → `.ck-card` in `global.css`, plus `.ck-card-go` for the
+  chevron. The course catalog, the course outline, a part list and the subject
+  index all use it. They had each written their own and had already drifted:
+  three hover treatments, two radii, and one with no resting elevation.
 - **Markup** → extend the existing component rather than adding a parallel one.
   `KeyNotes` and `Homework` are separate because they serve different moments,
   not because one was easier to copy.
@@ -364,8 +368,12 @@ What separates this from a dated docs theme is mostly restraint plus three
 specifics, all tokenised in `global.css`:
 
 - **Radii** (`--ck-r-sm/-r/-r-lg`, 8/12/16px) rather than 4px corners.
-- **Soft elevation** (`--ck-shadow*`) on hover for cards, rather than only
-  swapping a border colour.
+- **Soft elevation** (`--ck-shadow*`), and crucially **at rest**, not only on
+  hover. A card drawn in the page's own background colour with a 1.1:1 hairline
+  is not a card — it is text in a box, which is exactly how these read before.
+  `.ck-card` uses `--color-surface` with `--ck-shadow-sm` resting and
+  `--ck-shadow` on hover. Elevation that appears only under the pointer tells
+  the reader it is clickable after they have already found it.
 - **Generous whitespace and a tight heading scale** with negative letter-spacing.
 
 Avoid gradients, heavy borders, and more than one accent colour. This is aviation

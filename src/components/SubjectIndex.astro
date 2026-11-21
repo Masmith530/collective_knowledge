@@ -61,6 +61,7 @@ const planned = areas.filter((a) => a.count === 0);
 							{group.articles.map((item) => (
 								<li>
 									<a
+										class="ck-card"
 										href={item.href}
 										data-ck-lesson={item.parts.length === 0 ? item.href : undefined}
 									>
@@ -155,26 +156,16 @@ const planned = areas.filter((a) => a.count === 0);
 		margin: 0;
 	}
 
+	/* Layout only; the surface and hover come from `.ck-card`. */
 	.ck-sx-area a {
-		display: block;
-		padding: 0.9rem 1.15rem;
-		border: 1px solid var(--color-border);
-		border-radius: var(--ck-r);
-		background: var(--color-canvas);
-		text-decoration: none;
-		transition: border-color 140ms ease, box-shadow 140ms ease;
-	}
-
-	.ck-sx-area a:hover {
-		border-color: var(--color-border-accent);
-		box-shadow: var(--ck-shadow);
+		padding: 0.95rem 1.2rem;
 	}
 
 	.ck-sx-title {
 		display: block;
-		font-size: 1rem;
-		font-weight: 620;
-		letter-spacing: -0.01em;
+		font-size: 1.0625rem;
+		font-weight: 650;
+		letter-spacing: -0.015em;
 		color: var(--color-text-primary);
 	}
 

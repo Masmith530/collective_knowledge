@@ -55,7 +55,7 @@ const plannedNames = planned.map((c) => c.title.replace(/\s*—\s*Helicopter$/, 
 			const w = weekNums.get(course.slug)?.size ?? 0;
 			return (
 				<li>
-					<a class="ck-cat-card" href={course.href}>
+					<a class="ck-card ck-cat-card" href={course.href}>
 						<div class="ck-cat-head">
 							<h3>{course.title}</h3>
 							<span class="ck-cat-badge">
@@ -64,8 +64,9 @@ const plannedNames = planned.map((c) => c.title.replace(/\s*—\s*Helicopter$/, 
 							</span>
 						</div>
 						<p>{course.blurb}</p>
-						<span class="ck-cat-go">
-							Open course <span aria-hidden="true">→</span>
+						<span class="ck-cat-foot">
+							<span class="ck-cat-open">Open course</span>
+							<span class="ck-card-go" aria-hidden="true">→</span>
 						</span>
 					</a>
 				</li>
@@ -98,8 +99,16 @@ const plannedNames = planned.map((c) => c.title.replace(/\s*—\s*Helicopter$/, 
 		margin: 0;
 		padding: 0;
 		display: grid;
-		gap: 0.85rem;
-		grid-template-columns: repeat(auto-fit, minmax(17rem, 1fr));
+		gap: 1rem;
+		/*
+		 * The `1fr` max used to be here, which stretched a single course across
+		 * the whole content column — a 1,200px card holding a title and one line
+		 * of blurb reads as an empty page rather than a small catalog. Capped at
+		 * 24rem the card keeps a card's proportions at any count, and the grid
+		 * still needs no breakpoint: `auto-fit` packs as many as fit and wraps.
+		 */
+		grid-template-columns: repeat(auto-fit, minmax(17rem, 24rem));
+		justify-content: start;
 		text-align: start;
 	}
 
@@ -108,23 +117,18 @@ const plannedNames = planned.map((c) => c.title.replace(/\s*—\s*Helicopter$/, 
 		display: flex;
 	}
 
+	/*
+	 * Layout only — the surface, border, elevation and hover all come from
+	 * `.ck-card` in global.css, so the four card surfaces on the site cannot
+	 * drift apart again.
+	 */
 	.ck-cat-card {
 		display: flex;
 		flex-direction: column;
-		gap: 0.5rem;
+		gap: 0.55rem;
 		width: 100%;
-		padding: 1.25rem 1.35rem;
-		border: 1px solid var(--color-border);
+		padding: 1.35rem 1.4rem 1.15rem;
 		border-radius: var(--ck-r-lg);
-		background: var(--color-canvas);
-		text-decoration: none;
-		transition: border-color 150ms ease, box-shadow 150ms ease, transform 150ms ease;
-	}
-
-	.ck-cat-card:hover {
-		border-color: var(--color-border-accent);
-		box-shadow: var(--ck-shadow);
-		transform: translateY(-1px);
 	}
 
 	.ck-cat-planned {
@@ -133,21 +137,27 @@ const plannedNames = planned.map((c) => c.title.replace(/\s*—\s*Helicopter$/, 
 		color: var(--color-text-muted);
 	}
 
+	/*
+	 * Stacked, not title-left / badge-right. Side by side, a course title and
+	 * "2 lessons · 1 week" fight for a 24rem card and the title loses — it wrapped
+	 * to two lines while the badge sat on one. The badge below it reads as what
+	 * it is, a label on the course, and the title gets the full width.
+	 */
 	.ck-cat-head {
 		display: flex;
+		flex-direction: column;
 		align-items: flex-start;
-		justify-content: space-between;
-		gap: 0.75rem;
+		gap: 0.45rem;
 	}
 
 	.ck-cat-head h3 {
 		margin: 0;
 		border: 0;
 		padding: 0;
-		font-size: 1.0625rem;
+		font-size: 1.125rem;
 		font-weight: 650;
-		letter-spacing: -0.015em;
-		line-height: 1.3;
+		letter-spacing: -0.02em;
+		line-height: 1.25;
 		color: var(--color-text-primary);
 	}
 
@@ -170,17 +180,18 @@ const plannedNames = planned.map((c) => c.title.replace(/\s*—\s*Helicopter$/, 
 		color: var(--color-text-secondary);
 	}
 
-	.ck-cat-go {
+	.ck-cat-foot {
+		display: flex;
+		align-items: center;
+		justify-content: space-between;
+		gap: 0.5rem;
 		margin-top: auto;
-		padding-top: 0.35rem;
-		font-size: 0.8125rem;
-		font-weight: 600;
-		color: var(--color-accent);
+		padding-top: 0.75rem;
 	}
 
-	.ck-cat-card:hover .ck-cat-go span {
-		display: inline-block;
-		transform: translateX(2px);
-		transition: transform 150ms ease;
+	.ck-cat-open {
+		font-size: 0.8125rem;
+		font-weight: 650;
+		color: var(--color-accent);
 	}
 </style>
