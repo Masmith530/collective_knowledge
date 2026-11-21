@@ -51,16 +51,21 @@ const NAV = [
 						href={item.href}
 						class="ck-nav-link"
 						/*
-						  "page" only when this link IS the current page. Inside a
-						  lesson, Courses points at the index, not at where you are —
-						  claiming "page" there gave every page two aria-current="page"
-						  elements and told a screen reader the header link was the
-						  current page. "true" is the generic form, and is what marks
-						  the section you are in.
+						  Always "true", the generic form: this is *section* nav, and it
+						  marks the section you are in, not the page you are on.
+						  Claiming "page" inside a lesson was plainly wrong — Courses
+						  points at the index, not at where you are. It was also wrong
+						  on the section index itself, where the link really is the
+						  current page: so is the sidebar's "All subject areas", and
+						  /subjects/ shipped two aria-current="page" elements, which
+						  tells a screen reader there are two current pages.
+
+						  The sidebar owns "page" because it is the page-level nav. On
+						  /curriculum/ that leaves nothing claiming "page", which is
+						  honest: the sidebar there lists courses, and none of them is
+						  this page.
 						*/
-						aria-current={
-							path === item.href ? 'page' : path.startsWith(item.match) ? 'true' : undefined
-						}
+						aria-current={path.startsWith(item.match) ? 'true' : undefined}
 					>
 						{item.label}
 					</a>
@@ -151,8 +156,9 @@ const NAV = [
 		color: var(--color-text-primary);
 	}
 
-	/* Any aria-current value: "page" on the index itself, "true" anywhere else
-	   in that section. Both mean "you are here" and both get the highlight. */
+	/* `aria-current="true"` — "you are in this section". Matched on the
+	   attribute rather than its value so the highlight survives if the value
+	   ever changes. */
 	.ck-nav-link[aria-current] {
 		background: var(--color-accent-soft);
 		color: var(--color-accent);

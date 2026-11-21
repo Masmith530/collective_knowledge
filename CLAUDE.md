@@ -170,10 +170,24 @@ itself.
    site" list, which was correct and still wrong — clicking a link in the pinned
    footer should not rearrange the furniture you clicked it in.
 
-   Both outlines are therefore rendered on those two pages and one is revealed.
-   Every page in a section records which one in `sessionStorage`; the pages in
-   neither read it back. **Courses is the markup default**, so a cold visit, a
-   shared link and a reader with no JavaScript all land on the primary content.
+   Every view is therefore rendered on those two pages and one is revealed.
+   Every page records which view it is in `sessionStorage`; the pages that are
+   no view read it back. **The course list is the markup default**, so a cold
+   visit, a shared link and a reader with no JavaScript all land on the section
+   index, which assumes nothing about them.
+
+   **A "view" is more specific than a section, and that distinction is the
+   whole fix.** Courses is two kinds of sidebar: the course *list* at
+   `/curriculum/`, and a given course's outline. Remembering only "you were in
+   Courses" handed a course outline to a reader who had only ever seen the
+   course list — the same wrong-outline bug, one level up. View ids are
+   `catalog`, `course:<slug>` and `subjects`, and the site-information pages
+   render one block per view, including one per open course.
+
+   Because a view id contains a course slug there is no static CSS selector per
+   view, so the reveal toggles two classes and CSS knows only "shown" and "not
+   shown". Do not replace that with `[data-ck-show='…']` rules — generating one
+   per course would put the course list in two places.
    The reveal is an `is:inline` script for the same reason `ThemeProvider` uses
    one — a bundled module is deferred, so the reader would watch the Courses
    outline appear and then be replaced. It only ever switches *away* from the
@@ -183,15 +197,20 @@ itself.
    would duplicate navigation already on screen, and "back" cannot be honest on
    a page reached from a search result.
 
-   Known limit: the outline shown is the first open course. With one open course
-   that is always right; when a second opens, remember the course alongside the
-   section and render an outline per open course, same reveal mechanism.
+   This also removed the "first open course" fallback entirely: `currentCourse`
+   is now undefined outside a course rather than defaulting to `openCourses[0]`,
+   which is what produced the original bug and would have produced it again.
 
    **Exactly one `aria-current="page"` per page.** It marks the page you are on,
    nothing else. A split lesson's row therefore carries `data-ck-in` instead —
    "this is the lesson you are inside" — and the header's section links use
-   `aria-current="true"`, the generic form, because Courses points at the index
-   rather than at where you are. Getting this wrong is invisible on screen and
+   `aria-current="true"`, the generic form, **always** — it is section nav and
+   marks the section you are in, not the page you are on. Even on `/subjects/`,
+   where the header link really is the current page: so is the sidebar's "All
+   subject areas", and that page shipped two. The sidebar owns "page" because
+   it is the page-level nav. On `/curriculum/` nothing claims "page" at all,
+   which is honest — the sidebar there lists courses and none of them is that
+   page. Getting this wrong is invisible on screen and
    tells a screen reader there are two current pages.
 
    It is **the same component either side of `nav`** — a permanent left column
